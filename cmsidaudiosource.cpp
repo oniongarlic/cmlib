@@ -40,6 +40,8 @@ bool CMSidAudioSource::generateData(qint64 maxlen)
 
     quint32 played = engine->play((short*)m_buffer.data(), length/2); // 16
 
+    //m_pos=engine->time();
+
     return played>0 ? true : false;
 }
 

@@ -10,6 +10,7 @@
 #include <QAudioOutput>
 
 #include "cmsidaudiosource.h"
+#include "cmmodplugaudiosource.h"
 
 class AudioTest : public QObject
 {
@@ -26,7 +27,7 @@ private:
     QTimer*          m_pullTimer;
 
     QAudioDeviceInfo m_device;
-    CMSidAudioSource*  m_generator;
+    CMBaseAudioSource*  m_generator;
     QAudioOutput*    m_audioOutput;
     QIODevice*       m_output; // not owned
     QAudioFormat     m_format;

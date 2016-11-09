@@ -6,7 +6,6 @@
 #include <QtCore/qendian.h>
 
 #include "audiooutput.h"
-#include "cmsidaudiosource.h"
 
 const int DataFrequencyHz = 44100;
 const int BufferSize      = 65535;
@@ -43,11 +42,11 @@ void AudioTest::initializeAudio()
         m_format = info.nearestFormat(m_format);
     }
 
-    QFile sf("test.sid");
+    QFile sf("test.mod");
     sf.open(QIODevice::ReadOnly);
     QByteArray sdata=sf.readAll();
 
-    m_generator = new CMSidAudioSource(this);
+    m_generator = new CMModPlugAudioSource(this);
     m_generator->open(QIODevice::WriteOnly);
     m_generator->write(sdata.constData(), sdata.size());
     m_generator->close();

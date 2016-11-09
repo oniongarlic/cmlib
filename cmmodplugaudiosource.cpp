@@ -55,6 +55,12 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
             QIODevice::open(mode);
             r=true;
             m_pos=0;
+            setTracks(1);
+            setTrack(1);
+            m_meta.clear();
+            m_meta.insert("title", ModPlug_GetName(m_modplug));
+            m_meta.insert("tracks", m_tracks);
+            emit metaChanged(m_meta);
         }
         break;
     case QIODevice::WriteOnly:

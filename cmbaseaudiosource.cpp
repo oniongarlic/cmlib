@@ -8,7 +8,8 @@ CMBaseAudioSource::CMBaseAudioSource(QObject *parent) :
     m_track(0),
     m_tracks(0),
     m_channels(2),
-    m_rate(44100)
+    m_rate(44100),
+    m_valid(false)
 {
 
 }
@@ -57,6 +58,15 @@ void CMBaseAudioSource::setTracks(quint16 tracks)
 
     m_tracks = tracks;
     emit tracksChanged(tracks);
+}
+
+void CMBaseAudioSource::setvalid(bool valid)
+{
+    if (m_valid == valid)
+        return;
+
+    m_valid = valid;
+    emit validChanged(valid);
 }
 
 qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)

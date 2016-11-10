@@ -59,8 +59,15 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
             setTrack(1);
             m_meta.clear();
             m_meta.insert("title", ModPlug_GetName(m_modplug));
+            m_meta.insert("comment", ModPlug_GetMessage(m_modplug));
             m_meta.insert("tracks", m_tracks);
+
+            qDebug() << m_meta;
+
             emit metaChanged(m_meta);
+        } else {
+            qWarning("Failed to load mod file, invalid ?");
+            r=false;
         }
         break;
     case QIODevice::WriteOnly:
@@ -70,7 +77,7 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
         break;
     case QIODevice::ReadWrite:
         qWarning("ReadWrite is not supported");
-        return false;
+        r=false;
         break;
     }
 
@@ -79,6 +86,17 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
 
 void CMModPlugAudioSource::close()
 {
+    switch (openMode()) {
+    case QIODevice::ReadOnly:
+
+        break;
+    case QIODevice::WriteOnly:
+        setvalid(!m_tune.isEmpty());
+        break;
+    default:
+        break;
+    }
+
     QIODevice::close();
 }
 

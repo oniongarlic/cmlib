@@ -122,7 +122,17 @@ bool CMSidAudioSource::open(QIODevice::OpenMode mode)
 
 void CMSidAudioSource::close()
 {
-    engine->stop();
+    switch (openMode()) {
+    case QIODevice::ReadOnly:
+        engine->stop();
+        break;
+    case QIODevice::WriteOnly:
+        setvalid(!m_tune.isEmpty());
+        break;
+    default:
+        break;
+    }
+
     QIODevice::close();
 }
 

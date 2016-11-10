@@ -13,6 +13,7 @@ class CMBaseAudioSource : public QIODevice
     Q_PROPERTY(quint16 track READ track WRITE setTrack NOTIFY trackChanged)
     Q_PROPERTY(quint16 tracks READ tracks WRITE setTracks NOTIFY tracksChanged)
     Q_PROPERTY(QVariantHash meta READ meta NOTIFY metaChanged)
+    Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
 
 public:
     CMBaseAudioSource(QObject *parent);
@@ -47,11 +48,16 @@ public:
         return m_meta;
     }
 
+    bool valid() const
+    {
+        return m_valid;
+    }
+
 public slots:
     void setChannels(quint8 channels);
     void setRate(quint32 rate);
     virtual void setTrack(quint16 track);
-    void setTracks(quint16 tracks);
+    void setTracks(quint16 tracks);    
 
 signals:
     void channelsChanged(quint8 channels);
@@ -59,6 +65,10 @@ signals:
     void trackChanged(quint16 track);
     void tracksChanged(quint16 tracks);
     void metaChanged(QVariantHash meta);
+    void validChanged(bool valid);
+
+protected slots:
+    void setvalid(bool valid);
 
 protected:
     virtual bool generateData(qint64 maxlen) = 0;
@@ -75,6 +85,8 @@ protected:
 
     quint8 m_channels;
     quint32 m_rate;
+
+    bool m_valid;
 };
 
 #endif // CMBASEAUDIOSOURCE_H

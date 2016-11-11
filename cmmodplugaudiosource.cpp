@@ -62,8 +62,6 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
             m_meta.insert("comment", ModPlug_GetMessage(m_modplug));
             m_meta.insert("tracks", m_tracks);
 
-            qDebug() << m_meta;
-
             emit metaChanged(m_meta);
         } else {
             qWarning("Failed to load mod file, invalid ?");

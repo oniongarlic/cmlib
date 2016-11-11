@@ -14,6 +14,7 @@ class CMBaseAudioSource : public QIODevice
     Q_PROPERTY(quint16 tracks READ tracks WRITE setTracks NOTIFY tracksChanged)
     Q_PROPERTY(QVariantHash meta READ meta NOTIFY metaChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
+    Q_PROPERTY(quint64 position READ position WRITE setPosition NOTIFY positionChanged)
 
 public:
     CMBaseAudioSource(QObject *parent);
@@ -53,11 +54,25 @@ public:
         return m_valid;
     }
 
+    quint64 position() const
+    {
+        return m_position;
+    }
+
 public slots:
     void setChannels(quint8 channels);
     void setRate(quint32 rate);
     virtual void setTrack(quint16 track);
     void setTracks(quint16 tracks);    
+
+    void setposition(quint64 position)
+    {
+        if (m_position == position)
+            return;
+
+        m_position = position;
+        emit positionChanged(position);
+    }
 
 signals:
     void channelsChanged(quint8 channels);
@@ -67,24 +82,32 @@ signals:
     void metaChanged(QVariantHash meta);
     void validChanged(bool valid);
 
+    void positionChanged(quint64 position);
+
 protected slots:
     void setvalid(bool valid);
 
 protected:
     virtual bool generateData(qint64 maxlen) = 0;
     qint64 readData(char *data, qint64 maxlen);
-    qint64 writeData(const char *data, qint64 len);
-
-    QVariantHash m_meta;
+    qint64 writeData(const char *data, qint64 len);    
 
     QByteArray m_buffer;
     qint64 m_pos;
 
+    // Available tracks and current track. For source that support many internal tracks (for example SID files)
     quint16 m_track;
     quint16 m_tracks;
 
     quint8 m_channels;
     quint32 m_rate;
+
+    // Stream length and curren position. If length is unknown then it is 0
+    quint64 m_length;
+    quint64 m_position;
+
+    // Meta data (title, author, etc)
+    QVariantHash m_meta;
 
     bool m_valid;
 };

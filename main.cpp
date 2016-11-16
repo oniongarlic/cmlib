@@ -32,13 +32,18 @@ void scan_dir(const QString &path)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    int r;
 
-    app.setApplicationName("Qt SID Player");
+    app.setApplicationName("Qt CM Player test");
 
     scan_dir("/home/milang/Music/sidmusic");
 
     AudioTest *at;
     at=new AudioTest();
 
-    return app.exec();
+    r=app.exec();
+
+    delete at;
+
+    return r;
 }

@@ -8,6 +8,11 @@ CMSapAudioSource::CMSapAudioSource(QObject *parent)
     m_asap = ASAP_New();
 }
 
+CMSapAudioSource::~CMSapAudioSource()
+{
+    ASAP_Delete(m_asap);
+}
+
 bool CMSapAudioSource::generateData(qint64 maxlen)
 {
     qint64 length = maxlen;
@@ -37,13 +42,21 @@ bool CMSapAudioSource::open(QIODevice::OpenMode mode)
 
     switch (mode) {
     case QIODevice::ReadOnly:
-        if (m_tune.isEmpty())
+        if (m_tune.isEmpty()) {
+            qWarning("No SAP data loaded");
             return false;
+        }
+
+        if (m_tune.size()>ASAPInfo_MAX_MODULE_LENGTH) {
+            qWarning("SAP Data too big!");
+            return false;
+        }
 
         if (!ASAP_Load(m_asap, NULL,(const unsigned char *)m_tune.data(), m_tune.size())) {
             qWarning("Failed to load SAP file");
             return false;
         }
+
         m_info = ASAP_GetInfo(m_asap);
         m_tracks=ASAPInfo_GetSongs(m_info);
         m_track = ASAPInfo_GetDefaultSong(m_info)+1;
@@ -88,4 +101,11 @@ void CMSapAudioSource::close()
     }
 
     QIODevice::close();
+}
+
+bool CMSapAudioSource::reset()
+{
+    ASAP_Seek(m_asap, 0);
+    m_pos=0;
+    return true;
 }

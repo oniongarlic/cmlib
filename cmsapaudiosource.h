@@ -8,11 +8,14 @@
 class CMSapAudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
+    Q_CLASSINFO("mime", "audio/x-sap")
 public:
     explicit CMSapAudioSource(QObject *parent);
+    ~CMSapAudioSource();
 
     bool open(QIODevice::OpenMode mode);
     void close();
+    bool reset();
 public slots:
     void setTrack(quint16 track);
 protected:

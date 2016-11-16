@@ -64,7 +64,6 @@ public slots:
     void setRate(quint32 rate);
     virtual void setTrack(quint16 track);
     void setTracks(quint16 tracks);    
-
     void setPosition(quint64 position);
 
 signals:

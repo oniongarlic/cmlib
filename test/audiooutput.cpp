@@ -42,11 +42,11 @@ void AudioTest::initializeAudio()
         m_format = info.nearestFormat(m_format);
     }
 
-    QFile sf("test.mod");
+    QFile sf("test.sap");
     sf.open(QIODevice::ReadOnly);
     QByteArray sdata=sf.readAll();
 
-    m_generator = new CMModPlugAudioSource(this);
+    m_generator = new CMSapAudioSource(this);
     m_generator->open(QIODevice::WriteOnly);
     m_generator->write(sdata.constData(), sdata.size());
     m_generator->close();

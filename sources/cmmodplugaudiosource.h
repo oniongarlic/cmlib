@@ -9,6 +9,7 @@
 class CMModPlugAudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
+    Q_CLASSINFO("mime", "audio/x-mod")
 public:
     CMModPlugAudioSource(QObject *parent);
 

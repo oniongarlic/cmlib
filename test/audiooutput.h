@@ -11,6 +11,7 @@
 
 #include "cmsidaudiosource.h"
 #include "cmmodplugaudiosource.h"
+#include "cmsapaudiosource.h"
 
 class AudioTest : public QObject
 {

@@ -15,6 +15,7 @@
 class CMSidAudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
+    Q_CLASSINFO("mime", "audio/x-sid")
 public:
     explicit CMSidAudioSource(QObject *parent);
     ~CMSidAudioSource();

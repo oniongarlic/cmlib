@@ -65,14 +65,7 @@ public slots:
     virtual void setTrack(quint16 track);
     void setTracks(quint16 tracks);    
 
-    void setposition(quint64 position)
-    {
-        if (m_position == position)
-            return;
-
-        m_position = position;
-        emit positionChanged(position);
-    }
+    void setPosition(quint64 position);
 
 signals:
     void channelsChanged(quint8 channels);

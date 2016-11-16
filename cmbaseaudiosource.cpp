@@ -60,6 +60,15 @@ void CMBaseAudioSource::setTracks(quint16 tracks)
     emit tracksChanged(tracks);
 }
 
+void CMBaseAudioSource::setPosition(quint64 position)
+{
+    if (m_position == position)
+        return;
+
+    m_position = position;
+    emit positionChanged(position);
+}
+
 void CMBaseAudioSource::setvalid(bool valid)
 {
     if (m_valid == valid)

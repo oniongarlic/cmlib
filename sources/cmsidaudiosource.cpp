@@ -66,7 +66,7 @@ bool CMSidAudioSource::prepareTune()
 {
     tune->read((const uint_least8_t*)m_tune.constData(), m_tune.size());
     if (!tune->getStatus()) {
-        qWarning("Failed to read SID data");
+        qWarning("SID: Failed to read data");
         return false;
     }
 
@@ -92,12 +92,14 @@ bool CMSidAudioSource::prepareTune()
 
 bool CMSidAudioSource::open(QIODevice::OpenMode mode)
 {
-    bool r;
+    bool r=false;
 
     switch (mode) {
     case QIODevice::ReadOnly:
-        if (m_tune.isEmpty())
+        if (m_tune.isEmpty()) {
+            qWarning("SID: Not media loaded");
             return false;
+        }
         if (!prepareTune())
             return false;
         r=engine->load(tune);
@@ -110,6 +112,7 @@ bool CMSidAudioSource::open(QIODevice::OpenMode mode)
     case QIODevice::WriteOnly:
         m_tune.clear();
         QIODevice::open(mode);
+        r=true;
         break;
     case QIODevice::ReadWrite:
         qWarning("ReadWrite is not supported");
@@ -147,4 +150,13 @@ bool CMSidAudioSource::reset()
     engine->fastForward(100);
     m_pos=0;
     return true;
+}
+
+QStringList CMSidAudioSource::extensions()
+{
+    QStringList e;
+
+    e << "*.sid";
+
+    return e;
 }

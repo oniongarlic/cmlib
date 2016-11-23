@@ -24,11 +24,14 @@ public:
     qint64 pos() const;
     bool reset();
 
+    static QStringList extensions();
+
     // CMBaseAudioSource interface
 public slots:
     void setTrack(quint16 track);
 
 private:
+    Q_DISABLE_COPY(CMSidAudioSource)
     sidplayfp     *engine;
     SidTune       *tune;
     SidConfig     config;

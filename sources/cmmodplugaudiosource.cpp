@@ -27,9 +27,11 @@ bool CMModPlugAudioSource::generateData(qint64 maxlen)
     r=ModPlug_Read(m_modplug, m_buffer.data(), length);
 
     if (r==0) {
+        // XXX: We loop for now
+        emit eot();
         ModPlug_Seek(m_modplug, 0);
     } else {
-        //m_pos+=(float)r/(float)(m_rate*2*2);
+        // m_pos+=(float)r/(float)(m_rate*2*2);
     }
 
     return r>0 ? true : false;
@@ -60,7 +62,13 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
             m_meta.clear();
             m_meta.insert("title", ModPlug_GetName(m_modplug));
             m_meta.insert("comment", ModPlug_GetMessage(m_modplug));
+            m_meta.insert("channels", ModPlug_NumChannels(m_modplug));
+            m_meta.insert("instruments", ModPlug_NumInstruments(m_modplug));
+            m_meta.insert("patterns", ModPlug_NumPatterns(m_modplug));
+            m_meta.insert("samples", ModPlug_NumSamples(m_modplug));
             m_meta.insert("tracks", m_tracks);
+
+            qDebug() << m_meta;
 
             emit metaChanged(m_meta);
         } else {
@@ -80,6 +88,16 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
     }
 
     return r;
+}
+
+QStringList CMModPlugAudioSource::extensions()
+{
+    QStringList e;
+
+    e << "*.mod" << "*.xm" << "*.it" << "*.s3m" << "*.stm" << "*.669" << "*.amf" << "*.ams" << "*.dbm" << "*.dmf";
+    e << "*.dsm" << "*.far" <<"*.mdl" << "*.med" << "*.mtm" <<  "*.okt" << "*.ptm" << "*.ult" << "*.umx" << "*.mt2" << "*.psm";
+
+    return e;
 }
 
 void CMModPlugAudioSource::close()

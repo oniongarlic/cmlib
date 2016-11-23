@@ -16,6 +16,9 @@ public:
     void close();
     bool reset();
     bool open(QIODevice::OpenMode mode);
+
+    static QStringList extensions();
+
 protected:
     bool generateData(qint64 maxlen);
 private:

@@ -71,7 +71,7 @@ bool CMSapAudioSource::open(QIODevice::OpenMode mode)
 
         QIODevice::open(mode);
         m_pos=0;
-        ASAP_PlaySong(m_asap, m_track-1, -1);
+        r=ASAP_PlaySong(m_asap, m_track-1, -1);
 
         break;
     case QIODevice::WriteOnly:
@@ -92,6 +92,7 @@ void CMSapAudioSource::close()
     switch (openMode()) {
     case QIODevice::ReadOnly:
         m_info=NULL;
+        setvalid(!m_tune.isEmpty());
         break;
     case QIODevice::WriteOnly:
         setvalid(!m_tune.isEmpty());
@@ -108,4 +109,13 @@ bool CMSapAudioSource::reset()
     ASAP_Seek(m_asap, 0);
     m_pos=0;
     return true;
+}
+
+QStringList CMSapAudioSource::extensions()
+{
+    QStringList e;
+
+    e << "*.sap" <<  "*.rmt" << "*.cmc" << "*.cm3" << "*.cmr" << "*.cms" << "*.dmc" << "*.dlt" << "*.mpt" << "*.mpd" << "*.tmc" << "*.tm8" << "*.tm2" << "*.fc";
+
+    return e;
 }

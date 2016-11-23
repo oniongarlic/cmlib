@@ -16,6 +16,9 @@ public:
     bool open(QIODevice::OpenMode mode);
     void close();
     bool reset();
+
+    static QStringList extensions();
+
 public slots:
     void setTrack(quint16 track);
 protected:

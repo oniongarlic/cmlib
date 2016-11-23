@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariantHash>
+#include <QStringList>
 #include <QIODevice>
 
 class CMBaseAudioSource : public QIODevice
@@ -19,8 +20,8 @@ class CMBaseAudioSource : public QIODevice
 public:
     CMBaseAudioSource(QObject *parent);
 
-    // QIODevice interface
-public:
+    static QStringList extensions();
+
     qint64 bytesAvailable() const;
     bool canReadLine() const;
 
@@ -75,6 +76,8 @@ signals:
     void validChanged(bool valid);
 
     void positionChanged(quint64 position);
+
+    void eot();
 
 protected slots:
     void setvalid(bool valid);

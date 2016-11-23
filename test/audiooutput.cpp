@@ -42,15 +42,6 @@ void AudioTest::initializeAudio()
         m_format = info.nearestFormat(m_format);
     }
 
-    QFile sf("test.sap");
-    sf.open(QIODevice::ReadOnly);
-    QByteArray sdata=sf.readAll();
-
-    m_generator = new CMSapAudioSource(this);
-    m_generator->open(QIODevice::WriteOnly);
-    m_generator->write(sdata.constData(), sdata.size());
-    m_generator->close();
-
     createAudioOutput();
 }
 
@@ -58,10 +49,8 @@ void AudioTest::createAudioOutput()
 {
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
-    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));
-    m_generator->open(QIODevice::ReadOnly);
-    m_audioOutput->setBufferSize(165535*4);
-    m_audioOutput->start(m_generator);
+    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));    
+    m_audioOutput->setBufferSize(165535*4);  
     //m_output = m_audioOutput->start();
     //m_pullMode = false;
     //m_pullTimer->start(100);
@@ -70,6 +59,31 @@ void AudioTest::createAudioOutput()
 AudioTest::~AudioTest()
 {
 
+}
+
+bool AudioTest::play()
+{
+    bool r=m_generator->open(QIODevice::ReadOnly);
+    if (r)
+        m_audioOutput->start(m_generator);
+    else
+        qWarning("Open for playback failed");
+
+    return r;
+}
+
+bool AudioTest::load(QString file, CMBaseAudioSource *decoder)
+{
+    QFile sf(file);
+    sf.open(QIODevice::ReadOnly);
+    QByteArray sdata=sf.readAll();
+
+    m_generator=decoder;
+    m_generator->open(QIODevice::WriteOnly);
+    m_generator->write(sdata.constData(), sdata.size());
+    m_generator->close();
+
+    return true;
 }
 
 void AudioTest::deviceChanged(int index)

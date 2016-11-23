@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QTimer>
 #include <QByteArray>
+#include <QStringList>
 #include <QAudioOutput>
 
 #include "cmsidaudiosource.h"
@@ -19,6 +20,9 @@ class AudioTest : public QObject
 public:
     AudioTest();
     ~AudioTest();
+
+    bool load(QString file, CMBaseAudioSource *decoder);
+    bool play();
 
 private:
     void initializeAudio();

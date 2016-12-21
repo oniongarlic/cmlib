@@ -21,6 +21,7 @@ public:
     CMBaseAudioSource(QObject *parent);
 
     static QStringList extensions();
+    // virtual QStringList getExtensions();
 
     qint64 bytesAvailable() const;
     bool canReadLine() const;

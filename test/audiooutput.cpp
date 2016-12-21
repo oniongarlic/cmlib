@@ -19,6 +19,7 @@ AudioTest::AudioTest()
     ,   m_buffer(BufferSize, 0)
 {
     qDebug("InitAudio");
+
     initializeAudio();
 }
 
@@ -35,11 +36,10 @@ void AudioTest::initializeAudio()
     m_format.setByteOrder(QAudioFormat::LittleEndian);
     m_format.setSampleType(QAudioFormat::SignedInt);
 
-    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
-    qDebug() << info.deviceName();
-    if (!info.isFormatSupported(m_format)) {
+    qDebug() << m_device.deviceName();
+    if (!m_device.isFormatSupported(m_format)) {
         qWarning() << "Default format not supported - trying to use nearest";
-        m_format = info.nearestFormat(m_format);
+        m_format = m_device.nearestFormat(m_format);
     }
 
     createAudioOutput();

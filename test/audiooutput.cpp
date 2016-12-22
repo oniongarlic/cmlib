@@ -40,7 +40,7 @@ void AudioTest::initializeAudio()
     if (!m_device.isFormatSupported(m_format)) {
         qWarning() << "Default format not supported - trying to use nearest";
         m_format = m_device.nearestFormat(m_format);
-    }
+    }   
 
     createAudioOutput();
 }
@@ -51,6 +51,9 @@ void AudioTest::createAudioOutput()
     connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));    
     m_audioOutput->setBufferSize(165535*4);  
+
+    qDebug() << "Period size is: " << m_audioOutput->periodSize();
+
     //m_output = m_audioOutput->start();
     //m_pullMode = false;
     //m_pullTimer->start(100);
@@ -69,7 +72,30 @@ bool AudioTest::play()
     else
         qWarning("Open for playback failed");
 
+    qDebug() << "Buffer size used is: " << m_audioOutput->bufferSize();
+
     return r;
+}
+
+bool AudioTest::stop()
+{
+    m_audioOutput->stop();
+
+    return true;
+}
+
+bool AudioTest::pause()
+{
+    m_audioOutput->suspend();
+
+    return true;
+}
+
+bool AudioTest::resume()
+{
+    m_audioOutput->resume();
+
+    return true;
 }
 
 bool AudioTest::load(QString file, CMBaseAudioSource *decoder)

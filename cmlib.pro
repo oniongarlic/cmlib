@@ -1,4 +1,5 @@
 QT += gui
+QT += declarative
 
 CONFIG += mobility
 MOBILITY += multimedia
@@ -8,6 +9,8 @@ PKGCONFIG += libsidplayfp libmodplug
 LIBS+= -lasap
 
 INCLUDEPATH += sources
+
+OTHER_FILES += main.qml Button.qml
 
 SOURCES += test/main.cpp test/audiooutput.cpp \
     sources/cmbaseaudiosource.cpp \

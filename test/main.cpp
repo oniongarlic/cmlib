@@ -52,12 +52,11 @@ int main(int argc, char **argv)
     scanner.setFilters(mdec.getSupportedExtensions());
     scanner.addPath("/home/milang/Music");
 
-    scanner.scan(fileList, true);
     while (scanner.scan(fileList)) {
         // XXX
     }
 
-    // fileList.sort();
+    fileList.sort();
 
     at=new AudioTest();
 

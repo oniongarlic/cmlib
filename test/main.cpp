@@ -46,35 +46,37 @@ int main(int argc, char **argv)
     viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
 
     //viewer.addImportPath(QLatin1String("modules"));
-    viewer.setSource(QUrl::fromLocalFile("main.qml"));
 
     qsrand(QTime::currentTime().msec());
 
     scanner.setFilters(mdec.getSupportedExtensions());
     scanner.addPath("/home/milang/Music");
 
+    scanner.scan(fileList, true);
     while (scanner.scan(fileList)) {
         // XXX
     }
 
-    fileList.sort();
+    // fileList.sort();
 
     at=new AudioTest();
 
     context->setContextProperty("_files", &files);
     context->setContextProperty("_player", at);
 
+    viewer.setSource(QUrl::fromLocalFile("main.qml"));
+
     QString rfile=fileList.at(qrand() % fileList.size());
 
     files.setStringList(fileList);
 
-    qDebug() << "Playing file: " << rfile;
+    qDebug() << "Loading file: " << rfile;
 
     decoder=mdec.findSuitableDecoder(rfile);
     mr=at->load(rfile, decoder);
 
     if (mr) {
-        at->play();
+        // at->play();
         viewer.show();
         r=app.exec();
     } else {

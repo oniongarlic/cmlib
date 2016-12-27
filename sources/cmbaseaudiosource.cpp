@@ -2,13 +2,16 @@
 
 #include <QDebug>
 
+#define DEFAULT_CHANNELS (2)
+#define DEFAULT_RATE (44100)
+
 CMBaseAudioSource::CMBaseAudioSource(QObject *parent) :
     QIODevice(parent),
     m_pos(0),
     m_track(0),
     m_tracks(0),
-    m_channels(2),
-    m_rate(44100),
+    m_channels(DEFAULT_CHANNELS),
+    m_rate(DEFAULT_RATE),
     m_valid(false)
 {
 

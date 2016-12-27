@@ -66,13 +66,13 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
     bool r;
 
     if (m_paths.isEmpty())
-        return false;
+        return true;
 
     if (m_pathsleft.isEmpty() || fromStart)
         m_pathsleft=m_paths;
 
     const QString path=m_pathsleft.takeFirst();
-    QDirIterator it(path, m_filter, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    QDirIterator it(path, m_filter, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
 
     emit scanning(path);
 
@@ -80,13 +80,13 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
         QString f;
         QFileInfo info;
 
-        f=it.next();
+        f=it.next();        
 
         info=it.fileInfo();
-        if (info.isFile())
-            list.append(f);
-        else if (info.isDir()) {
-            m_pathsleft.append(f);
+        if (info.isFile()) {
+            list.append(f);            
+        } else if (info.isDir()) {
+            m_pathsleft.append(f);            
         }
     }
 

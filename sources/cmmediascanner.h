@@ -14,8 +14,10 @@ class CMMediaScanner : public QObject
     Q_OBJECT
 public:
     explicit CMMediaScanner(QObject *parent = 0);
-    Q_INVOKABLE void setFilters(const QStringList &filter);
+    void setFilters(const QStringList &filters);
+    Q_INVOKABLE void addFilter(const QString &filter);
     Q_INVOKABLE bool addPath(const QString path);
+    Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void clearPaths();
     Q_INVOKABLE bool scan(QStringList &list, bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
@@ -30,10 +32,10 @@ private slots:
     void scanLoop();
 
 private:
+    QTimer m_ticker;
     QStringList m_pathsleft;
     QStringList m_paths;
-    QStringList m_filter;
-    QTimer m_ticker;
+    QStringList m_filter;    
     QStringList m_filelist;
 };
 

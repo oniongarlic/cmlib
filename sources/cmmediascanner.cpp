@@ -9,9 +9,14 @@ CMMediaScanner::CMMediaScanner(QObject *parent) : QObject(parent)
     connect(&m_ticker, SIGNAL(timeout()), this, SLOT(scanLoop()));
 }
 
-void CMMediaScanner::setFilters(const QStringList &filter)
+void CMMediaScanner::setFilters(const QStringList &filters)
 {
-    m_filter=filter;
+    m_filter=filters;
+}
+
+void CMMediaScanner::addFilter(const QString &filter)
+{
+    m_filter << filter;
 }
 
 bool CMMediaScanner::addPath(const QString path)
@@ -30,6 +35,11 @@ bool CMMediaScanner::addPath(const QString path)
     qDebug() << path;
 
     return true;
+}
+
+void CMMediaScanner::clearFilters()
+{
+    m_filter.clear();
 }
 
 void CMMediaScanner::clearPaths()

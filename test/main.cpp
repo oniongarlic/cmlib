@@ -1,3 +1,8 @@
+/**
+  * A simple QtQuick 1.1 UI test application for CMlib
+  * GPL v2
+  *
+  */
 #include <QApplication>
 #include <QObject>
 #include <QDirIterator>
@@ -15,16 +20,13 @@
 #include <QDeclarativeContext>
 #include <QDeclarativeView>
 
+#include <QDesktopServices>
+
 #include "audiooutput.h"
 #include "cmmediascanner.h"
-#include "cmmediadecoder.h"
+#include "decoders/cmmediadecoder.h"
 
 QStringListModel files;
-
-void loadUI()
-{
-
-}
 
 int main(int argc, char **argv)
 {
@@ -50,7 +52,9 @@ int main(int argc, char **argv)
     qsrand(QTime::currentTime().msec());
 
     scanner.setFilters(mdec.getSupportedExtensions());
-    scanner.addPath("/home/milang/Music");
+    // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    scanner.addPath("/home/milang/Music/modules");
+    scanner.addPath("/home/milang/Music/sidmusic");
 
     while (scanner.scan(fileList)) {
         // XXX
@@ -62,8 +66,9 @@ int main(int argc, char **argv)
 
     context->setContextProperty("_files", &files);
     context->setContextProperty("_player", at);
+    //context->setContextProperty("_scanner", &scanner);
 
-    viewer.setSource(QUrl::fromLocalFile("main.qml"));
+    viewer.setSource(QUrl::fromLocalFile("test/main.qml"));
 
     QString rfile=fileList.at(qrand() % fileList.size());
 

@@ -4,6 +4,7 @@
 
 CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 {
+    // Registers our known source decoders
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMModPlugAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMModPlugAudioSource(this))));
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSidAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSidAudioSource(this))));
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSapAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSapAudioSource(this))));

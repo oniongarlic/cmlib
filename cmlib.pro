@@ -18,11 +18,14 @@ SOURCES += test/main.cpp test/audiooutput.cpp \
     sources/cmmodplugaudiosource.cpp \
     sources/cmsapaudiosource.cpp \
     sources/cmmediascanner.cpp \
-    sources/cmmediadecoder.cpp
+    decoders/cmmediadecoder.cpp \
+    sinks/cmbaseaudiosink.cpp
+
 HEADERS += test/audiooutput.h \
     sources/cmbaseaudiosource.h \
     sources/cmsidaudiosource.h \
     sources/cmmodplugaudiosource.h \
     sources/cmsapaudiosource.h \
     sources/cmmediascanner.h \
-    sources/cmmediadecoder.h
+    decoders/cmmediadecoder.h \
+    sinks/cmbaseaudiosink.h

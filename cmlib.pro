@@ -10,7 +10,7 @@ LIBS+= -lasap
 
 INCLUDEPATH += sources sinks player decoders
 
-OTHER_FILES += main.qml Button.qml
+OTHER_FILES += test/main.qml test/Button.qml
 
 SOURCES += test/main.cpp \
     sources/cmbaseaudiosource.cpp \

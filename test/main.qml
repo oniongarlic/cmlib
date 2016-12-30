@@ -21,7 +21,7 @@ Rectangle {
 
         Button {
             title: "Resume"
-            onClicked: _player.resume();
+            onClicked: _player.play();
         }
 
         Button {
@@ -34,8 +34,16 @@ Rectangle {
         Button {
             title: "Scan"
             onClicked: {
-                _player.stop();
+                //_player.stop();
             }
+        }
+    }
+
+    Connections {
+        target: _player
+        onMetadata: {
+            console.debug("Got metadata!")
+            console.debug(meta.title)
         }
     }
 
@@ -69,8 +77,8 @@ Rectangle {
                             font.pointSize: 12
                         }
                         onClicked: {
-                            console.debug("File: "+model.display);
-
+                            console.debug("File: "+model.display);                            
+                            _player.load(model.display);
                         }
                     }
                 }

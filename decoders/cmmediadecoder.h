@@ -19,7 +19,7 @@ public:
 signals:
     void metadata(QVariantHash meta);
 
-public slots:
+protected slots:
     void decoderMetadata(QVariantHash meta);
 
 protected:

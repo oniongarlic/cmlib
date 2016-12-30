@@ -32,13 +32,12 @@ QStringListModel files;
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    int r;
-    bool mr;
-    QStringList fileList;       
+    QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
     CMMediaPlayer player;
     CMQtAudioSink sink;
+    int r;
 
     app.setApplicationName("Qt CM Player test");
 
@@ -63,28 +62,19 @@ int main(int argc, char **argv)
         // XXX
     }
 
-    fileList.sort();    
+    fileList.sort();
 
     context->setContextProperty("_files", &files);
     context->setContextProperty("_player", &player);
     //context->setContextProperty("_scanner", &scanner);
 
     viewer.setSource(QUrl::fromLocalFile("test/main.qml"));
-
-    QString rfile=fileList.at(qrand() % fileList.size());
-
     files.setStringList(fileList);
 
-    qDebug() << "Loading file: " << rfile;
+    // QString rfile=fileList.at(qrand() % fileList.size());
 
-    mr=player.load(rfile);
-
-    if (mr) {        
-        viewer.show();
-        r=app.exec();
-    } else {
-        r=255;
-    }
+    viewer.show();
+    return app.exec();
 
     return r;
 }

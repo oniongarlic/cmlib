@@ -4,16 +4,23 @@
 #include "cmmediaplayer.h"
 
 #define CHECK_SINK(s) { if (!s) { qWarning("Sink is not set"); return false; } }
+#define CHECK_SOURCE(s) { if (!s) { qWarning("Source is not set"); return false; } }
 
-CMMediaPlayer::CMMediaPlayer(QObject *parent) : QObject(parent)
+CMMediaPlayer::CMMediaPlayer(QObject *parent)
+    : QObject(parent)
 {
-
+    connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
 }
 
+/**
+ * @brief CMMediaPlayer::load
+ * @param file
+ * @return
+ */
 bool CMMediaPlayer::load(const QString file)
 {
-    m_source=m_dec.findSuitableDecoder(file);
-    if (!m_source)
+    CMBaseAudioSource *source=m_dec.findSuitableDecoder(file);
+    if (!source)
         return false;
 
     qDebug() << "Loading file " << file;
@@ -25,12 +32,26 @@ bool CMMediaPlayer::load(const QString file)
     if (data.isEmpty())
         return false;
 
-    return load(data);
+    return load(data, source);
 }
 
-bool CMMediaPlayer::load(const QByteArray &data)
+/**
+ * @brief CMMediaPlayer::load
+ * @param data
+ * @param source
+ * @return
+ */
+bool CMMediaPlayer::load(const QByteArray &data, CMBaseAudioSource *source)
 {
     qDebug() << "Loading data " << data.size();
+
+    if (m_sink && m_sink->state()!=QAudio::StoppedState)
+        return false;
+
+    m_source=source;
+
+    if (m_source->isOpen())
+        m_source->close();
 
     m_source->open(QIODevice::WriteOnly);
     m_source->write(data.constData(), data.size());
@@ -43,27 +64,30 @@ bool CMMediaPlayer::load(const QByteArray &data)
 
 bool CMMediaPlayer::play()
 {
-    CHECK_SINK(m_sink);
-
     qDebug("Play");
+
+    CHECK_SINK(m_sink);
+    CHECK_SOURCE(m_source);
 
     return m_sink->play();
 }
 
 bool CMMediaPlayer::stop()
 {
-    CHECK_SINK(m_sink);
-
     qDebug("Stop");
+
+    CHECK_SINK(m_sink);
+    CHECK_SOURCE(m_source);
 
     return m_sink->stop();
 }
 
 bool CMMediaPlayer::pause()
 {
-    CHECK_SINK(m_sink);
-
     qDebug("Pause");
+
+    CHECK_SINK(m_sink);
+    CHECK_SOURCE(m_source);
 
     return m_sink->pause();
 }
@@ -73,4 +97,14 @@ bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
     m_sink=sink;
 
     return true;
+}
+
+QAudio::State CMMediaPlayer::getState()
+{
+    return m_sink->state();
+}
+
+void CMMediaPlayer::decoderMetadata(QVariantHash meta)
+{
+    emit metadata(meta);
 }

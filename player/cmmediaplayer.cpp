@@ -92,6 +92,12 @@ bool CMMediaPlayer::pause()
     return m_sink->pause();
 }
 
+bool CMMediaPlayer::setTrack(quint16 track)
+{
+    m_source->setTrack(track);
+    return true;
+}
+
 bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
 {
     m_sink=sink;
@@ -107,4 +113,10 @@ QAudio::State CMMediaPlayer::getState()
 void CMMediaPlayer::decoderMetadata(QVariantHash meta)
 {
     emit metadata(meta);
+}
+
+void CMMediaPlayer::sinkPosition(double pos)
+{
+    m_position=pos;
+    emit positionChanged(m_position);
 }

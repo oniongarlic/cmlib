@@ -10,6 +10,8 @@
 class CMMediaPlayer : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(double position READ position NOTIFY positionChanged)
+    Q_PROPERTY(double length READ length NOTIFY lengthChanged)
 public:
     explicit CMMediaPlayer(QObject *parent = 0);
 
@@ -18,16 +20,30 @@ public:
     Q_INVOKABLE bool play();
     Q_INVOKABLE bool stop();
     Q_INVOKABLE bool pause();
+    Q_INVOKABLE bool setTrack(quint16 track);
 
     bool setAudioSink(CMBaseAudioSink *sink);
 
     QAudio::State getState();
 
-signals:    
+    double position() const
+    {
+        return m_position;
+    }
+
+    double length() const
+    {
+        return m_length;
+    }
+
+signals:
     void metadata(QVariantHash meta);
+    void positionChanged(double position);
+    void lengthChanged(double length);
 
 protected slots:
     void decoderMetadata(QVariantHash meta);
+    void sinkPosition(double pos);
 
 public slots:
 
@@ -36,6 +52,8 @@ private:
     CMBaseAudioSink *m_sink;
     QAudio::State m_state;
     CMMediaDecoder m_dec;
+    double m_position;
+    double m_length;
 };
 
 #endif // CMMEDIAPLAYER_H

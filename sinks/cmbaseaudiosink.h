@@ -22,6 +22,7 @@ public:
 
 signals:
     void stateChanged(QAudio::State state);
+    void position(qint64 pos);
 
 public slots:
 

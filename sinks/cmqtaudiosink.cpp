@@ -135,7 +135,8 @@ void CMQtAudioSink::deviceChanged(int index)
 
 void CMQtAudioSink::notified()
 {
-    qWarning() << "bytesFree = " << m_audioOutput->bytesFree() << ", " << "elapsedUSecs = " << m_audioOutput->elapsedUSecs() << ", " << "processedUSecs = " << m_audioOutput->processedUSecs();
+    //qWarning() << "bytesFree = " << m_audioOutput->bytesFree() << ", " << "elapsedUSecs = " << m_audioOutput->elapsedUSecs() << ", " << "processedUSecs = " << m_audioOutput->processedUSecs();
+    emit position(m_audioOutput->processedUSecs());
 }
 
 void CMQtAudioSink::toggleSuspendResume()

@@ -22,7 +22,8 @@
 
 #include <QDesktopServices>
 
-#include "audiooutput.h"
+#include "cmqtaudiosink.h"
+#include "cmmediaplayer.h"
 #include "cmmediascanner.h"
 #include "decoders/cmmediadecoder.h"
 
@@ -33,11 +34,11 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     int r;
     bool mr;
-    QStringList fileList;
-    AudioTest *at;
-    CMBaseAudioSource *decoder;
+    QStringList fileList;       
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
+    CMMediaPlayer player;
+    CMQtAudioSink sink;
 
     app.setApplicationName("Qt CM Player test");
 
@@ -51,6 +52,8 @@ int main(int argc, char **argv)
 
     qsrand(QTime::currentTime().msec());
 
+    player.setAudioSink(&sink);
+
     scanner.setFilters(mdec.getSupportedExtensions());
     // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     scanner.addPath("/home/milang/Music/modules");
@@ -60,12 +63,10 @@ int main(int argc, char **argv)
         // XXX
     }
 
-    fileList.sort();
-
-    at=new AudioTest();
+    fileList.sort();    
 
     context->setContextProperty("_files", &files);
-    context->setContextProperty("_player", at);
+    context->setContextProperty("_player", &player);
     //context->setContextProperty("_scanner", &scanner);
 
     viewer.setSource(QUrl::fromLocalFile("test/main.qml"));
@@ -76,18 +77,14 @@ int main(int argc, char **argv)
 
     qDebug() << "Loading file: " << rfile;
 
-    decoder=mdec.findSuitableDecoder(rfile);
-    mr=at->load(rfile, decoder);
+    mr=player.load(rfile);
 
-    if (mr) {
-        // at->play();
+    if (mr) {        
         viewer.show();
         r=app.exec();
     } else {
         r=255;
     }
-
-    delete at;
 
     return r;
 }

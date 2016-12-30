@@ -8,24 +8,26 @@ CONFIG +=link_pkgconfig
 PKGCONFIG += libsidplayfp libmodplug
 LIBS+= -lasap
 
-INCLUDEPATH += sources
+INCLUDEPATH += sources sinks player decoders
 
 OTHER_FILES += main.qml Button.qml
 
-SOURCES += test/main.cpp test/audiooutput.cpp \
+SOURCES += test/main.cpp \
     sources/cmbaseaudiosource.cpp \
     sources/cmsidaudiosource.cpp \
     sources/cmmodplugaudiosource.cpp \
     sources/cmsapaudiosource.cpp \
     sources/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
-    sinks/cmbaseaudiosink.cpp
+    sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
+    player/cmmediaplayer.cpp
 
-HEADERS += test/audiooutput.h \
+HEADERS += \
     sources/cmbaseaudiosource.h \
     sources/cmsidaudiosource.h \
     sources/cmmodplugaudiosource.h \
     sources/cmsapaudiosource.h \
     sources/cmmediascanner.h \
     decoders/cmmediadecoder.h \
-    sinks/cmbaseaudiosink.h
+    sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
+    player/cmmediaplayer.h

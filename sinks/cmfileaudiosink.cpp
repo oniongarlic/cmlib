@@ -32,8 +32,8 @@ bool CMFileAudioSink::play()
     }
 
     if (m_file.isOpen()) {
-        m_state=QAudio::ActiveState;
         m_timer.start();
+        setState(QAudio::ActiveState);
         return true;
     }
 
@@ -42,6 +42,7 @@ bool CMFileAudioSink::play()
     if (r) {
         afterOpen();
         m_timer.start();
+        setState(QAudio::ActiveState);
     } else {
         qWarning("Failed to open file for writing");
     }
@@ -59,7 +60,7 @@ bool CMFileAudioSink::stop()
     m_file.close();
     //m_file.disconnect(this, 0);
 
-    m_state=QAudio::StoppedState;
+    setState(QAudio::StoppedState);
 
     return true;
 }
@@ -67,12 +68,16 @@ bool CMFileAudioSink::stop()
 bool CMFileAudioSink::pause()
 {
     m_timer.stop();
-    m_state=QAudio::IdleState;
+    setState(QAudio::SuspendedState);
+
+    return true;
 }
 
 bool CMFileAudioSink::setFile(const QString file)
 {
     m_file.setFileName(file);
+
+    return true;
 }
 
 void CMFileAudioSink::readTicker()

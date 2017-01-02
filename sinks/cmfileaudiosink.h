@@ -26,9 +26,10 @@ protected:
     virtual bool afterOpen();
     virtual bool aboutToClose();
 
-private:
-    QTimer m_timer;
     QFile m_file;
+
+private:
+    QTimer m_timer;    
     uint m_readSize;
 };
 

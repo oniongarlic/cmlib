@@ -79,6 +79,7 @@ bool CMMediaPlayer::stop()
     CHECK_SINK(m_sink);
     CHECK_SOURCE(m_source);
 
+    m_source->reset();
     return m_sink->stop();
 }
 

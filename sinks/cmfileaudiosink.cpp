@@ -40,6 +40,7 @@ bool CMFileAudioSink::play()
     r=m_file.open(QIODevice::WriteOnly);
 
     if (r) {
+        afterOpen();
         m_timer.start();
     } else {
         qWarning("Failed to open file for writing");
@@ -78,6 +79,11 @@ void CMFileAudioSink::readTicker()
 {
     QByteArray tmp=m_source->read(m_readSize);
     m_file.write(tmp);
+}
+
+bool CMFileAudioSink::afterOpen()
+{
+    return true;
 }
 
 bool CMFileAudioSink::aboutToClose()

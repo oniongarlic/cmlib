@@ -23,6 +23,7 @@ protected slots:
     void readTicker();
 
 protected:
+    virtual bool afterOpen();
     virtual bool aboutToClose();
 
 private:

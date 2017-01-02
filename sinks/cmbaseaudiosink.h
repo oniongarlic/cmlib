@@ -27,6 +27,7 @@ signals:
 public slots:
 
 protected:
+    void setState(QAudio::State state);
     CMBaseAudioSource *m_source;
     QAudio::State m_state;
 };

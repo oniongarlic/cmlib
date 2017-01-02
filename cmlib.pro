@@ -20,7 +20,9 @@ SOURCES += test/main.cpp \
     sources/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
     sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
-    player/cmmediaplayer.cpp
+    player/cmmediaplayer.cpp \
+    sinks/cmfileaudiosink.cpp \
+    sinks/cmwavfileaudiosink.cpp
 
 HEADERS += \
     sources/cmbaseaudiosource.h \
@@ -30,4 +32,6 @@ HEADERS += \
     sources/cmmediascanner.h \
     decoders/cmmediadecoder.h \
     sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
-    player/cmmediaplayer.h
+    player/cmmediaplayer.h \
+    sinks/cmfileaudiosink.h \
+    sinks/cmwavfileaudiosink.h

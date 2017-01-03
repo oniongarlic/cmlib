@@ -5,7 +5,7 @@ CONFIG += mobility
 MOBILITY += multimedia
 
 CONFIG +=link_pkgconfig
-PKGCONFIG += libsidplayfp libmodplug
+PKGCONFIG += libsidplayfp libmodplug flac++
 LIBS+= -lasap
 
 INCLUDEPATH += sources sinks player decoders
@@ -22,7 +22,8 @@ SOURCES += test/main.cpp \
     sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
     player/cmmediaplayer.cpp \
     sinks/cmfileaudiosink.cpp \
-    sinks/cmwavfileaudiosink.cpp
+    sinks/cmwavfileaudiosink.cpp \
+    sources/cmflacaudiosource.cpp
 
 HEADERS += \
     sources/cmbaseaudiosource.h \
@@ -34,4 +35,5 @@ HEADERS += \
     sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
     player/cmmediaplayer.h \
     sinks/cmfileaudiosink.h \
-    sinks/cmwavfileaudiosink.h
+    sinks/cmwavfileaudiosink.h \
+    sources/cmflacaudiosource.h

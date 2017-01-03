@@ -23,6 +23,8 @@
 #include <QDesktopServices>
 
 #include "cmqtaudiosink.h"
+#include "cmfileaudiosink.h"
+#include "cmwavfileaudiosink.h"
 #include "cmmediaplayer.h"
 #include "cmmediascanner.h"
 #include "decoders/cmmediadecoder.h"
@@ -35,8 +37,6 @@ int main(int argc, char **argv)
     QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
-    CMMediaPlayer player;
-    CMQtAudioSink sink;
     int r;
 
     app.setApplicationName("Qt CM Player test");
@@ -47,14 +47,17 @@ int main(int argc, char **argv)
     viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
     viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
 
-    //viewer.addImportPath(QLatin1String("modules"));
+    qmlRegisterType<CMMediaPlayer>("org.tal.cm", 1, 0, "CMMediaPlayer");
+    qmlRegisterUncreatableType<CMBaseAudioSink>("org.tal.cm", 1, 0, "CMBaseAudioSink", "CMBaseAudioSink is abstract and can not be created");
+    qmlRegisterType<CMQtAudioSink>("org.tal.cm", 1, 0, "CMQtAudioSink");
+    qmlRegisterType<CMFileAudioSink>("org.tal.cm", 1, 0, "CMFileAudioSink");
+    qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
 
     qsrand(QTime::currentTime().msec());
 
-    player.setAudioSink(&sink);
-
     scanner.setFilters(mdec.getSupportedExtensions());
     // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    scanner.addPath("/home/milang/CMTestFiles");
     scanner.addPath("/home/milang/Music/modules");
     scanner.addPath("/home/milang/Music/sidmusic");
 
@@ -64,8 +67,7 @@ int main(int argc, char **argv)
 
     fileList.sort();
 
-    context->setContextProperty("_files", &files);
-    context->setContextProperty("_player", &player);
+    context->setContextProperty("_files", &files);    
     //context->setContextProperty("_scanner", &scanner);
 
     viewer.setSource(QUrl::fromLocalFile("test/main.qml"));

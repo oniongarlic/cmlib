@@ -1,9 +1,28 @@
 import QtQuick 1.1
+import org.tal.cm 1.0
 
 Rectangle {
     id: root
     width: 1024
     height: 600
+
+    CMMediaPlayer {
+        id: player
+        Component.onCompleted: setAudioSink(qtAudioSink)
+
+        onMetadata: {
+            console.debug(meta.title)
+        }
+    }
+
+    CMQtAudioSink {
+        id: qtAudioSink
+    }
+
+    CMWavFileAudioSink {
+        id: wavSink
+        file: "audio-qml.wav"
+    }
 
     Row {
         id: control
@@ -11,49 +30,42 @@ Rectangle {
         anchors.top: parent.top
         Button {
             title: "Play"
-            onClicked: _player.play();
+            onClicked: {
+                if (!player.play())
+                    console.debug("Playback start failed")
+            }
         }
 
         Button {
             title: "Pause"
-            onClicked: _player.pause();
+            onClicked: player.pause();
         }
 
         Button {
             title: "Resume"
-            onClicked: _player.play();
+            onClicked: player.play();
         }
 
         Button {
             title: "Stop"
             onClicked: {
-                _player.stop();
+                player.stop();
             }
         }
 
         Button {
-            title: "Scan"
+            title: "Save WAV"
+            //enabled: player.s
             onClicked: {
-                //_player.stop();
+                player.setAudioSink(wavSink)
             }
         }
         Text {
             id: posText
             width: 80
             height: parent.height
-            text: "--"
+            text:player.position/1000;
             horizontalAlignment: Text.AlignHCenter
-        }
-    }
-
-    Connections {
-        target: _player
-        onMetadata: {
-            console.debug("Got metadata!")
-            console.debug(meta.title)
-        }
-        onPositionChanged: {
-            posText.text=position/1000;
         }
     }
 
@@ -88,7 +100,7 @@ Rectangle {
                         }
                         onClicked: {
                             console.debug("File: "+model.display);                            
-                            _player.load(model.display);
+                            player.load(model.display);
                         }
                     }
                 }

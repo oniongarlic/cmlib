@@ -90,6 +90,8 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
     if (r==false) {
         qWarning("Source failed to generate data");
         return -1;
+    } else {
+        qDebug() << m_buffer.size();
     }
 
     while (maxlen - total > 0) {
@@ -99,17 +101,14 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
         total += chunk;
     }
 
-    // qDebug() << r << maxlen << total;
+    //qDebug() << r << maxlen << m_pos << total;
 
     return total;
 }
 
 qint64 CMBaseAudioSource::writeData(const char *data, qint64 len)
 {
-    Q_UNUSED(data);
-    Q_UNUSED(len);
-
-    qWarning("Data write not implemented in this element");
-
-    return -1;
+    m_data.append(data, len);
+    qDebug() << "SOURCE data: " << len;
+    return len;
 }

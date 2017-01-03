@@ -73,8 +73,10 @@ bool CMMediaPlayer::play()
     CHECK_SINK(m_sink);
     CHECK_SOURCE(m_source);
 
-    if (!m_source->valid())
+    if (!m_source->valid()) {
+        qWarning("Source data is not valid");
         return false;
+    }
 
     return m_sink->play();
 }

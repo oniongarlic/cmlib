@@ -8,6 +8,8 @@
 #include "cmmodplugaudiosource.h"
 #include "cmsapaudiosource.h"
 
+#include "cmflacaudiosource.h"
+
 class CMMediaDecoder : public QObject
 {
     Q_OBJECT

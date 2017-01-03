@@ -37,6 +37,13 @@ Rectangle {
                 //_player.stop();
             }
         }
+        Text {
+            id: posText
+            width: 80
+            height: parent.height
+            text: "--"
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 
     Connections {
@@ -44,6 +51,9 @@ Rectangle {
         onMetadata: {
             console.debug("Got metadata!")
             console.debug(meta.title)
+        }
+        onPositionChanged: {
+            posText.text=position/1000;
         }
     }
 

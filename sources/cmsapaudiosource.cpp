@@ -18,7 +18,7 @@ bool CMSapAudioSource::generateData(qint64 maxlen)
     qint64 length = maxlen;
     m_buffer.resize(length);
     int played=ASAP_Generate(m_asap, (unsigned char *)m_buffer.data(), length, ASAPSampleFormat_S16_L_E);
-    // m_pos=ASAP_GetPosition(m_asap)/1000;
+    setPosition(ASAP_GetPosition(m_asap));
 
     return played>0 ? true : false;
 }

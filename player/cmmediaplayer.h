@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE bool stop();
     Q_INVOKABLE bool pause();
     Q_INVOKABLE bool setTrack(quint16 track);
+    Q_INVOKABLE void setPlaytime(quint64 ms);
 
     bool setAudioSink(CMBaseAudioSink *sink);
 
@@ -38,22 +39,23 @@ public:
 
 signals:
     void metadata(QVariantHash meta);
-    void positionChanged(double position);
+    void positionChanged(quint64 position);
     void lengthChanged(double length);
 
 protected slots:
     void decoderMetadata(QVariantHash meta);
-    void sinkPosition(double pos);
+    void sinkPosition(quint64 pos);
 
 public slots:
 
-private:
+private:    
     CMBaseAudioSource *m_source;
     CMBaseAudioSink *m_sink;
     QAudio::State m_state;
     CMMediaDecoder m_dec;
     double m_position;
     double m_length;
+    quint64 m_playtime;
 };
 
 #endif // CMMEDIAPLAYER_H

@@ -8,6 +8,7 @@
 
 CMMediaPlayer::CMMediaPlayer(QObject *parent)
     : QObject(parent)
+    , m_playtime(0)
 {
     connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
 }
@@ -57,6 +58,9 @@ bool CMMediaPlayer::load(const QByteArray &data, CMBaseAudioSource *source)
     m_source->write(data.constData(), data.size());
     m_source->close();
 
+    m_source->disconnect(this, 0);
+    connect(m_source, SIGNAL(positionChanged(quint64)), SLOT(sinkPosition(quint64)));
+
     m_sink->setAudioSource(m_source);
 
     return true;
@@ -68,6 +72,9 @@ bool CMMediaPlayer::play()
 
     CHECK_SINK(m_sink);
     CHECK_SOURCE(m_source);
+
+    if (!m_source->valid())
+        return false;
 
     return m_sink->play();
 }
@@ -99,6 +106,11 @@ bool CMMediaPlayer::setTrack(quint16 track)
     return true;
 }
 
+void CMMediaPlayer::setPlaytime(quint64 ms)
+{
+    m_playtime=ms;
+}
+
 bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
 {
     m_sink=sink;
@@ -116,8 +128,11 @@ void CMMediaPlayer::decoderMetadata(QVariantHash meta)
     emit metadata(meta);
 }
 
-void CMMediaPlayer::sinkPosition(double pos)
+void CMMediaPlayer::sinkPosition(quint64 pos)
 {
     m_position=pos;
     emit positionChanged(m_position);
+
+    if (m_playtime>0 && pos>m_playtime)
+        stop();
 }

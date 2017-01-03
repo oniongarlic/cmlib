@@ -40,7 +40,7 @@ bool CMSidAudioSource::generateData(qint64 maxlen)
 
     quint32 played = engine->play((short*)m_buffer.data(), length/2); // 16
 
-    //m_pos=engine->time();
+    setPosition(engine->time()*1000);
 
     return played>0 ? true : false;
 }
@@ -139,16 +139,11 @@ void CMSidAudioSource::close()
     QIODevice::close();
 }
 
-qint64 CMSidAudioSource::pos() const
-{
-    return m_pos;
-}
-
 bool CMSidAudioSource::reset()
 {
     engine->stop();
     engine->fastForward(100);
-    m_pos=0;
+    setPosition(0);
     return true;
 }
 

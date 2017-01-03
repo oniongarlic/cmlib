@@ -20,8 +20,7 @@ public:
     explicit CMSidAudioSource(QObject *parent);
     ~CMSidAudioSource();
     bool open(OpenMode mode);
-    void close();
-    qint64 pos() const;
+    void close();   
     bool reset();
 
     static QStringList extensions();

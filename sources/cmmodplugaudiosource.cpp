@@ -13,8 +13,8 @@ CMModPlugAudioSource::CMModPlugAudioSource(QObject *parent) :
     settings.mFrequency = m_rate;
     /* insert more setting changes here */
     ModPlug_SetSettings(&settings);
-
     m_modplug=NULL;
+    m_track_pos=0;
 }
 
 bool CMModPlugAudioSource::generateData(qint64 maxlen)
@@ -29,10 +29,21 @@ bool CMModPlugAudioSource::generateData(qint64 maxlen)
     if (r==0) {
         // XXX: We loop for now
         emit eot();
-        ModPlug_Seek(m_modplug, 0);
-    } else {
-        // m_pos+=(float)r/(float)(m_rate*2*2);
+        reset();
+    } else {        
+        float tmp=((float)r/(float)(m_rate*2.0*2.0))*(float)1000.0;
+        m_track_pos+=tmp;
+        setPosition(m_track_pos);
     }
+
+    m_speed=ModPlug_GetCurrentSpeed(m_modplug);
+    m_tempo=ModPlug_GetCurrentTempo(m_modplug);
+    m_order=ModPlug_GetCurrentOrder(m_modplug);
+    m_pattern=ModPlug_GetCurrentPattern(m_modplug);
+    m_row=ModPlug_GetCurrentRow(m_modplug);
+    m_pchannels=ModPlug_GetPlayingChannels(m_modplug);
+
+    // qDebug() << m_order << ":" << m_row << "-" << m_pattern;
 
     return r>0 ? true : false;
 }
@@ -55,8 +66,7 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
         m_modplug = ModPlug_Load(m_tune.data(), m_tune.size());
         if (m_modplug) {
             QIODevice::open(mode);
-            r=true;
-            m_pos=0;
+            r=true;            
             setTracks(1);
             setTrack(1);
             m_meta.clear();
@@ -80,6 +90,8 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
         m_tune.clear();
         r=true;
         QIODevice::open(mode);
+        m_track_pos=0;
+        setPosition(m_track_pos);
         break;
     case QIODevice::ReadWrite:
         qWarning("ReadWrite is not supported");
@@ -121,8 +133,9 @@ bool CMModPlugAudioSource::reset()
     if (!m_modplug)
         return false;
 
-    ModPlug_Seek(m_modplug, 0);
-    m_pos=0;
+    ModPlug_Seek(m_modplug, 0);    
+    m_track_pos=0;
+    setPosition(m_track_pos);
 
     return true;
 }

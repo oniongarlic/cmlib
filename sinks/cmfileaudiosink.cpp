@@ -55,6 +55,8 @@ bool CMFileAudioSink::stop()
     if (!m_file.isOpen())
         return false;
 
+    m_timer.stop();
+
     aboutToClose();
 
     m_file.close();

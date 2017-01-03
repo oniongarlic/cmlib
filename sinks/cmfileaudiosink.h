@@ -9,6 +9,7 @@
 class CMFileAudioSink : public CMBaseAudioSink
 {
     Q_OBJECT
+    Q_PROPERTY(QString file READ file WRITE setFile NOTIFY fileChanged)
 public:
     CMFileAudioSink(QObject *parent = 0);
 
@@ -18,6 +19,14 @@ public:
     //Q_INVOKABLE bool resume();
 
     Q_INVOKABLE bool setFile(const QString file);
+
+    QString file() const
+    {
+        return m_file.fileName();
+    }
+
+signals:
+    void fileChanged(QString file);
 
 protected slots:
     void readTicker();

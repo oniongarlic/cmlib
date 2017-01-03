@@ -45,13 +45,6 @@ bool CMSidAudioSource::generateData(qint64 maxlen)
     return played>0 ? true : false;
 }
 
-qint64 CMSidAudioSource::writeData(const char *data, qint64 len)
-{
-    m_tune.append(data, len);
-    qDebug() << "Wrote: " << len;
-    return len;
-}
-
 void CMSidAudioSource::setTrack(quint16 track)
 {
 
@@ -64,7 +57,7 @@ void CMSidAudioSource::setTrack(quint16 track)
 
 bool CMSidAudioSource::prepareTune()
 {
-    tune->read((const uint_least8_t*)m_tune.constData(), m_tune.size());
+    tune->read((const uint_least8_t*)m_data.constData(), m_data.size());
     if (!tune->getStatus()) {
         qWarning("SID: Failed to read data");
         return false;
@@ -96,7 +89,7 @@ bool CMSidAudioSource::open(QIODevice::OpenMode mode)
 
     switch (mode) {
     case QIODevice::ReadOnly:
-        if (m_tune.isEmpty()) {
+        if (m_data.isEmpty()) {
             qWarning("SID: Not media loaded");
             return false;
         }
@@ -110,7 +103,7 @@ bool CMSidAudioSource::open(QIODevice::OpenMode mode)
         }
         break;
     case QIODevice::WriteOnly:
-        m_tune.clear();
+        m_data.clear();
         QIODevice::open(mode);
         r=true;
         break;
@@ -130,7 +123,7 @@ void CMSidAudioSource::close()
         engine->stop();
         break;
     case QIODevice::WriteOnly:
-        setvalid(!m_tune.isEmpty());
+        setvalid(!m_data.isEmpty());
         break;
     default:
         break;

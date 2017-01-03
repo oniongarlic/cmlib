@@ -35,14 +35,11 @@ private:
     SidTune       *tune;
     SidConfig     config;
     ReSIDfpBuilder *rs;
-    QByteArray m_tune;
 
     bool prepareTune();
 
 protected:
     bool generateData(qint64 maxlen);   
-    qint64 writeData(const char *data, qint64 len);
-
 };
 
 #endif // CMSIDAUDIOSOURCE_H

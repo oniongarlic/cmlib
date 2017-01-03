@@ -6,8 +6,9 @@
 
 class CMWavFileAudioSink : public CMFileAudioSink
 {
+    Q_OBJECT
 public:
-    CMWavFileAudioSink();
+    CMWavFileAudioSink(QObject *parent = 0);
 
 protected:
 

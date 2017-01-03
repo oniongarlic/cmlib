@@ -2,7 +2,8 @@
 
 #include <QDebug>
 
-CMWavFileAudioSink::CMWavFileAudioSink()
+CMWavFileAudioSink::CMWavFileAudioSink(QObject *parent)
+    : CMFileAudioSink(parent)
 {
     sample_rate=44100;
     channels=2;

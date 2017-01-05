@@ -23,7 +23,7 @@ public:
     Q_INVOKABLE bool setTrack(quint16 track);
     Q_INVOKABLE void setPlaytime(quint64 ms);
 
-    bool setAudioSink(CMBaseAudioSink *sink);
+    Q_INVOKABLE bool setAudioSink(CMBaseAudioSink *sink);
 
     QAudio::State getState();
 

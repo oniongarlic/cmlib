@@ -7,6 +7,11 @@ CMBaseAudioSink::CMBaseAudioSink(QObject *parent)
 
 }
 
+bool CMBaseAudioSink::isValid()
+{
+    return true;
+}
+
 void CMBaseAudioSink::setAudioSource(CMBaseAudioSource *source)
 {
     m_source=source;

@@ -16,6 +16,8 @@ public:
     virtual bool stop()=0;
     virtual bool pause()=0;
 
+    virtual bool isValid();
+
     void setAudioSource(CMBaseAudioSource *source);
 
     QAudio::State state() const;

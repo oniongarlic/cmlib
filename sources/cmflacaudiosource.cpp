@@ -8,6 +8,11 @@ CMFlacAudioSource::CMFlacAudioSource(QObject *parent)
     init();
 }
 
+CMFlacAudioSource::~CMFlacAudioSource()
+{
+    finish();
+}
+
 FLAC__StreamDecoderReadStatus CMFlacAudioSource::read_callback(FLAC__byte buffer[], size_t *bytes)
 {
     //qDebug() << "FLAC: Read CB " << *bytes;

@@ -13,6 +13,7 @@ class CMFlacAudioSource : public CMBaseAudioSource, FLAC::Decoder::Stream
     Q_OBJECT
 public:
     CMFlacAudioSource(QObject *parent=0);
+    ~CMFlacAudioSource();
 
     static QStringList extensions();
 

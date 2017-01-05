@@ -37,3 +37,8 @@ HEADERS += \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
     sources/cmflacaudiosource.h
+
+qnx {
+    HEADERS += sinks/cmqsaaudiosink.h
+    SOURCES += sinks/cmqsaaudiosink.cpp
+}

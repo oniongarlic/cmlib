@@ -18,7 +18,7 @@ public:
 
     virtual bool isValid();
 
-    void setAudioSource(CMBaseAudioSource *source);
+    virtual void setAudioSource(CMBaseAudioSource *source);
 
     QAudio::State state() const;
 

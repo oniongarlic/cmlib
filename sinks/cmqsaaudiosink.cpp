@@ -2,6 +2,7 @@
 
 CMQSAAudioSink::CMQSAAudioSink(QObject *parent)
     : CMBaseAudioSink(parent)
+    , m_valid(false)
 {
     if ((err = audio_manager_snd_pcm_open_preferred(AUDIO_TYPE_MULTIMEDIA, &handle, &am_handle, NULL, NULL, SND_PCM_OPEN_PLAYBACK)) < 0)
         goto error;
@@ -30,10 +31,11 @@ CMQSAAudioSink::CMQSAAudioSink(QObject *parent)
     if (!prepareAudio())
         goto error;
 
-    return true;
+    m_valid=true;
+    return;
 
 error:
-    qDebug() << "Sound error: " << snd_strerror(err);
+    qDebug() << "Sound init error: " << snd_strerror(err);
     if (handle) {
         snd_pcm_close(handle);
         handle=0;
@@ -107,11 +109,6 @@ void CMQSAAudioSink::playLoop() {
             m_pos=pos;
             emit positionChanged(m_pos);
         }
-        if (m_current!=track && track>0) {
-            m_current=track;
-            track=0;
-            emit trackChanged(m_current);
-        }
     }
     qDebug("playLoop is going away");
 }
@@ -183,5 +180,10 @@ void CMQSAAudioSink::checkStatus() {
             qWarning() << "Unhandled status " << status.status;
         }
     }
+}
+
+bool CMQSAAudioSink::isValid()
+{
+    return m_valid;
 }
 

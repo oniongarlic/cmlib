@@ -41,8 +41,12 @@ private:
     QWaitCondition pauseCond;
 
     bool m_isPlaying;
-    bool m_isLoaded;
+    bool m_valid;
     bool m_isRunning;
+
+    // CMBaseAudioSink interface
+public:
+    bool isValid();
 };
 
 #endif // CMQSAAUDIOSINK_H

@@ -24,6 +24,10 @@ Rectangle {
         file: "audio-qml.wav"
     }
 
+    CMBaseThreadedAudioSink {
+        id: testSink
+    }
+
     Row {
         id: control
         width: parent.width
@@ -60,6 +64,13 @@ Rectangle {
                 player.setAudioSink(wavSink)
             }
         }
+        Button {
+            title: "TestSink"
+            onClicked: {
+                player.setAudioSink(testSink)
+            }
+        }
+
         Text {
             id: posText
             width: 80

@@ -25,6 +25,9 @@
 #include "cmqtaudiosink.h"
 #include "cmfileaudiosink.h"
 #include "cmwavfileaudiosink.h"
+
+#include "cmbasethreadedaudiosink.h"
+
 #include "cmmediaplayer.h"
 #include "cmmediascanner.h"
 #include "decoders/cmmediadecoder.h"
@@ -52,6 +55,7 @@ int main(int argc, char **argv)
     qmlRegisterType<CMQtAudioSink>("org.tal.cm", 1, 0, "CMQtAudioSink");
     qmlRegisterType<CMFileAudioSink>("org.tal.cm", 1, 0, "CMFileAudioSink");
     qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
+    qmlRegisterType<CMBaseThreadedAudioSink>("org.tal.cm", 1, 0, "CMBaseThreadedAudioSink");
 
     qsrand(QTime::currentTime().msec());
 

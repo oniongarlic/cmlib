@@ -23,18 +23,19 @@ FLAC__StreamDecoderReadStatus CMFlacAudioSource::read_callback(FLAC__byte buffer
 FLAC__StreamDecoderWriteStatus CMFlacAudioSource::write_callback(const FLAC__Frame *frame, const FLAC__int32 * const buffer[])
 {
     const FLAC__uint32 total_size = (FLAC__uint32)(m_total_samples * m_channels * (m_bps/8));
-    int i,j;
 
     //qDebug() << "FLAC: Write CB " << frame->header.blocksize;
 
     m_buffer.resize(frame->header.blocksize*m_channels*2);
     qint16 *b=(qint16 *)m_buffer.data();
 
-    for (i = 0; i < frame->header.blocksize; i++) {
-        for (j = 0; j < m_channels; j++) {
+    for (uint i = 0; i < frame->header.blocksize; i++) {
+        for (uint j = 0; j < m_channels; j++) {
             *b++ = (qint16) buffer[j][i];
         }
     }
+
+    return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
 void CMFlacAudioSource::error_callback(FLAC__StreamDecoderErrorStatus status)
@@ -67,7 +68,7 @@ bool CMFlacAudioSource::generateData(qint64 maxlen)
     bool r=process_single();
 
     if (!r)
-        qWarning("Failed to process FLAC data");
+        qWarning("Failed to process FLAC data");    
 
     return r;
 }
@@ -93,7 +94,7 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
             QIODevice::open(mode);
             m_pos=0;
         } else {
-            qWarning("FLAC: Failed to process flac data");
+            qWarning("FLAC: Failed to process initial flac data");
             setvalid(false);
         }
         break;
@@ -130,6 +131,7 @@ void CMFlacAudioSource::close()
 bool CMFlacAudioSource::reset()
 {
     FLAC::Decoder::Stream::reset();
+    return m_read_buffer.seek(0);
 }
 
 void CMFlacAudioSource::metadata_callback(const FLAC__StreamMetadata *metadata)

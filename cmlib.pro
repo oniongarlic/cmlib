@@ -23,7 +23,8 @@ SOURCES += test/main.cpp \
     player/cmmediaplayer.cpp \
     sinks/cmfileaudiosink.cpp \
     sinks/cmwavfileaudiosink.cpp \
-    sources/cmflacaudiosource.cpp
+    sources/cmflacaudiosource.cpp \
+    sinks/cmbasethreadedaudiosink.cpp
 
 HEADERS += \
     sources/cmbaseaudiosource.h \
@@ -36,7 +37,9 @@ HEADERS += \
     player/cmmediaplayer.h \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
-    sources/cmflacaudiosource.h
+    sources/cmflacaudiosource.h \
+    sinks/cmbasethreadedaudiosink.h \
+    sinks/cmplaybackthread_p.h
 
 qnx {
     HEADERS += sinks/cmqsaaudiosink.h

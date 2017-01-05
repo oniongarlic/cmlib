@@ -1,3 +1,8 @@
+/*
+ * SID source
+ *
+ */
+
 #include "cmsidaudiosource.h"
 
 #include <QDebug>

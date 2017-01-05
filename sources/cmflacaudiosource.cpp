@@ -1,5 +1,11 @@
-#include "cmflacaudiosource.h"
+/*
+ * FLAC Decoder source
+ *
+ * A Very basic FLAC decoder source. Supports only 16-bit and 2-channel flac files.
+ *
+ */
 
+#include "cmflacaudiosource.h"
 #include <QDebug>
 
 CMFlacAudioSource::CMFlacAudioSource(QObject *parent)

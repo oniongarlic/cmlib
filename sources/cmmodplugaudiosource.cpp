@@ -1,6 +1,12 @@
-#include <QDebug>
+/*
+ * Track module source
+ *
+ *
+ */
 
 #include "cmmodplugaudiosource.h"
+
+#include <QDebug>
 
 CMModPlugAudioSource::CMModPlugAudioSource(QObject *parent) :
     CMBaseAudioSource(parent)

@@ -1,3 +1,8 @@
+/*
+ * SAP Source
+ *
+ */
+
 #include "cmsapaudiosource.h"
 
 #include <QDebug>

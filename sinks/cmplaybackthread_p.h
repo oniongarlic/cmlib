@@ -6,6 +6,7 @@
 #include <QWaitCondition>
 
 #include "cmbaseaudiosource.h"
+#include "cmbasethreadedaudiosink.h"
 
 class CMPlaybackThread : public QObject
 {
@@ -13,15 +14,22 @@ class CMPlaybackThread : public QObject
 
 public:
     CMPlaybackThread(QObject *parent=0);
-    void playLoop();
 
     QMutex sync;
     QWaitCondition pauseCond;
 
-    bool isPlaying;
     bool isRunning;
+    bool isPlaying;
 
     CMBaseAudioSource *source;
+    CMBaseThreadedAudioSink *sink;
+
+public slots:
+    void playLoop();
+
+protected:
+    size_t frag_size;
+    QByteArray m_buffer;
 };
 
 #endif // CMPLAYBACKTHREAD_P_H

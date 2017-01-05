@@ -85,6 +85,16 @@ int CMBaseThreadedAudioSink::write(const QByteArray &buffer)
 
 bool CMBaseThreadedAudioSink::play()
 {
+    bool r;
+
+    if (!m_source->isOpen()) {
+        qDebug("Opening source");
+        r=m_source->open(QIODevice::ReadOnly);
+        if (!r) {
+            qWarning("Open for playback failed");
+            return false;
+        }
+    }
     m_playback->sync.lock();
     m_playback->isPlaying=true;
     m_playback->sync.unlock();

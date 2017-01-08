@@ -14,6 +14,43 @@ CMPlaybackThread::CMPlaybackThread(QObject *parent)
 
 }
 
+bool CMPlaybackThread::play()
+{
+    bool r=true;
+
+    sync.lock();
+    isPlaying=true;
+    sync.unlock();
+    pauseCond.wakeAll();
+
+    return r;
+}
+
+bool CMPlaybackThread::stop()
+{
+    bool r=true;
+
+    sync.lock();
+    isPlaying=false;
+    if (sink)
+        sink->drain();
+    sync.unlock();
+    pauseCond.wakeAll();
+
+    return r;
+}
+
+void CMPlaybackThread::exit()
+{
+    sync.lock();
+    isPlaying=false;
+    if (sink)
+        sink->drain();
+    isRunning=false;
+    sync.unlock();
+    pauseCond.wakeAll();
+}
+
 void CMPlaybackThread::playLoop()
 {
     QThread *cur=QThread::currentThread();
@@ -28,7 +65,8 @@ void CMPlaybackThread::playLoop()
         if (!isPlaying) {
             qDebug("Waiting...");
             pauseCond.wait(&sync);
-            // prepareAudio();
+            if (sink)
+                sink->prepare();
             qDebug("...Resuming");
             if (!source) {
                 qWarning("Source is not set !");
@@ -41,14 +79,16 @@ void CMPlaybackThread::playLoop()
         if (isPlaying) {
             Q_ASSERT(source);
             Q_ASSERT(sink);
-            qDebug("R");
-            source->read(m_buffer.data(), frag_size);
-            qDebug("W");
-            sink->write(m_buffer);
+            sync.unlock();
+            int r=source->read(m_buffer.data(), frag_size);
+            sync.lock();
+            if (r>0)
+                sink->write(m_buffer);
         }
         sync.unlock();
     }
     qDebug("playLoop is going away");
+    cur->exit();
 }
 
 CMBaseThreadedAudioSink::CMBaseThreadedAudioSink(QObject *parent)
@@ -70,17 +110,24 @@ CMBaseThreadedAudioSink::CMBaseThreadedAudioSink(QObject *parent)
 
 CMBaseThreadedAudioSink::~CMBaseThreadedAudioSink()
 {
-    m_playback->sync.lock();
-    m_playback->isPlaying=false;
-    m_playback->isRunning=false;
-    m_playback->sync.unlock();
-    m_playback->pauseCond.wakeAll();
+    m_playback->exit();
+    m_pt->wait();
 }
 
 int CMBaseThreadedAudioSink::write(const QByteArray &buffer)
 {
     qDebug() << "Buffer: " << buffer.size();
     return 0;
+}
+
+void CMBaseThreadedAudioSink::prepare()
+{
+
+}
+
+void CMBaseThreadedAudioSink::drain()
+{
+
 }
 
 bool CMBaseThreadedAudioSink::play()
@@ -95,30 +142,21 @@ bool CMBaseThreadedAudioSink::play()
             return false;
         }
     }
-    m_playback->sync.lock();
-    m_playback->isPlaying=true;
-    m_playback->sync.unlock();
-    m_playback->pauseCond.wakeAll();
+    m_playback->play();
 
     return true;
 }
 
 bool CMBaseThreadedAudioSink::stop()
 {
-    m_playback->sync.lock();
-    m_playback->isPlaying=false;
-    m_playback->sync.unlock();
-    m_playback->pauseCond.wakeAll();
+    m_playback->stop();
 
     return true;
 }
 
 bool CMBaseThreadedAudioSink::pause()
 {
-    m_playback->sync.lock();
-    m_playback->isPlaying=false;
-    m_playback->sync.unlock();
-    m_playback->pauseCond.wakeAll();
+    m_playback->stop();
 
     return true;
 }

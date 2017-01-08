@@ -23,6 +23,8 @@ protected:
     CMPlaybackThread *m_playback;
     QThread *m_pt;
     virtual int write(const QByteArray &buffer);
+    virtual void prepare();
+    virtual void drain();
 
     // CMBaseAudioSink interface
 public:

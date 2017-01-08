@@ -6,21 +6,17 @@
 #include <QWaitCondition>
 #include <QQueue>
 
-#include "cmbaseaudiosink.h"
+#include "cmbasethreadedaudiosink.h"
 
 #include <sys/asound.h>
 #include <sys/asoundlib.h>
 #include <audio/audio_manager_routing.h>
 
-class CMQSAAudioSink : public CMBaseAudioSink
+class CMQSAAudioSink : public CMBaseThreadedAudioSink
 {
 public:
     explicit CMQSAAudioSink(QObject *parent = 0);
     ~CMQSAAudioSink();
-
-    bool play();
-    bool stop();
-    bool pause();
 
     Q_INVOKABLE void setEq(snd_pcm_eq_t eq);
 
@@ -32,13 +28,8 @@ private:
     snd_pcm_channel_params_t pp;
     snd_pcm_channel_setup_t setup;
 
-    QByteArray m_buffer;
-
     bool prepareAudio();
     void checkStatus();
-
-    QMutex sync;
-    QWaitCondition pauseCond;
 
     bool m_isPlaying;
     bool m_valid;
@@ -47,6 +38,12 @@ private:
     // CMBaseAudioSink interface
 public:
     bool isValid();
+
+    // CMBaseThreadedAudioSink interface
+protected:
+    int write(const QByteArray &buffer);
+    void prepare();
+    void drain();
 };
 
 #endif // CMQSAAUDIOSINK_H

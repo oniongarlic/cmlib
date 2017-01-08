@@ -24,6 +24,10 @@ public:
     CMBaseAudioSource *source;
     CMBaseThreadedAudioSink *sink;
 
+    bool play();
+    bool stop();
+    void exit();
+
 public slots:
     void playLoop();
 

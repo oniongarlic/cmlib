@@ -28,6 +28,7 @@ private:
     QByteArray m_tune;
     ASAP *m_asap;
     const ASAPInfo *m_info;
+    int m_song_channels;
 };
 
 #endif // CMSAPAUDIOSOURCE_H

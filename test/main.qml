@@ -3,29 +3,25 @@ import org.tal.cm 1.0
 
 Rectangle {
     id: root
-    width: 1024
+    width: 600
     height: 600
 
     CMMediaPlayer {
         id: player
-        Component.onCompleted: setAudioSink(qtAudioSink)
+        Component.onCompleted: setAudioSink(audioSink)
 
         onMetadata: {
             console.debug(meta.title)
         }
     }
 
-    CMQtAudioSink {
-        id: qtAudioSink
+    CMAudioSink {
+        id: audioSink
     }
 
     CMWavFileAudioSink {
         id: wavSink
         file: "audio-qml.wav"
-    }
-
-    CMBaseThreadedAudioSink {
-        id: testSink
     }
 
     Row {
@@ -92,6 +88,8 @@ Rectangle {
             height: parent.height
             model: _files
 
+            //flickableDirection: Flickable.HorizontalAndVerticalFlick
+
             signal inputSelected(variant input);
             property int currentInput: -1;
 
@@ -106,8 +104,8 @@ Rectangle {
                         Text {
                             id: txt
                             text: display;
-                            anchors.margins: 8;
-                            font.pointSize: 12
+                            anchors.margins: 16;
+                            font.pixelSize: 18
                         }
                         onClicked: {
                             console.debug("File: "+model.display);                            

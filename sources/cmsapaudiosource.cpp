@@ -25,6 +25,9 @@ bool CMSapAudioSource::generateData(qint64 maxlen)
     int played=ASAP_Generate(m_asap, (unsigned char *)m_buffer.data(), length, ASAPSampleFormat_S16_L_E);
     setPosition(ASAP_GetPosition(m_asap));
 
+    if (played==0)
+        emit eot();
+
     return played>0 ? true : false;
 }
 
@@ -71,11 +74,13 @@ bool CMSapAudioSource::open(QIODevice::OpenMode mode)
         m_meta.insert("title", ASAPInfo_GetTitleOrFilename(m_info));
         m_meta.insert("author", ASAPInfo_GetAuthor(m_info));
         m_meta.insert("tracks", m_tracks);
+        m_meta.insert("channels", m_channels);
 
         emit metaChanged(m_meta);
 
         QIODevice::open(mode);
         m_pos=0;
+        ASAP_DetectSilence(m_asap, 2);
         r=ASAP_PlaySong(m_asap, m_track-1, -1);
 
         break;

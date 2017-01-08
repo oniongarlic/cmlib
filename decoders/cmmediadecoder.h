@@ -8,7 +8,9 @@
 #include "cmmodplugaudiosource.h"
 #include "cmsapaudiosource.h"
 
+#ifdef FLAC_DECODER
 #include "cmflacaudiosource.h"
+#endif
 
 class CMMediaDecoder : public QObject
 {

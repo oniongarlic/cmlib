@@ -21,15 +21,21 @@ void CMMediaScanner::addFilter(const QString &filter)
 
 bool CMMediaScanner::addPath(const QString path)
 {
-    if (m_paths.contains(path))
+    if (m_paths.contains(path)) {
+        qWarning() << "Scan path already exist in scan list";
         return true;
+    }
 
     QDir p(path);
-    if (p.makeAbsolute()==false)
+    if (p.makeAbsolute()==false) {
+        qWarning() << "Scan path is invalid, failed to create absolute path";
         return false;
+    }
 
-    if (p.exists(path)==false)
+    if (p.exists(path)==false) {
+        qWarning() << "Scan path does not exist";
         return false;
+    }
 
     m_paths.append(path);
     qDebug() << path;
@@ -76,7 +82,7 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
     bool r;
 
     if (m_paths.isEmpty())
-        return true;
+        return false;
 
     if (m_pathsleft.isEmpty() || fromStart)
         m_pathsleft=m_paths;

@@ -4,9 +4,7 @@ QT += declarative
 CONFIG += mobility
 MOBILITY += multimedia
 
-CONFIG +=link_pkgconfig
-PKGCONFIG += libsidplayfp libmodplug flac++
-LIBS+= -lasap
+#DEFINES += FLAC_DECODER
 
 INCLUDEPATH += sources sinks player decoders
 
@@ -23,7 +21,6 @@ SOURCES += test/main.cpp \
     player/cmmediaplayer.cpp \
     sinks/cmfileaudiosink.cpp \
     sinks/cmwavfileaudiosink.cpp \
-    sources/cmflacaudiosource.cpp \
     sinks/cmbasethreadedaudiosink.cpp
 
 HEADERS += \
@@ -37,11 +34,37 @@ HEADERS += \
     player/cmmediaplayer.h \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
-    sources/cmflacaudiosource.h \
     sinks/cmbasethreadedaudiosink.h \
     sinks/cmplaybackthread_p.h
 
-qnx {
+contains(DEFINES,FLAC_DECODER) {
+    HEADERS += sources/cmflacaudiosource.h
+    SOURCES += sources/cmflacaudiosource.cpp
+}
+
+unix:!qnx {
+CONFIG +=link_pkgconfig
+PKGCONFIG += libsidplayfp libmodplug flac++
+LIBS+= -lasap
+    DEFINES += ALSAAUDIO
+    HEADERS += sinks/cmalsaaudiosink.h
+    SOURCES += sinks/cmalsaaudiosink.cpp
+    LIBS+=-lasound
+}
+
+qnx:blackberry {
+    DEFINES += QNXAUDIO
+
     HEADERS += sinks/cmqsaaudiosink.h
     SOURCES += sinks/cmqsaaudiosink.cpp
+
+    LIBS += -laudio_manager
+    LIBS += -L3party/lib -lsidplayfp -lmodplug -lasound -lsc68 -lfile68 -lunice68 ./3party/lib/libasap.a
+
+contains(DEFINES,FLAC_DECODER) {
+    LIBS += -lFLAC -lFLAC++
+}
+
+#../lib/libayfly.a ../lib/libayemu.a
+    INCLUDEPATH += 3party/include
 }

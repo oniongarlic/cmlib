@@ -14,6 +14,7 @@ Currently implemented are:
 * libsidplayfp for SID files
 * libmodplug for Tracker modules
 * libasap for SAP files
+* FLAC
 
 Basic usage of source goes like this:
 * The source file data is loaded normally into a buffer, say a QByteArray
@@ -27,10 +28,11 @@ Sinks
 =====
 Currently work in progress, test app is using QAudioOutput
 
-Planned sinks are:
-* Plain Qt QAudioOutput
+* Qt QAudioOutput
+* ALSA
 * QNX QSA
-* File writer (wav)
+* Raw data file writer
+* WAV file writer
 
 Scanner
 =======
@@ -38,7 +40,7 @@ Media file scanner, for now using only file extensions to decide what source to 
 
 Decoder
 =======
-WIP
+Helper to check what source to use. Works.
 
 Player
 ======
@@ -46,7 +48,7 @@ To make playback easy as:
 * load();
 * play/stop/pause();
 
-Does not exist yet.
+Works.
 
 TODO
 ====
@@ -54,7 +56,7 @@ Support is planned for more formats:
 
 * sc68
 * uade module playback
-* flac, ogg, etc
+* ogg, etc
 
 Why?
 ====

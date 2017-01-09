@@ -11,6 +11,7 @@ CMMediaPlayer::CMMediaPlayer(QObject *parent)
     , m_playtime(0)
 {
     connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+    connect(&m_dec, SIGNAL(eot()), this, SLOT(decoderEOT()));
 }
 
 /**
@@ -102,6 +103,13 @@ bool CMMediaPlayer::pause()
     return m_sink->pause();
 }
 
+bool CMMediaPlayer::prepare()
+{
+    CHECK_SOURCE(m_source);
+
+    return m_source->open(QIODevice::ReadOnly);
+}
+
 bool CMMediaPlayer::setTrack(quint16 track)
 {
     m_source->setTrack(track);
@@ -128,6 +136,11 @@ QAudio::State CMMediaPlayer::getState()
 void CMMediaPlayer::decoderMetadata(QVariantHash meta)
 {
     emit metadata(meta);
+}
+
+void CMMediaPlayer::decoderEOT()
+{
+    emit eot();
 }
 
 void CMMediaPlayer::sinkPosition(quint64 pos)

@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE bool play();
     Q_INVOKABLE bool stop();
     Q_INVOKABLE bool pause();
+    Q_INVOKABLE bool prepare();
     Q_INVOKABLE bool setTrack(quint16 track);
     Q_INVOKABLE void setPlaytime(quint64 ms);
 
@@ -55,11 +56,12 @@ signals:
     void positionChanged(quint64 position);
     void lengthChanged(double length);
     void tracksChanged(int tracks);
-
     void trackChanged(int track);
+    void eot();
 
 protected slots:
     void decoderMetadata(QVariantHash meta);
+    void decoderEOT();
     void sinkPosition(quint64 pos);
 
 public slots:

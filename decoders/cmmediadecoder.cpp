@@ -23,6 +23,7 @@ void CMMediaDecoder::connectDecoderSignals()
         CMBaseAudioSource *d=decoders.at(i)->second;
 
         connect(d, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+        connect(d, SIGNAL(eot()), this, SLOT(decoderEOT()));
     }
 }
 
@@ -63,6 +64,11 @@ void CMMediaDecoder::decoderMetadata(QVariantHash meta)
 {
     qDebug() << "Got decoder meta data " << meta;
     emit metadata(meta);
+}
+
+void CMMediaDecoder::decoderEOT()
+{
+    emit eot();
 }
 
 /**

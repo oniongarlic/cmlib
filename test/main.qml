@@ -13,6 +13,10 @@ Rectangle {
         onMetadata: {
             console.debug(meta.title)
         }
+        onEot: {
+            console.debug("EOT!")
+            player.stop();
+        }
     }
 
     CMAudioSink {
@@ -109,7 +113,8 @@ Rectangle {
                         }
                         onClicked: {
                             console.debug("File: "+model.display);                            
-                            player.load(model.display);
+                            if (player.load(model.display))
+                                player.prepare();
                         }
                     }
                 }

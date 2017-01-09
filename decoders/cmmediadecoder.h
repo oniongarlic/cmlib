@@ -22,9 +22,11 @@ public:
 
 signals:
     void metadata(QVariantHash meta);
+    void eot();
 
 protected slots:
     void decoderMetadata(QVariantHash meta);
+    void decoderEOT();
 
 protected:
     void createDecoderRegExp();

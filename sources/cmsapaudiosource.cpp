@@ -21,9 +21,20 @@ CMSapAudioSource::~CMSapAudioSource()
 bool CMSapAudioSource::generateData(qint64 maxlen)
 {
     qint64 length = maxlen;
+
     m_buffer.resize(length);
-    int played=ASAP_Generate(m_asap, (unsigned char *)m_buffer.data(), length, ASAPSampleFormat_S16_L_E);
+    int played=ASAP_Generate(m_asap, (unsigned char *)m_buffer.data(), m_channels==1 ? length/2 : length, ASAPSampleFormat_S16_L_E);
     setPosition(ASAP_GetPosition(m_asap));
+
+    // We deal with stereo, always but ASAP will generate mono data if only one track so adjust
+    if (m_channels==1) {
+        int h=length/2;
+
+        for (int i=h;i>0;i--){
+            m_buffer[i*2]=m_buffer[i];
+            m_buffer[i*2-1]=m_buffer[i];
+        }
+    }
 
     return played>0 ? true : false;
 }

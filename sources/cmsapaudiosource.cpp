@@ -22,7 +22,7 @@ bool CMSapAudioSource::generateData(qint64 maxlen)
 {
     qint64 length = maxlen;
 
-    m_buffer.resize(length);
+    m_buffer.resize(length);    
     int played=ASAP_Generate(m_asap, (unsigned char *)m_buffer.data(), m_channels==1 ? length/2 : length, ASAPSampleFormat_S16_L_E);
     setPosition(ASAP_GetPosition(m_asap));
 
@@ -31,22 +31,17 @@ bool CMSapAudioSource::generateData(qint64 maxlen)
 
     // We deal with stereo, always but ASAP will generate mono data if only one track so adjust
     if (m_channels==1 && played>0) {
-        int h=length/2;
+        for (int i=played-1;i>=2;i-=2){
+            m_buffer[i*2+1]=m_buffer[i];
+            m_buffer[i*2]=m_buffer[i-1];
 
-        for (int i=h;i>0;i--){
-            m_buffer[i*2]=m_buffer[i];
             m_buffer[i*2-1]=m_buffer[i];
+            m_buffer[i*2-2]=m_buffer[i-1];
+
         }
     }
 
     return played>0 ? true : false;
-}
-
-qint64 CMSapAudioSource::writeData(const char *data, qint64 len)
-{
-    m_tune.append(data, len);
-    qDebug() << "Wrote: " << len;
-    return len;
 }
 
 void CMSapAudioSource::setTrack(quint16 track)
@@ -61,17 +56,17 @@ bool CMSapAudioSource::open(QIODevice::OpenMode mode)
 
     switch (mode) {
     case QIODevice::ReadOnly:
-        if (m_tune.isEmpty()) {
+        if (m_data.isEmpty()) {
             qWarning("No SAP data loaded");
             return false;
         }
 
-        if (m_tune.size()>ASAPInfo_MAX_MODULE_LENGTH) {
+        if (m_data.size()>ASAPInfo_MAX_MODULE_LENGTH) {
             qWarning("SAP Data too big!");
             return false;
         }
 
-        if (!ASAP_Load(m_asap, NULL,(const unsigned char *)m_tune.data(), m_tune.size())) {
+        if (!ASAP_Load(m_asap, NULL,(const unsigned char *)m_data.data(), m_data.size())) {
             qWarning("Failed to load SAP file");
             return false;
         }
@@ -96,7 +91,7 @@ bool CMSapAudioSource::open(QIODevice::OpenMode mode)
 
         break;
     case QIODevice::WriteOnly:
-        m_tune.clear();
+        m_data.clear();
         QIODevice::open(mode);
         break;
     case QIODevice::ReadWrite:
@@ -113,10 +108,10 @@ void CMSapAudioSource::close()
     switch (openMode()) {
     case QIODevice::ReadOnly:
         m_info=NULL;
-        setvalid(!m_tune.isEmpty());
+        setvalid(!m_data.isEmpty());
         break;
     case QIODevice::WriteOnly:
-        setvalid(!m_tune.isEmpty());
+        setvalid(!m_data.isEmpty());
         break;
     default:
         break;

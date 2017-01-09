@@ -23,9 +23,7 @@ public slots:
     void setTrack(quint16 track);
 protected:
     bool generateData(qint64 maxlen);
-    qint64 writeData(const char *data, qint64 len);
 private:
-    QByteArray m_tune;
     ASAP *m_asap;
     const ASAPInfo *m_info;
     int m_song_channels;

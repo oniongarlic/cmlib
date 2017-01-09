@@ -3,13 +3,14 @@
 CMBaseAudioSink::CMBaseAudioSink(QObject *parent)
     : QObject(parent)
     , m_state(QAudio::StoppedState)
+    , m_valid(true)
 {
 
 }
 
 bool CMBaseAudioSink::isValid()
 {
-    return true;
+    return m_valid;
 }
 
 void CMBaseAudioSink::setAudioSource(CMBaseAudioSource *source)

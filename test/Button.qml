@@ -3,8 +3,8 @@ import QtQuick 1.1
 Rectangle {
     id: btn
     width: abc.width+16
-    height: 32
-    color: enabled ? "#80E980" : "#C0C0C0"
+    height: abc.height+18
+    color: ma.pressed ? "#80E980" : "#C0C0C0"
     property alias title: abc.text
     property bool enabled: true
     Text {
@@ -12,6 +12,7 @@ Rectangle {
         anchors.centerIn: parent;
     }
     MouseArea {
+        id: ma
         anchors.fill: parent
         enabled: btn.enabled
         onClicked: {

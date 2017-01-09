@@ -12,6 +12,9 @@ class CMMediaPlayer : public QObject
     Q_OBJECT
     Q_PROPERTY(double position READ position NOTIFY positionChanged)
     Q_PROPERTY(double length READ length NOTIFY lengthChanged)
+
+    Q_PROPERTY(int track READ track WRITE setTrack NOTIFY trackChanged)
+    Q_PROPERTY(int tracks READ tracks NOTIFY tracksChanged)
 public:
     explicit CMMediaPlayer(QObject *parent = 0);
 
@@ -37,10 +40,23 @@ public:
         return m_length;
     }
 
+    int tracks() const
+    {
+        return m_tracks;
+    }
+
+    int track() const
+    {
+        return m_track;
+    }
+
 signals:
     void metadata(QVariantHash meta);
     void positionChanged(quint64 position);
     void lengthChanged(double length);
+    void tracksChanged(int tracks);
+
+    void trackChanged(int track);
 
 protected slots:
     void decoderMetadata(QVariantHash meta);
@@ -56,6 +72,8 @@ private:
     double m_position;
     double m_length;
     quint64 m_playtime;
+    int m_tracks;
+    int m_track;
 };
 
 #endif // CMMEDIAPLAYER_H

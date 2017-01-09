@@ -1,9 +1,13 @@
 #include "cmqsaaudiosink.h"
 
+#include <QDebug>
+
 CMQSAAudioSink::CMQSAAudioSink(QObject *parent)
-    : CMBaseAudioSink(parent)
+    : CMBaseThreadedAudioSink(parent)
     , m_valid(false)
 {
+    int err;
+
     if ((err = audio_manager_snd_pcm_open_preferred(AUDIO_TYPE_MULTIMEDIA, &handle, &am_handle, NULL, NULL, SND_PCM_OPEN_PLAYBACK)) < 0)
         goto error;
     snd_pcm_plugin_set_enable(handle, PLUGIN_ROUTING | PLUGIN_EQ);
@@ -50,75 +54,12 @@ CMQSAAudioSink::~CMQSAAudioSink()
     }
 }
 
-bool CMQSAAudioSink::play()
-{
-
-}
-
-bool CMQSAAudioSink::stop()
-{
-
-}
-
-bool CMQSAAudioSink::pause()
-{
-
-}
-
-void CMQSAAudioSink::playLoop() {
-    QThread *cur;
-    int err;
-    size_t written=0;
-    int pos=0,track=0;
-    size_t length=pci.max_fragment_size;
-    snd_pcm_channel_status_t status;
-
-    cur=QThread::currentThread();
-
-    memset (&status, 0, sizeof (status));
-    status.channel = SND_PCM_CHANNEL_PLAYBACK;
-
-    qDebug() << "Thread is running :" << cur->currentThreadId();
-
-    while (m_isRunning) {
-        int r;
-
-        sync.lock();
-        if (!m_isPlaying) {
-            qDebug("Waiting...");
-            pauseCond.wait(&sync);
-            prepareAudio();
-            qDebug("...Resuming");
-        }
-
-        checkStatus();
-
-        if (m_isPlaying) {
-            // XXX
-
-
-            written = snd_pcm_plugin_write(handle, m_buffer.data(), length);
-            if (written<length) {
-                qWarning() << "w<l:" << written << " < " << length;
-                err=snd_pcm_plugin_status (handle, &status);
-                qDebug() << "Status is: " << status.status;
-            }
-        }
-        sync.unlock();
-        if (m_pos!=pos) {
-            m_pos=pos;
-            emit positionChanged(m_pos);
-        }
-    }
-    qDebug("playLoop is going away");
-}
-
 bool CMQSAAudioSink::prepareAudio() {
     int err;
 
     pp.format.interleave = 1;
-    pp.format.rate = m_freq;
-    pp.format.voices = m_channels;
+    pp.format.rate = 44100;
+    pp.format.voices = 2;
     pp.format.format = SND_PCM_SFMT_S16_LE;
 
     if ((err = snd_pcm_plugin_params (handle, &pp)) < 0)
@@ -126,10 +67,6 @@ bool CMQSAAudioSink::prepareAudio() {
 
     if ((err = snd_pcm_plugin_prepare (handle, SND_PCM_CHANNEL_PLAYBACK)) < 0)
         goto error;
-
-    qDebug() << "Rate is " << pp.format.rate;
-
-    qDebug() << "Plugin state " << snd_pcm_plugin_get_inactive(handle);
 
     return true;
 
@@ -142,11 +79,9 @@ void CMQSAAudioSink::setEq(snd_pcm_eq_t eq) {
     int err;
 
     qDebug() << "EQ Preset " << eq;
-    sync.lock();
     err=snd_pcm_plugin_set_eq(handle, eq);
     if (err<0)
         qDebug() << "EQ Error: " << snd_strerror(err);
-    sync.unlock();
 }
 
 void CMQSAAudioSink::checkStatus() {
@@ -162,9 +97,7 @@ void CMQSAAudioSink::checkStatus() {
             qDebug("Resuming playback channel");
             err = snd_pcm_plugin_prepare(handle, SND_PCM_CHANNEL_PLAYBACK);
             if (err<0) {
-                m_isPlaying=false;
-                emit playingChanged(m_isPlaying);
-                emit error();
+                qDebug() << "UnderRun Error: " << snd_strerror(err);
             }
             break;
         case SND_PCM_STATUS_CHANGE:
@@ -185,5 +118,30 @@ void CMQSAAudioSink::checkStatus() {
 bool CMQSAAudioSink::isValid()
 {
     return m_valid;
+}
+
+int CMQSAAudioSink::write(const QByteArray &buffer)
+{
+    int err, written;
+    snd_pcm_channel_status_t status;
+
+    written = snd_pcm_plugin_write(handle, buffer.data(), buffer.size());
+    if (written<buffer.size()) {
+        qWarning() << "w<l:" << written << " < " << buffer.size();
+        err=snd_pcm_plugin_status (handle, &status);
+        qDebug() << "Status is: " << status.status;
+    }
+
+    return written;
+}
+
+void CMQSAAudioSink::prepare()
+{
+    snd_pcm_plugin_prepare(handle, SND_PCM_CHANNEL_PLAYBACK);
+}
+
+void CMQSAAudioSink::drain()
+{
+
 }
 

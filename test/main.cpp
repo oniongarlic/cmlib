@@ -43,9 +43,10 @@
 
 QStringListModel files;
 
-void myMessageOutput(QtMsgType type, const char* msg){
-               fprintf(stdout, "%s\n", msg);
-               fflush(stdout);
+void myMessageOutput(QtMsgType type, const char* msg)
+{
+    fprintf(stdout, "%s\n", msg);
+    fflush(stdout);
 }
 
 int main(int argc, char **argv)
@@ -86,9 +87,11 @@ int main(int argc, char **argv)
     scanner.setFilters(mdec.getSupportedExtensions());
     // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    scanner.addPath("/home/milang/Music");
 #if defined(Q_OS_BLACKBERRY)
     scanner.addPath("/accounts/1000/shared/music");
+#else
+    scanner.addPath("/home/milang/Music");
+    scanner.addPath("/home/milang/CMTestFiles");
 #endif
 
     while (scanner.scan(fileList)) {
@@ -97,7 +100,7 @@ int main(int argc, char **argv)
 
     fileList.sort();
 
-    context->setContextProperty("_files", &files);    
+    context->setContextProperty("_files", &files);
     //context->setContextProperty("_scanner", &scanner);
 
 #if defined(Q_OS_BLACKBERRY)

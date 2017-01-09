@@ -89,9 +89,7 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
 
     if (r==false) {
         qWarning("Source failed to generate data");
-        return -1;
-    } else {
-        qDebug() << m_buffer.size();
+        return -1;    
     }
 
     while (maxlen - total > 0) {
@@ -100,8 +98,6 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
         m_pos = (m_pos + chunk) % m_buffer.size();
         total += chunk;
     }
-
-    //qDebug() << r << maxlen << m_pos << total;
 
     return total;
 }

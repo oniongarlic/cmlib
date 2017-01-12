@@ -4,7 +4,7 @@ CMFileAudioSink::CMFileAudioSink(QObject *parent) :
     CMBaseAudioSink(parent),
     m_readSize(44100*2*2)
 {
-    m_timer.setInterval(100);
+    m_timer.setInterval(50);
     connect(&m_timer, SIGNAL(timeout()), SLOT(readTicker()));
 }
 

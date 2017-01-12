@@ -53,9 +53,7 @@ CMQtAudioSink::~CMQtAudioSink()
 }
 
 bool CMQtAudioSink::play()
-{
-    bool r;
-
+{    
     if (!m_audioOutput) {
         qWarning("AudioOutput not set!");
         return false;
@@ -72,7 +70,7 @@ bool CMQtAudioSink::play()
 
     switch (s) {
     case QAudio::ActiveState:
-        return true;
+        //
         break;
     case QAudio::SuspendedState:
         m_audioOutput->resume();
@@ -80,7 +78,7 @@ bool CMQtAudioSink::play()
     case QAudio::StoppedState:
         if (!m_source->isOpen()) {
             qDebug("Opening source");
-            r=m_source->open(QIODevice::ReadOnly);
+            bool r=m_source->open(QIODevice::ReadOnly);
             if (!r) {
                 qWarning("Open for playback failed");
                 return false;
@@ -91,16 +89,18 @@ bool CMQtAudioSink::play()
         m_audioOutput->start(m_source);
         break;
     case QAudio::IdleState:
+        qDebug("Idle Audio state");
         //m_audioOutput->resume(m_generator);
         break;
     default:
         qWarning("Unknown Audio state");
+        return false;
         break;
     }
 
     qDebug() << "Buffer size used is: " << m_audioOutput->bufferSize();
 
-    return r;
+    return true;
 }
 
 bool CMQtAudioSink::stop()

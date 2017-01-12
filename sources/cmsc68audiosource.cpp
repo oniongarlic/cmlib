@@ -160,6 +160,14 @@ QStringList CMSC68AudioSource::extensions()
     return e;
 }
 
+void CMSC68AudioSource::setTrack(quint16 track)
+{
+    if (m_track<m_tracks) {
+        sc68_play(m_sc68, track, SC68_DEF_LOOP);
+        CMBaseAudioSource::setTrack(track);
+    }
+}
+
 bool CMSC68AudioSource::generateData(qint64 maxlen)
 {
     int r,n=maxlen/4;
@@ -173,6 +181,9 @@ bool CMSC68AudioSource::generateData(qint64 maxlen)
         break;
     case SC68_ERROR:
         qWarning() << "sc68: process error " << r << sc68_error(m_sc68);
+        break;
+    case SC68_IDLE:
+        return true;
         break;
     default:
         if (r & SC68_CHANGE) {
@@ -189,5 +200,6 @@ bool CMSC68AudioSource::generateData(qint64 maxlen)
             qDebug() << "sc68: seek";
         }
     }
+    qDebug() << r;
     return false;
 }

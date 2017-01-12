@@ -23,6 +23,9 @@ public:
 
     static bool initOnce;
 
+public slots:
+    void setTrack(quint16 track);
+
 protected:
     bool generateData(qint64 maxlen);
 

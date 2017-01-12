@@ -14,6 +14,7 @@ Currently implemented are:
 * libsidplayfp for SID files
 * libmodplug for Tracker modules
 * libasap for SAP files
+* sc68 for Atari and Amiga SC68 and sndh files
 * FLAC
 
 Basic usage of source goes like this:
@@ -54,10 +55,14 @@ TODO
 ====
 Support is planned for more formats:
 
-* sc68
 * uade module playback
+* other retro formats
 * ogg, etc
 
 Why?
 ====
-I need a simple framework to playback various retro formats that works on Qt / QNX / BlackBerry 10.
+I started working on a retro music player for BB10 devcies. The coded started as a very simple test
+on using libplayfp and QNX QSA audio output. Then it grew. And became a messy tangle of stuff bolted on
+and adding new formats and features started to be way too complicated.
+
+So I started to create a simple framework for playback of various retro formats that works on plain Qt / QNX / BlackBerry 10.

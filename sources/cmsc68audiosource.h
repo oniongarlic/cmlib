@@ -12,10 +12,16 @@ class CMSC68AudioSource : public CMBaseAudioSource
     Q_OBJECT
 public:
     explicit CMSC68AudioSource(QObject *parent=NULL);
+    ~CMSC68AudioSource();
 
     // CMBaseAudioSource interface
+    bool open(OpenMode mode);
+    void close();
+    bool reset();
 
     static QStringList extensions();
+
+    static bool initOnce;
 
 protected:
     bool generateData(qint64 maxlen);

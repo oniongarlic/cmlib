@@ -7,6 +7,7 @@
 #include "cmsidaudiosource.h"
 #include "cmmodplugaudiosource.h"
 #include "cmsapaudiosource.h"
+#include "cmsc68audiosource.h"
 
 #ifdef FLAC_DECODER
 #include "cmflacaudiosource.h"

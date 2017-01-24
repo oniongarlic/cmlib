@@ -96,6 +96,12 @@ qint64 CMFlacAudioSource::generateData(qint64 maxlen)
     bool r=process_single();
 #endif
 
+    if (m_buffer_length>0) {
+        float tmp=((float)m_buffer_length/(float)(m_rate*2.0*2.0))*(float)1000.0;
+        m_track_pos+=tmp;
+        setPosition(m_track_pos);
+    }
+
     return m_buffer_length;
 }
 
@@ -112,6 +118,7 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
 
         m_buffer.fill(0);
         m_buffer_length=0;
+        m_track_pos=0;
 
         m_read_buffer.setData(m_data);
         m_read_buffer.open(QIODevice::ReadOnly);
@@ -122,6 +129,13 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
             setvalid(true);
             QIODevice::open(mode);
             m_pos=0;
+
+            m_meta.clear();
+            m_meta.insert("channels", m_channels);
+            m_meta.insert("rate", m_sample_rate);
+            m_meta.insert("bits", m_bps);
+            emit metaChanged(m_meta);
+
         } else if (r) {
             qWarning("FLAC: Only 44.1 kHz, 16-bit, Stereo FLAC files are supported at this time.");
             setvalid(false);

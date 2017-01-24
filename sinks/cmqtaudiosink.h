@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QByteArray>
 #include <QStringList>
+
 #include <QAudioOutput>
 
 #include "cmbaseaudiosink.h"

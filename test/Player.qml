@@ -18,6 +18,8 @@ Rectangle {
             console.debug("EOT!")
             player.stop();
         }
+        onTracksChanged: console.debug(tracks)
+        onTrackChanged: console.debug(track)
     }
 
     CMAudioSink {
@@ -57,18 +59,37 @@ Rectangle {
                 player.stop();
             }
         }
+        Button {
+            title: "Stop"
+            onClicked: {
+                player.stop();
+            }
+        }
+        Button {
+            title: "Prev"
+            enabled: player.track>1
+            onClicked: {
+                player.prevTrack();
+            }
+        }
+        Button {
+            title: "Next"
+            enabled: player.tracks>1
+            onClicked: {
+                player.nextTrack();
+            }
+        }
 
         Button {
-            title: "Save WAV"
-            //enabled: player.s
+            title: "WAV Sink"
             onClicked: {
                 player.setAudioSink(wavSink)
             }
         }
         Button {
-            title: "TestSink"
+            title: "OutSink"
             onClicked: {
-                player.setAudioSink(testSink)
+                player.setAudioSink(audioSink)
             }
         }
 

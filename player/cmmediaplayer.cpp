@@ -107,12 +107,37 @@ bool CMMediaPlayer::prepare()
 {
     CHECK_SOURCE(m_source);
 
-    return m_source->open(QIODevice::ReadOnly);
+    bool r=m_source->open(QIODevice::ReadOnly);
+    if (r) {
+        m_tracks=m_source->tracks();
+        emit tracksChanged(m_tracks);
+
+        m_track=m_source->track();
+        emit trackChanged(m_track);
+    }
+    return r;
+}
+
+bool CMMediaPlayer::prevTrack()
+{
+    if (m_track>1)
+        return setTrack(m_track-1);
+
+    return false;
+}
+
+bool CMMediaPlayer::nextTrack()
+{
+    if (m_track<m_tracks)
+        return setTrack(m_track+1);
+    return false;
 }
 
 bool CMMediaPlayer::setTrack(quint16 track)
 {
     m_source->setTrack(track);
+    m_track=track;
+    emit trackChanged(m_track);
     return true;
 }
 

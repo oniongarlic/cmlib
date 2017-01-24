@@ -24,6 +24,10 @@ public:
     Q_INVOKABLE bool stop();
     Q_INVOKABLE bool pause();
     Q_INVOKABLE bool prepare();
+
+    Q_INVOKABLE bool prevTrack();
+    Q_INVOKABLE bool nextTrack();
+
     Q_INVOKABLE bool setTrack(quint16 track);
     Q_INVOKABLE void setPlaytime(quint64 ms);
 

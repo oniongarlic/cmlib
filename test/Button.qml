@@ -4,7 +4,7 @@ Rectangle {
     id: btn
     width: abc.width+16
     height: abc.height+18
-    color: ma.pressed ? "#80E980" : "#C0C0C0"
+    color: ma.pressed ? "#80E980" : !enabled ? "#C0C0C0" : "#C0F0C0"
     property alias title: abc.text
     property bool enabled: true
     Text {

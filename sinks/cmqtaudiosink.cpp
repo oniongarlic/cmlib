@@ -49,7 +49,7 @@ void CMQtAudioSink::createAudioOutput()
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
     connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));
-    m_audioOutput->setBufferSize(65535*4);
+    m_audioOutput->setBufferSize(65535);
 }
 
 CMQtAudioSink::~CMQtAudioSink()

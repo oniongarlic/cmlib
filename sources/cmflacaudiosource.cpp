@@ -110,6 +110,9 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
             return false;
         }
 
+        m_buffer.fill(0);
+        m_buffer_length=0;
+
         m_read_buffer.setData(m_data);
         m_read_buffer.open(QIODevice::ReadOnly);
 
@@ -126,8 +129,6 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
         break;
     case QIODevice::WriteOnly:
         m_data.clear();
-        m_buffer.fill(0);
-        m_buffer_length=0;
         QIODevice::open(mode);
         r=true;
         break;

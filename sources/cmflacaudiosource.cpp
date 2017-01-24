@@ -39,6 +39,7 @@ FLAC__StreamDecoderWriteStatus CMFlacAudioSource::write_callback(const FLAC__Fra
     qDebug() << "FLAC: Write CB " << frame->header.blocksize;
 
     if (fsize>m_buffer.size()) {
+        qDebug() << "Buffer too small, resizing buffer " << fsize;
         m_buffer.resize(fsize);
     }
 
@@ -49,6 +50,8 @@ FLAC__StreamDecoderWriteStatus CMFlacAudioSource::write_callback(const FLAC__Fra
             *b++ = (qint16) buffer[j][i];
         }
     }
+
+    m_buffer_length=fsize;
 
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
@@ -62,33 +65,38 @@ qint64 CMFlacAudioSource::readData(char *data, qint64 maxlen)
 {
     bool r;
 
-    if (m_buffer.isEmpty()) {
-        m_buffer_length=generateData(maxlen);
+    if (m_buffer_length==0) {
+        generateData(maxlen);
         m_pos=0;
-    } else if (m_pos>=m_buffer.size()) {
-        m_buffer.clear();
-        m_buffer_length=generateData(maxlen);
+    } else if (m_pos<m_buffer_length) {
+
+    } else {
+        generateData(maxlen);
         m_pos=0;
     }
 
-    qint64 s=qMin((qint64)m_buffer.size()-m_pos, maxlen);
+    qint64 s=qMin(m_buffer_length-m_pos, maxlen);
     memcpy(data, m_buffer.constData()+m_pos, s);
     m_pos+=s;
 
     return s;
 }
 
-bool CMFlacAudioSource::generateData(qint64 maxlen)
+qint64 CMFlacAudioSource::generateData(qint64 maxlen)
 {  
-    bool r;
+#if 0
+    qint64 len=qMin((qint64)m_buffer.size(), maxlen);
 
-    while (m_buffer_length<maxlen) {
-        r=process_single();
+    while (m_buffer_length<len/2) {
+        bool r=process_single();
         if (!r)
             qWarning("Failed to process FLAC data");
     }
+#else
+    bool r=process_single();
+#endif
 
-    return r;
+    return m_buffer_length;
 }
 
 bool CMFlacAudioSource::open(QIODevice::OpenMode mode)

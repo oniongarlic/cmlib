@@ -25,7 +25,7 @@ protected:
 
     // CMBaseAudioSource interface
 protected:
-    bool generateData(qint64 maxlen);
+    qint64 generateData(qint64 maxlen);
 
     // QIODevice interface
 public:

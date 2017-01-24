@@ -7,6 +7,20 @@
 
 #include <QDebug>
 
+static QString clockSpeed(clock_t c)
+{
+    switch (c) {
+    case SidTuneInfo::CLOCK_UNKNOWN:
+        return "Unknown";
+    case SidTuneInfo::CLOCK_PAL:
+        return "PAL";
+    case SidTuneInfo::CLOCK_NTSC:
+        return "NYSC";
+    default:
+        return "Any";
+    }
+}
+
 CMSidAudioSource::CMSidAudioSource(QObject *parent) :
     CMBaseAudioSource(parent)
 {
@@ -67,8 +81,7 @@ bool CMSidAudioSource::prepareTune()
     const SidTuneInfo *info=tune->getInfo();
 
     setTracks(info->songs());
-    qDebug() << "Songs: " << m_tracks;
-    setTrack(info->startSong());
+    setTrack(0);
 
     info=tune->getInfo(0);
 
@@ -76,13 +89,16 @@ bool CMSidAudioSource::prepareTune()
     m_meta.insert("title", info->infoString(0));
     m_meta.insert("author", info->infoString(1));
     m_meta.insert("tracks", m_tracks);
+    m_meta.insert("stereo", info->isStereo());
+    m_meta.insert("format", info->formatString());
+    m_meta.insert("clock", clockSpeed(info->clockSpeed()));
 
     emit metaChanged(m_meta);
 
-    qDebug() << m_meta;
-
     return true;
 }
+
+
 
 bool CMSidAudioSource::open(QIODevice::OpenMode mode)
 {

@@ -23,8 +23,13 @@ CMQtAudioSink::CMQtAudioSink(QObject *parent)
 void CMQtAudioSink::initializeAudio()
 {
 
+#if QT_VERSION < 0x050000
     m_format.setFrequency(DataFrequencyHz);
     m_format.setChannels(2);
+#else
+    m_format.setSampleRate(DataFrequencyHz);
+    m_format.setChannelCount(2);
+#endif
     m_format.setSampleSize(16);
     m_format.setCodec("audio/pcm");
     m_format.setByteOrder(QAudioFormat::LittleEndian);

@@ -1,14 +1,20 @@
 QT += gui
-QT += declarative
-
-CONFIG += mobility
-MOBILITY += multimedia
 
 # DEFINES += FLAC_DECODER
 
+lessThan(QT_MAJOR_VERSION, 5): {
+CONFIG += mobility
+MOBILITY += multimedia
+QT += declarative
+} else {
+QT += qml quick
+QT += multimedia
+# CONFIG += c++11
+}
+
 INCLUDEPATH += sources sinks player decoders
 
-OTHER_FILES += test/main.qml test/Button.qml
+OTHER_FILES += test/*.qml
 
 SOURCES += test/main.cpp \
     sources/cmbaseaudiosource.cpp \
@@ -17,8 +23,8 @@ SOURCES += test/main.cpp \
     sources/cmsapaudiosource.cpp \
     sources/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
-    sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
     player/cmmediaplayer.cpp \
+    sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
     sinks/cmfileaudiosink.cpp \
     sinks/cmwavfileaudiosink.cpp \
     sinks/cmbasethreadedaudiosink.cpp \
@@ -31,8 +37,8 @@ HEADERS += \
     sources/cmsapaudiosource.h \
     sources/cmmediascanner.h \
     decoders/cmmediadecoder.h \
-    sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
     player/cmmediaplayer.h \
+    sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
     sinks/cmbasethreadedaudiosink.h \
@@ -79,3 +85,6 @@ contains(DEFINES,FLAC_DECODER) {
     SOURCES += sources/cmflacaudiosource.cpp
     LIBS += -lFLAC -lFLAC++
 }
+
+DISTFILES += \
+    test/*.qml

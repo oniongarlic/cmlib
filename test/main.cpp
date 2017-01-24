@@ -3,7 +3,7 @@
   * GPL v2
   *
   */
-#include <QApplication>
+
 #include <QObject>
 #include <QDirIterator>
 #include <QFile>
@@ -15,10 +15,18 @@
 #include <QTime>
 #include <QDebug>
 
+#if QT_VERSION >= 0x050000
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QtQuick>
+#include <QtQml>
+#else
+#include <QApplication>
 #include <QDeclarativeComponent>
 #include <QDeclarativeEngine>
 #include <QDeclarativeContext>
 #include <QDeclarativeView>
+#endif
 
 #include <QDesktopServices>
 
@@ -43,29 +51,24 @@
 
 QStringListModel files;
 
+#if 0
 void myMessageOutput(QtMsgType type, const char* msg)
 {
     fprintf(stdout, "%s\n", msg);
     fflush(stdout);
 }
+#endif
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
-    int r;
-
-    qInstallMsgHandler(myMessageOutput);
 
     app.setApplicationName("Qt CM Player test");
 
-    QDeclarativeView viewer;
-    QDeclarativeContext *context = viewer.rootContext();
-
-    viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
-    viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    //qInstallMsgHandler(myMessageOutput);
 
     qmlRegisterType<CMMediaPlayer>("org.tal.cm", 1, 0, "CMMediaPlayer");
     qmlRegisterUncreatableType<CMBaseAudioSink>("org.tal.cm", 1, 0, "CMBaseAudioSink", "CMBaseAudioSink is abstract and can not be created");
@@ -99,26 +102,32 @@ int main(int argc, char **argv)
     }
 
     fileList.sort();
+    files.setStringList(fileList);
 
+#if QT_VERSION < 0x050000
+    QDeclarativeView viewer;
+    QDeclarativeContext *context = viewer.rootContext();
+
+    viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
+    viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
     context->setContextProperty("_files", &files);
     //context->setContextProperty("_scanner", &scanner);
-
 #if defined(Q_OS_BLACKBERRY)
     viewer.setSource(QUrl::fromLocalFile("app/native/test/main.qml"));
 #else
     viewer.setSource(QUrl::fromLocalFile("test/main.qml"));
 #endif
-    files.setStringList(fileList);
-
-    // QString rfile=fileList.at(qrand() % fileList.size());
-
 #if defined(Q_OS_QNX)
     viewer.showFullScreen();
 #else
     viewer.show();
 #endif
+#else
+    QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("_files", &files);
+    engine.load(QUrl(QStringLiteral("test/qtquick2-main.qml")));
+#endif
 
     return app.exec();
-
-    return r;
 }

@@ -51,6 +51,7 @@ void CMSidAudioSource::setTrack(quint16 track)
     int r=tune->selectSong(track);
     if (r!=0) {
         CMBaseAudioSource::setTrack(r);
+        reset();
     }
     qDebug() << r << tune->statusString();
 }
@@ -69,7 +70,7 @@ bool CMSidAudioSource::prepareTune()
     qDebug() << "Songs: " << m_tracks;
     setTrack(info->startSong());
 
-    info=tune->getInfo(1);
+    info=tune->getInfo(0);
 
     m_meta.clear();
     m_meta.insert("title", info->infoString(0));

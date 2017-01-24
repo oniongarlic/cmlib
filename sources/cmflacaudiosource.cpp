@@ -20,9 +20,7 @@ CMFlacAudioSource::~CMFlacAudioSource()
 }
 
 FLAC__StreamDecoderReadStatus CMFlacAudioSource::read_callback(FLAC__byte buffer[], size_t *bytes)
-{
-    qDebug() << "FLAC: Read CB " << *bytes;
-
+{    
     if (m_read_buffer.atEnd())
         return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
 
@@ -35,8 +33,6 @@ FLAC__StreamDecoderWriteStatus CMFlacAudioSource::write_callback(const FLAC__Fra
 {
     const FLAC__uint32 total_size = (FLAC__uint32)(m_total_samples * m_channels * (m_bps/8));
     qint32 fsize=frame->header.blocksize*m_channels*2;
-
-    qDebug() << "FLAC: Write CB " << frame->header.blocksize;
 
     if (fsize>m_buffer.size()) {
         qDebug() << "Buffer too small, resizing buffer " << fsize;

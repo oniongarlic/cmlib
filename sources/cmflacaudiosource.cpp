@@ -118,10 +118,13 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
 
         r=process_until_end_of_metadata();
 
-        if (r) {
+        if (r && m_channels==2 && m_bps==16 && m_sample_rate==44100) {
             setvalid(true);
             QIODevice::open(mode);
             m_pos=0;
+        } else if (r) {
+            qWarning("FLAC: Only 44.1 kHz, 16-bit, Stereo FLAC files are supported at this time.");
+            setvalid(false);
         } else {
             qWarning("FLAC: Failed to process initial flac data");
             setvalid(false);

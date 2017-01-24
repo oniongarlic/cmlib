@@ -45,7 +45,8 @@ int CMAlsaAudioSink::write(const QByteArray &buffer)
             snd_pcm_prepare(handle);
             break;
         default:
-            qDebug() << "Unhandled ALSA error: " << snd_strerror(err);
+            qDebug() << "Unhandled ALSA error, trying to recover: " << snd_strerror(err);
+            snd_pcm_prepare(handle);
             break;
         }
     }

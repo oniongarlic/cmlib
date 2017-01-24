@@ -7,6 +7,8 @@
 
 CMBaseAudioSource::CMBaseAudioSource(QObject *parent) :
     QIODevice(parent),
+    m_buffer(DEFAULT_RATE*DEFAULT_CHANNELS*2, (char)0),
+    m_buffer_length(0),
     m_pos(0),
     m_track(0),
     m_tracks(0),
@@ -14,12 +16,13 @@ CMBaseAudioSource::CMBaseAudioSource(QObject *parent) :
     m_rate(DEFAULT_RATE),
     m_valid(false)
 {
-
+    qDebug("baseSource");
+    qDebug() << m_buffer.size();
 }
 
 qint64 CMBaseAudioSource::bytesAvailable() const
 {
-    return m_buffer.size() + QIODevice::bytesAvailable();
+    return m_buffer_length + QIODevice::bytesAvailable();
 }
 
 bool CMBaseAudioSource::canReadLine() const
@@ -85,17 +88,26 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
 {
     qint64 total = 0;
 
-    bool r=generateData(maxlen);
-
-    if (r==false) {
-        qWarning("Source failed to generate data");
-        return -1;    
+    if (!isOpen()) {
+        qWarning("source: Trying to read closed source");
+        return -1;
     }
 
-    while (maxlen - total > 0) {
-        const qint64 chunk = qMin((m_buffer.size() - m_pos), maxlen - total);
+    if (maxlen==0) {
+        return 0;
+    }
+
+    m_buffer_length=generateData(qMin((qint64)m_buffer.size(), maxlen));
+
+    if (m_buffer_length==0) {
+        qWarning("Source failed to generate data");
+        return 0;
+    }
+
+    while (m_buffer_length - total > 0) {
+        const qint64 chunk = qMin((m_buffer_length - m_pos), m_buffer_length - total);
         memcpy(data + total, m_buffer.constData() + m_pos, chunk);
-        m_pos = (m_pos + chunk) % m_buffer.size();
+        m_pos = (m_pos + chunk) % m_buffer_length;
         total += chunk;
     }
 

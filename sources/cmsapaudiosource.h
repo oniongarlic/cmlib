@@ -22,7 +22,7 @@ public:
 public slots:
     void setTrack(quint16 track);
 protected:
-    bool generateData(qint64 maxlen);
+    qint64 generateData(qint64 maxlen);
 private:
     ASAP *m_asap;
     const ASAPInfo *m_info;

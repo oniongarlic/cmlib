@@ -39,7 +39,7 @@ private:
     bool prepareTune();
 
 protected:
-    bool generateData(qint64 maxlen);   
+    qint64 generateData(qint64 maxlen);
 };
 
 #endif // CMSIDAUDIOSOURCE_H

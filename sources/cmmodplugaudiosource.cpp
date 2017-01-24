@@ -23,17 +23,16 @@ CMModPlugAudioSource::CMModPlugAudioSource(QObject *parent) :
     m_track_pos=0;
 }
 
-bool CMModPlugAudioSource::generateData(qint64 maxlen)
+qint64 CMModPlugAudioSource::generateData(qint64 maxlen)
 {
-    int r;
+    qint64 r;
 
-    qint64 length = maxlen;
-    m_buffer.resize(length);
+    r=ModPlug_Read(m_modplug, m_buffer.data(), maxlen);
 
-    r=ModPlug_Read(m_modplug, m_buffer.data(), length);
-
+    // Check for end-of-track and if so, zero fill buffer and report
     if (r==0) {
-        // XXX: We loop for now
+        qDebug("modplug: EOT");
+        m_buffer.fill(0);
         emit eot();
         reset();
     } else {        
@@ -51,7 +50,7 @@ bool CMModPlugAudioSource::generateData(qint64 maxlen)
 
     // qDebug() << m_order << ":" << m_row << "-" << m_pattern;
 
-    return r>0 ? true : false;
+    return r;
 }
 
 qint64 CMModPlugAudioSource::writeData(const char *data, qint64 len)
@@ -136,8 +135,10 @@ void CMModPlugAudioSource::close()
 
 bool CMModPlugAudioSource::reset()
 {
-    if (!m_modplug)
+    if (!m_modplug) {
+        qWarning("moduplug: reset without data");
         return false;
+    }
 
     ModPlug_Seek(m_modplug, 0);    
     m_track_pos=0;

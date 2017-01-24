@@ -34,10 +34,14 @@ FLAC__StreamDecoderReadStatus CMFlacAudioSource::read_callback(FLAC__byte buffer
 FLAC__StreamDecoderWriteStatus CMFlacAudioSource::write_callback(const FLAC__Frame *frame, const FLAC__int32 * const buffer[])
 {
     const FLAC__uint32 total_size = (FLAC__uint32)(m_total_samples * m_channels * (m_bps/8));
+    qint32 fsize=frame->header.blocksize*m_channels*2;
 
     qDebug() << "FLAC: Write CB " << frame->header.blocksize;
 
-    m_buffer.resize(frame->header.blocksize*m_channels*2);
+    if (fsize>m_buffer.size()) {
+        m_buffer.resize(fsize);
+    }
+
     qint16 *b=(qint16 *)m_buffer.data();
 
     for (uint i = 0; i < frame->header.blocksize; i++) {
@@ -59,11 +63,11 @@ qint64 CMFlacAudioSource::readData(char *data, qint64 maxlen)
     bool r;
 
     if (m_buffer.isEmpty()) {
-        generateData(maxlen);
+        m_buffer_length=generateData(maxlen);
         m_pos=0;
     } else if (m_pos>=m_buffer.size()) {
         m_buffer.clear();
-        generateData(maxlen);
+        m_buffer_length=generateData(maxlen);
         m_pos=0;
     }
 
@@ -78,7 +82,7 @@ bool CMFlacAudioSource::generateData(qint64 maxlen)
 {  
     bool r;
 
-    while (m_buffer.size()<maxlen) {
+    while (m_buffer_length<maxlen) {
         r=process_single();
         if (!r)
             qWarning("Failed to process FLAC data");

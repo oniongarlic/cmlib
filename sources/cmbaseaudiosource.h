@@ -84,12 +84,13 @@ protected slots:
     void setvalid(bool valid);
 
 protected:
-    virtual bool generateData(qint64 maxlen) = 0;
+    virtual qint64 generateData(qint64 maxlen) = 0;
     qint64 readData(char *data, qint64 maxlen);
     qint64 writeData(const char *data, qint64 len);    
 
     QByteArray m_data;
     QByteArray m_buffer;
+    qint64 m_buffer_length;
     qint64 m_pos;
 
     // Available tracks and current track. For source that support many internal tracks (for example SID files)

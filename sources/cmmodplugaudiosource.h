@@ -20,7 +20,7 @@ public:
     static QStringList extensions();
 
 protected:
-    bool generateData(qint64 maxlen);
+    qint64 generateData(qint64 maxlen);
 private:
     ModPlugFile *m_modplug;
     ModPlug_Settings settings;

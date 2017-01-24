@@ -38,26 +38,21 @@ CMSidAudioSource::~CMSidAudioSource()
     delete rs;
 }
 
-bool CMSidAudioSource::generateData(qint64 maxlen)
+qint64 CMSidAudioSource::generateData(qint64 maxlen)
 {
-    qint64 length = maxlen;
-    m_buffer.resize(length);
-
-    quint32 played = engine->play((short*)m_buffer.data(), length/2); // 16
+    m_buffer_length = engine->play((short*)m_buffer.data(), maxlen/2); // 16
     setPosition(engine->time()*1000);
 
-
-    return played>0 ? true : false;
+    return m_buffer_length*2;
 }
 
 void CMSidAudioSource::setTrack(quint16 track)
-{
-
+{    
     int r=tune->selectSong(track);
     if (r!=0) {
         CMBaseAudioSource::setTrack(r);
     }
-    qDebug() << tune->statusString();
+    qDebug() << r << tune->statusString();
 }
 
 bool CMSidAudioSource::prepareTune()

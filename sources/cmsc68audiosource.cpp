@@ -162,28 +162,27 @@ QStringList CMSC68AudioSource::extensions()
 
 void CMSC68AudioSource::setTrack(quint16 track)
 {
+    qDebug() << "sc68 setTrack" << track << m_track << m_tracks;
     if (m_track<m_tracks) {
         sc68_play(m_sc68, track, SC68_DEF_LOOP);
         CMBaseAudioSource::setTrack(track);
     }
 }
 
-bool CMSC68AudioSource::generateData(qint64 maxlen)
+qint64 CMSC68AudioSource::generateData(qint64 maxlen)
 {
     int r,n=maxlen/4;
 
-    m_buffer.resize(maxlen);
     r=sc68_process(m_sc68, (void *)m_buffer.data(), &n);
     switch (r) {
     case SC68_OK:
         setPosition(sc68_cntl(m_sc68, SC68_GET_PLAYPOS));
-        return true;
         break;
     case SC68_ERROR:
         qWarning() << "sc68: process error " << r << sc68_error(m_sc68);
         break;
     case SC68_IDLE:
-        return true;
+        //
         break;
     default:
         if (r & SC68_CHANGE) {
@@ -199,7 +198,8 @@ bool CMSC68AudioSource::generateData(qint64 maxlen)
         if (r & SC68_SEEK) {
             qDebug() << "sc68: seek";
         }
+        return 0;
     }
-    qDebug() << r;
-    return false;
+
+    return maxlen;
 }

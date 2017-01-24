@@ -81,6 +81,16 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
             m_meta.insert("instruments", ModPlug_NumInstruments(m_modplug));
             m_meta.insert("patterns", ModPlug_NumPatterns(m_modplug));
             m_meta.insert("samples", ModPlug_NumSamples(m_modplug));
+
+            QVariantList samples;
+            for (int i=0;i<ModPlug_NumSamples(m_modplug);i++) {
+                char tmp[80];
+                ModPlug_SampleName(m_modplug, i, tmp);
+                samples << tmp;
+            }
+
+            m_meta.insert("sampleData", samples);
+
             m_meta.insert("tracks", m_tracks);
 
             qDebug() << m_meta;

@@ -60,12 +60,6 @@ Rectangle {
             }
         }
         Button {
-            title: "Stop"
-            onClicked: {
-                player.stop();
-            }
-        }
-        Button {
             title: "Prev"
             enabled: player.track>1
             onClicked: {

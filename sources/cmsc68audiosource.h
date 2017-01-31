@@ -11,6 +11,7 @@ class CMSC68AudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
     Q_CLASSINFO("mime", "audio/x-sc68")
+    Q_CLASSINFO("extensions", "*.sc68;*.sndh")
 public:
     explicit CMSC68AudioSource(QObject *parent=NULL);
     ~CMSC68AudioSource();

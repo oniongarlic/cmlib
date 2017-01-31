@@ -11,6 +11,7 @@
 class CMFlacAudioSource : public CMBaseAudioSource, FLAC::Decoder::Stream
 {
     Q_OBJECT
+    Q_CLASSINFO("extensions", "*.flac")
 public:
     CMFlacAudioSource(QObject *parent=0);
     ~CMFlacAudioSource();

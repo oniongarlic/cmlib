@@ -9,6 +9,7 @@ class CMSapAudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
     Q_CLASSINFO("mime", "audio/x-sap")
+    Q_CLASSINFO("extensions", "*.sap;*.rmt;*.cmc;*.cm3;*.cmr;*.cms;*.dmc;*.dlt;*.mpt;*.mpd;*.tmc;*.tm8;*.tm2;*.fc")
 public:
     explicit CMSapAudioSource(QObject *parent);
     ~CMSapAudioSource();

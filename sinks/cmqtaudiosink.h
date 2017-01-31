@@ -40,8 +40,8 @@ private:
 private slots:
     void notified();    
     void toggleSuspendResume();
-    void stateChanged(QAudio::State state);
     void deviceChanged(int index);
+    void outputStateChanged(QAudio::State state);
 };
 
 #endif

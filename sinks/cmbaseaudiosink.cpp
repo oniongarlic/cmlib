@@ -1,5 +1,7 @@
 #include "cmbaseaudiosink.h"
 
+#include <QDebug>
+
 CMBaseAudioSink::CMBaseAudioSink(QObject *parent)
     : QObject(parent)
     , m_state(QAudio::StoppedState)
@@ -25,8 +27,11 @@ QAudio::State CMBaseAudioSink::state() const
 
 void CMBaseAudioSink::setState(QAudio::State state)
 {
+    qDebug() << "CMBaseAudioSink::state = " << state;
+
     if (m_state==state)
         return;
+
     m_state=state;
     emit stateChanged(m_state);
 }

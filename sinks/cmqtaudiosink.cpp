@@ -48,7 +48,7 @@ void CMQtAudioSink::createAudioOutput()
 {
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
     connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
-    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(stateChanged(QAudio::State)));
+    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(outputStateChanged(QAudio::State)));
     m_audioOutput->setBufferSize(65535);
 }
 
@@ -160,13 +160,8 @@ void CMQtAudioSink::toggleSuspendResume()
     }
 }
 
-void CMQtAudioSink::stateChanged(QAudio::State state)
+void CMQtAudioSink::outputStateChanged(QAudio::State state)
 {
-    qDebug() << "state = " << state;
-
-    if (m_state==state)
-        return;
-
-    m_state=state;
-    emit stateChanged(m_state);
+    qDebug() << "QtAudioOuputState: " << state;
+    setState(state);
 }

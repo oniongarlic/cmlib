@@ -148,6 +148,7 @@ void CMSC68AudioSource::close()
 bool CMSC68AudioSource::reset()
 {
     sc68_play(m_sc68, m_track, SC68_DEF_LOOP);
+    setPosition(0);
     return true;
 }
 

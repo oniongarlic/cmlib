@@ -2,11 +2,13 @@
 
 #include <QDebug>
 
+#if 0
 static void
 sc68_debug_cb(const int bit, sc68_t * sc68, const char *fmt, va_list list)
 {
     qDebug() << fmt;
 }
+#endif
 
 bool CMSC68AudioSource::initOnce=false;
 
@@ -36,15 +38,11 @@ CMSC68AudioSource::CMSC68AudioSource(QObject *parent)
     // create.name = "bb-sc68";
     create.sampling_rate = m_rate;
 
-
     m_sc68 = sc68_create(&create);
     if (!m_sc68) {
-        qWarning("SC68 create failed");
-        qDebug() << sc68_error(0);
+        qWarning() << "SC68 create failed: " << sc68_error(0);
         goto error_out;
     }
-
-    qDebug() << "sc68 rate " << create.sampling_rate;
 
     sc68_cntl(m_sc68, SC68_SET_ASID, SC68_ASID_ON);
     // sc68_cntl(m_sc68, )
@@ -56,7 +54,7 @@ error_out:;
 
 CMSC68AudioSource::~CMSC68AudioSource()
 {
-    if (!m_sc68)
+    if (m_sc68)
         sc68_destroy(m_sc68);
 }
 
@@ -105,6 +103,7 @@ bool CMSC68AudioSource::open(QIODevice::OpenMode mode)
             m_meta.insert("album", minfo.album);
             m_meta.insert("format", minfo.format);
             m_meta.insert("genre", minfo.genre);
+            m_meta.insert("year", minfo.year);
         }
 
         m_meta.insert("tracks", m_tracks);
@@ -148,6 +147,7 @@ void CMSC68AudioSource::close()
 
 bool CMSC68AudioSource::reset()
 {
+    sc68_play(m_sc68, m_track, SC68_DEF_LOOP);
     return true;
 }
 

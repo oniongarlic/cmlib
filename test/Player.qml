@@ -35,8 +35,10 @@ Rectangle {
         id: control
         width: parent.width
         anchors.top: parent.top
+        spacing: 4
         Button {
             title: "Play"
+            enabled: !player.playing
             onClicked: {
                 if (!player.play())
                     console.debug("Playback start failed")
@@ -45,16 +47,13 @@ Rectangle {
 
         Button {
             title: "Pause"
+            enabled: player.playing
             onClicked: player.pause();
         }
 
         Button {
-            title: "Resume"
-            onClicked: player.play();
-        }
-
-        Button {
             title: "Stop"
+            enabled: player.playing
             onClicked: {
                 player.stop();
             }

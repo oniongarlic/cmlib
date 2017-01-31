@@ -9,6 +9,11 @@
 CMMediaPlayer::CMMediaPlayer(QObject *parent)
     : QObject(parent)
     , m_playtime(0)
+    , m_playing(false)
+    , m_position(0)
+    , m_length(0)
+    , m_track(0)
+    , m_tracks(0)
 {
     connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
     connect(&m_dec, SIGNAL(eot()), this, SLOT(decoderEOT()));
@@ -148,7 +153,13 @@ void CMMediaPlayer::setPlaytime(quint64 ms)
 
 bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
 {
+    if (m_sink) {
+        m_sink->disconnect(this, 0);
+    }
+
     m_sink=sink;
+
+    connect(m_sink, SIGNAL(stateChanged(QAudio::State)), SLOT(sinkState(QAudio::State)));
 
     return true;
 }
@@ -175,4 +186,23 @@ void CMMediaPlayer::sinkPosition(quint64 pos)
 
     if (m_playtime>0 && pos>m_playtime)
         stop();
+}
+
+void CMMediaPlayer::sinkState(QAudio::State state)
+{
+    qDebug() << "PlayerSinkState " << state;
+    switch (state) {
+    case QAudio::ActiveState:
+        m_playing=true;
+        emit playingChanged(m_playing);
+        break;
+    case QAudio::SuspendedState:
+    case QAudio::IdleState:
+    case QAudio::StoppedState:
+        m_playing=false;
+        emit playingChanged(m_playing);
+        break;
+    default:
+        break;
+    }
 }

@@ -15,6 +15,9 @@ class CMMediaPlayer : public QObject
 
     Q_PROPERTY(int track READ track WRITE setTrack NOTIFY trackChanged)
     Q_PROPERTY(int tracks READ tracks NOTIFY tracksChanged)
+
+    Q_PROPERTY(bool playing READ playing NOTIFY playingChanged)
+
 public:
     explicit CMMediaPlayer(QObject *parent = 0);
 
@@ -55,6 +58,11 @@ public:
         return m_track;
     }
 
+    bool playing() const
+    {
+        return m_playing;
+    }
+
 signals:
     void metadata(QVariantHash meta);
     void positionChanged(quint64 position);
@@ -63,10 +71,13 @@ signals:
     void trackChanged(int track);
     void eot();
 
+    void playingChanged(bool playing);
+
 protected slots:
     void decoderMetadata(QVariantHash meta);
     void decoderEOT();
     void sinkPosition(quint64 pos);
+    void sinkState(QAudio::State state);
 
 public slots:
 
@@ -80,6 +91,7 @@ private:
     quint64 m_playtime;
     int m_tracks;
     int m_track;
+    bool m_playing;
 };
 
 #endif // CMMEDIAPLAYER_H

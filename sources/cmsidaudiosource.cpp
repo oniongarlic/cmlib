@@ -89,7 +89,7 @@ bool CMSidAudioSource::prepareTune()
     m_meta.insert("title", info->infoString(0));
     m_meta.insert("author", info->infoString(1));
     m_meta.insert("tracks", m_tracks);
-    m_meta.insert("stereo", info->isStereo());
+    m_meta.insert("stereo", info->sidChips());
     m_meta.insert("format", info->formatString());
     m_meta.insert("clock", clockSpeed(info->clockSpeed()));
 

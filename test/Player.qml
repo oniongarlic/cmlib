@@ -17,6 +17,8 @@ Rectangle {
         onEot: {
             console.debug("EOT!")
             player.stop();
+            //files.incrementCurrentIndex();
+            //player.play();
         }
         onTracksChanged: console.debug(tracks)
         onTrackChanged: console.debug(track)
@@ -102,20 +104,34 @@ Rectangle {
         ListView {
             id: files
             delegate: fileDelegate
+            highlight: highlightDelegate
+            highlightFollowsCurrentItem: true
             clip: true;
             width: parent.width
             height: parent.height
             model: _files
+            currentIndex: -1
 
             //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-            signal inputSelected(variant input);
-            property int currentInput: -1;
+            onCurrentIndexChanged: {
+                //var data=model.get(currentIndex)
+                //console.debug(data)
+            }
+
+            Component {
+                id: highlightDelegate
+                Rectangle {
+                    color: "green"
+                    width: parent.width
+                    height: 20
+                }
+            }
 
             Component {
                 id: fileDelegate
-                Rectangle {
-                    // color: model.input_id==inputs.currentInput ? "#e5e5e5" : "#ffffff";
+                Item {
+                    //color: files.currentIndex==inputs.currentInput ? "#e5e5e5" : "#ffffff";
                     width: parent.width;
                     height: txt.height;
                     MouseArea {
@@ -127,7 +143,8 @@ Rectangle {
                             font.pixelSize: 18
                         }
                         onClicked: {
-                            console.debug("File: "+model.display);                            
+                            console.debug("File: "+model.display);
+                            files.currentIndex=index
                             if (player.load(model.display))
                                 player.prepare();
                         }

@@ -28,7 +28,8 @@ SOURCES += test/main.cpp \
     sinks/cmfileaudiosink.cpp \
     sinks/cmwavfileaudiosink.cpp \
     sinks/cmbasethreadedaudiosink.cpp \
-    sources/cmsc68audiosource.cpp
+    sources/cmsc68audiosource.cpp \
+    scanner/cmlibrarymodel.cpp
 
 HEADERS += \
     sources/cmbaseaudiosource.h \
@@ -43,7 +44,8 @@ HEADERS += \
     sinks/cmwavfileaudiosink.h \
     sinks/cmbasethreadedaudiosink.h \
     sinks/cmplaybackthread_p.h \
-    sources/cmsc68audiosource.h
+    sources/cmsc68audiosource.h \
+    scanner/cmlibrarymodel.h
 
 unix:!qnx {
     CONFIG +=link_pkgconfig

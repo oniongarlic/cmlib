@@ -21,7 +21,7 @@ SOURCES += test/main.cpp \
     sources/cmsidaudiosource.cpp \
     sources/cmmodplugaudiosource.cpp \
     sources/cmsapaudiosource.cpp \
-    sources/cmmediascanner.cpp \
+    scanner/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
     player/cmmediaplayer.cpp \
     sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
@@ -35,7 +35,7 @@ HEADERS += \
     sources/cmsidaudiosource.h \
     sources/cmmodplugaudiosource.h \
     sources/cmsapaudiosource.h \
-    sources/cmmediascanner.h \
+    scanner/cmmediascanner.h \
     decoders/cmmediadecoder.h \
     player/cmmediaplayer.h \
     sinks/cmbaseaudiosink.h sinks/cmqtaudiosink.h \
@@ -47,7 +47,12 @@ HEADERS += \
 
 unix:!qnx {
     CONFIG +=link_pkgconfig
-    PKGCONFIG += libsidplayfp sc68 libmodplug flac++
+
+    PKGCONFIG += flac++
+    PKGCONFIG += libmodplug
+    PKGCONFIG += libsidplayfp
+    PKGCONFIG += sc68
+
     LIBS+= -lasap
     # DEFINES += ALSAAUDIO
     DEFINES += QTAUDIO

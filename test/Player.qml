@@ -133,19 +133,27 @@ Rectangle {
                 Item {
                     //color: files.currentIndex==inputs.currentInput ? "#e5e5e5" : "#ffffff";
                     width: parent.width;
-                    height: txt.height;
+                    height: r.height;
                     MouseArea {
                         anchors.fill: parent;
-                        Text {
-                            id: txt
-                            text: display;
+                        Row {
+                            id: r
                             anchors.margins: 16;
-                            font.pixelSize: 18
+                            Text {
+                                id: txt
+                                text: model.filename;
+                                font.pixelSize: 18
+                            }
+                            Text {
+                                id: type
+                                text: model.type
+                                color: "red"
+                            }
                         }
                         onClicked: {
-                            console.debug("File: "+model.display);
+                            console.debug("File: "+model.file);
                             files.currentIndex=index
-                            if (player.load(model.display))
+                            if (player.load(model.file))
                                 player.prepare();
                         }
                     }

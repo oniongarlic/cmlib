@@ -46,10 +46,11 @@
 #include "cmwavfileaudiosink.h"
 
 #include "cmmediaplayer.h"
-#include "cmmediascanner.h"
+#include "scanner/cmmediascanner.h"
+#include "scanner/cmlibrarymodel.h"
 #include "decoders/cmmediadecoder.h"
 
-QStringListModel files;
+CMLibraryModel model;
 
 #if 0
 void myMessageOutput(QtMsgType type, const char* msg)
@@ -85,6 +86,8 @@ int main(int argc, char **argv)
     // qmlRegisterType<CMFileAudioSink>("org.tal.cm", 1, 0, "CMFileAudioSink");
     qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
 
+    qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "LibraryModel", "C++ only");
+
     qsrand(QTime::currentTime().msec());
 
     scanner.setFilters(mdec.getSupportedExtensions());
@@ -102,7 +105,7 @@ int main(int argc, char **argv)
     }
 
     fileList.sort();
-    files.setStringList(fileList);
+    model.setStringList(&fileList);
 
 #if QT_VERSION < 0x050000
     QDeclarativeView viewer;
@@ -110,7 +113,7 @@ int main(int argc, char **argv)
 
     viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
     viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    context->setContextProperty("_files", &files);
+    context->setContextProperty("_files", &model);
     //context->setContextProperty("_scanner", &scanner);
 #if defined(Q_OS_BLACKBERRY)
     viewer.setSource(QUrl::fromLocalFile("app/native/test/main.qml"));
@@ -125,7 +128,7 @@ int main(int argc, char **argv)
 #else
     QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextProperty("_files", &files);
+    engine.rootContext()->setContextProperty("_files", &model);
     engine.load(QUrl(QStringLiteral("test/qtquick2-main.qml")));
 #endif
 

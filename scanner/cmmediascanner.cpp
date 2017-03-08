@@ -1,17 +1,68 @@
 #include "cmmediascanner.h"
 #include <QDebug>
 #include <QDir>
+#include <QSqlQuery>
+#include <QSqlError>
+
+#define TABLE_MEDIA_FILES "CREATE TABLE IF NOT EXISTS mediafiles (\
+path text not null,\
+title text,\
+meta text,\
+type int not null,\
+rating int not null default -1,\
+primary key (path));"
 
 CMMediaScanner::CMMediaScanner(QObject *parent) : QObject(parent)
 {
     m_ticker.setSingleShot(true);
     m_ticker.setInterval(100);
     connect(&m_ticker, SIGNAL(timeout()), this, SLOT(scanLoop()));
+
+    m_tables.insert("mediafiles", TABLE_MEDIA_FILES);
+    //m_tables.insert("playhistory", TABLE_MEDIA_FILES);
+    //m_tables.insert("files", TABLE_MEDIA_FILES);
+}
+
+CMMediaScanner::~CMMediaScanner()
+{
+    m_db.close();
 }
 
 void CMMediaScanner::setFilters(const QStringList &filters)
 {
     m_filter=filters;
+}
+
+bool CMMediaScanner::createTable(const QString table)
+{
+    QSqlQuery query(m_db);
+    bool r;
+    QString tdef=m_tables.value(table);
+
+    if (tdef.isEmpty()) {
+        qWarning() << "Definition not found for table " << table;
+        return false;
+    }
+
+    r=query.exec(tdef);
+    if (!r)
+        qWarning("Table query failed");
+    return r;
+}
+
+bool CMMediaScanner::initialize(QString db)
+{
+    m_db=QSqlDatabase::addDatabase("QSQLITE");
+    m_db.setDatabaseName(db);
+
+    m_db_ok=m_db.open();
+    if (!m_db_ok) {
+        qWarning("Failed to open database");
+    } else {
+        createTable("mediafiles");
+    }
+
+    return m_db_ok;
 }
 
 void CMMediaScanner::addFilter(const QString &filter)
@@ -100,7 +151,17 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
 
         info=it.fileInfo();
         if (info.isFile()) {
-            list.append(f);            
+            QSqlQuery query(m_db);
+
+            list.append(f);
+
+            query.prepare("INSERT INTO mediafiles (path, type) VALUES (?, -1)");
+            query.bindValue(0, f);
+
+            if (!query.exec()) {
+                qWarning() << "Query failed: " << query.lastError() ;
+                qDebug() << query.lastQuery();
+            }
         } else if (info.isDir()) {
             m_pathsleft.append(f);            
         }

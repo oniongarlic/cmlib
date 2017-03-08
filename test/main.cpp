@@ -90,6 +90,8 @@ int main(int argc, char **argv)
 
     qsrand(QTime::currentTime().msec());
 
+    scanner.initialize("mediadatabase.db");
+
     scanner.setFilters(mdec.getSupportedExtensions());
     // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 

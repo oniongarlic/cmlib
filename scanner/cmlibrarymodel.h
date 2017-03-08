@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <QVariantMap>
+#include <QSqlDatabase>
 
 class CMLibraryModel : public QAbstractListModel
 {
@@ -30,7 +31,7 @@ public:
         return roles;
     }
 
-private:
+private:    
     QStringList *m_data;
     QStringList m_dummy;
 };

@@ -6,8 +6,14 @@
 #include "cmbaseaudiosource.h"
 #include "cmsidaudiosource.h"
 #include "cmmodplugaudiosource.h"
+
+#ifdef SAP_DECODER
 #include "cmsapaudiosource.h"
+#endif
+
+#ifdef SC68_DECODER
 #include "cmsc68audiosource.h"
+#endif
 
 #ifdef FLAC_DECODER
 #include "cmflacaudiosource.h"

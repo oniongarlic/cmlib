@@ -1,6 +1,11 @@
 QT += gui sql
 
 # DEFINES += FLAC_DECODER
+# DEFINES += SAP_DECODER
+DEFINES += SID_DECODER
+DEFINES += MOD_DECODER
+
+ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
 
 lessThan(QT_MAJOR_VERSION, 5): {
 CONFIG += mobility
@@ -18,24 +23,17 @@ OTHER_FILES += test/*.qml
 
 SOURCES += test/main.cpp \
     sources/cmbaseaudiosource.cpp \
-    sources/cmsidaudiosource.cpp \
-    sources/cmmodplugaudiosource.cpp \
-    sources/cmsapaudiosource.cpp \
     scanner/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
     player/cmmediaplayer.cpp \
     sinks/cmbaseaudiosink.cpp sinks/cmqtaudiosink.cpp \
     sinks/cmfileaudiosink.cpp \
     sinks/cmwavfileaudiosink.cpp \
-    sinks/cmbasethreadedaudiosink.cpp \
-    sources/cmsc68audiosource.cpp \
+    sinks/cmbasethreadedaudiosink.cpp \    
     scanner/cmlibrarymodel.cpp
 
 HEADERS += \
     sources/cmbaseaudiosource.h \
-    sources/cmsidaudiosource.h \
-    sources/cmmodplugaudiosource.h \
-    sources/cmsapaudiosource.h \
     scanner/cmmediascanner.h \
     decoders/cmmediadecoder.h \
     player/cmmediaplayer.h \
@@ -43,8 +41,7 @@ HEADERS += \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
     sinks/cmbasethreadedaudiosink.h \
-    sinks/cmplaybackthread_p.h \
-    sources/cmsc68audiosource.h \
+    sinks/cmplaybackthread_p.h \    
     scanner/cmlibrarymodel.h
 
 unix:!qnx:!android {
@@ -80,13 +77,21 @@ qnx:blackberry {
 }
 
 android {
-    LIBS += -L3rdparty/android-armv7/lib
+    #LIBS += -L3rdparty/android-armv7/lib
+    LIBS += -L$$ANDROID_SYSROOT/lib
+    INCLUDEPATH += $$ANDROID_SYSROOT/include
+
     LIBS += -lsidplayfp
     LIBS += -lmodplug
-    LIBS += -lsc68 -lfile68 -lunice68
-    LIBS += ./3rdparty/android-armv7/lib/libasap.a
+    # LIBS += -lsc68 -lfile68 -lunice68
+    # LIBS += ./3rdparty/android-armv7/lib/libasap.a
 
     DEFINES += QTAUDIO
+
+    contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+        ANDROID_EXTRA_LIBS = $$ANDROID_SYSROOT/lib/libsidplayfp.so \
+    $$ANDROID_SYSROOT/lib/libmodplug.so
+    }
 }
 
 #######################################################################
@@ -109,5 +114,41 @@ contains(DEFINES,FLAC_DECODER) {
     LIBS += -lFLAC -lFLAC++
 }
 
+# Modplug
+contains(DEFINES,MOD_DECODER) {
+    HEADERS += sources/cmmodplugaudiosource.h
+    SOURCES += sources/cmmodplugaudiosource.cpp
+}
+
+# SID
+contains(DEFINES,SID_DECODER) {
+    HEADERS += sources/cmsidaudiosource.h
+    SOURCES += sources/cmsidaudiosource.cpp
+}
+
+# SC68
+contains(DEFINES,SC68_DECODER) {
+    HEADERS += sources/cmsc68audiosource.h
+    SOURCES += sources/cmsc68audiosource.cpp
+}
+
+# ASAP
+contains(DEFINES,SAP_DECODER) {
+    HEADERS += sources/cmsapaudiosource.h
+    SOURCES += sources/cmsapaudiosource.cpp
+}
+
 DISTFILES += \
-    test/*.qml
+    test/*.qml \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat
+
+RESOURCES += \
+    test/test.qrc
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

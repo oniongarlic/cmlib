@@ -47,7 +47,7 @@ HEADERS += \
     sources/cmsc68audiosource.h \
     scanner/cmlibrarymodel.h
 
-unix:!qnx {
+unix:!qnx:!android {
     CONFIG +=link_pkgconfig
 
     PKGCONFIG += flac++
@@ -66,11 +66,27 @@ qnx:blackberry {
     HEADERS += sinks/cmqsaaudiosink.h
     SOURCES += sinks/cmqsaaudiosink.cpp
 
-    LIBS += -laudio_manager
-    LIBS += -L3party/lib -lsidplayfp -lmodplug -lasound -lsc68 -lfile68 -lunice68 ./3party/lib/libasap.a
+    LIBS += -lasound -laudio_manager
+
+    LIBS += -L3rdparty/qnx-armv7/lib
+    LIBS += -lsidplayfp
+    LIBS += -lmodplug
+    LIBS += -lsc68 -lfile68 -lunice68
+    LIBS += ./3rdparty/qnx-armv7/lib/libasap.a
+
 #./3party/lib/libayfly.a ./3party/lib/libayemu.a
 
-    INCLUDEPATH += 3party/include
+    INCLUDEPATH += 3rdparty/include
+}
+
+android {
+    LIBS += -L3rdparty/android-armv7/lib
+    LIBS += -lsidplayfp
+    LIBS += -lmodplug
+    LIBS += -lsc68 -lfile68 -lunice68
+    LIBS += ./3rdparty/android-armv7/lib/libasap.a
+
+    DEFINES += QTAUDIO
 }
 
 #######################################################################

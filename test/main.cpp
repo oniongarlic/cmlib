@@ -92,8 +92,13 @@ int main(int argc, char **argv)
 
     scanner.initialize("mediadatabase.db");
 
-    scanner.setFilters(mdec.getSupportedExtensions());
-    // scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    scanner.setFilters(mdec.getSupportedExtensions());    
+
+#if QT_VERSION < 0x050000
+    scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+#else
+    scanner.addPath(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+#endif
 
 #if defined(Q_OS_BLACKBERRY)
     scanner.addPath("/accounts/1000/shared/music");
@@ -118,9 +123,9 @@ int main(int argc, char **argv)
     context->setContextProperty("_files", &model);
     //context->setContextProperty("_scanner", &scanner);
 #if defined(Q_OS_BLACKBERRY)
-    viewer.setSource(QUrl::fromLocalFile("app/native/test/main.qml"));
+    viewer.setSource(QUrl::fromLocalFile("qrc:/main.qml"));
 #else
-    viewer.setSource(QUrl::fromLocalFile("test/main.qml"));
+    viewer.setSource(QUrl::fromLocalFile("qrc:/main.qml"));
 #endif
 #if defined(Q_OS_QNX)
     viewer.showFullScreen();
@@ -131,7 +136,7 @@ int main(int argc, char **argv)
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("_files", &model);
-    engine.load(QUrl(QStringLiteral("test/qtquick2-main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qtquick2-main.qml")));
 #endif
 
     return app.exec();

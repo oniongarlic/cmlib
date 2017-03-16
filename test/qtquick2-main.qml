@@ -1,11 +1,10 @@
-import QtQuick 2.6
+import QtQuick 2.8
 import org.tal.cm 1.0
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
-import QtPositioning 5.5
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.1
 
-Window {
+ApplicationWindow {
     id: root
     visible: true
     width: 1024
@@ -15,5 +14,4 @@ Window {
     Player {
         anchors.fill: parent
     }
-
 }

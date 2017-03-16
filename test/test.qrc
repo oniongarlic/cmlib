@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qtquick2-main.qml</file>
+        <file>main.qml</file>
+        <file>Button.qml</file>
+        <file>Player.qml</file>
+    </qresource>
+</RCC>

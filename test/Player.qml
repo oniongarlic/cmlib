@@ -1,10 +1,10 @@
-import QtQuick 2.6
+import QtQuick 2.8
+import QtQuick.Layouts 1.1
 import org.tal.cm 1.0
 
 Rectangle {
     id: root
-    width: 600
-    height: 600
+    anchors.fill: parent
     visible: true
 
     CMMediaPlayer {
@@ -33,7 +33,7 @@ Rectangle {
         file: "audio-qml.wav"
     }
 
-    Row {
+    RowLayout {
         id: control
         width: parent.width
         anchors.top: parent.top
@@ -97,7 +97,7 @@ Rectangle {
         }
     }
 
-    Column {
+    ColumnLayout {
         width: parent.width
         anchors.top: control.bottom
         anchors.bottom: parent.bottom
@@ -106,6 +106,7 @@ Rectangle {
             delegate: fileDelegate
             highlight: highlightDelegate
             highlightFollowsCurrentItem: true
+            highlightMoveDuration: 500
             clip: true;
             width: parent.width
             height: parent.height
@@ -142,7 +143,7 @@ Rectangle {
                             Text {
                                 id: txt
                                 text: model.filename;
-                                font.pixelSize: 18
+                                font.pixelSize: 24
                             }
                             Text {
                                 id: type
@@ -161,5 +162,4 @@ Rectangle {
             }
         }
     }
-
 }

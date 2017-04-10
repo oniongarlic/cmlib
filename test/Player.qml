@@ -2,14 +2,28 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.1
 import org.tal.cm 1.0
 
-Rectangle {
+Item {
     id: root
     anchors.fill: parent
     visible: true
 
+    property alias position: player.position
+
     CMMediaPlayer {
         id: player
         Component.onCompleted: setAudioSink(audioSink)
+
+        property bool wasPlaying: false
+
+        function prepareNewSong() {
+            if (player.playing) {
+                console.debug("Stopping current playback")
+                player.stop();
+                player.wasPlaying=true;
+            } else {
+                player.wasPlaying=false;
+            }
+        }
 
         onMetadata: {
             console.debug(meta.title)
@@ -17,8 +31,10 @@ Rectangle {
         onEot: {
             console.debug("EOT!")
             player.stop();
-            //files.incrementCurrentIndex();
-            //player.play();
+            if (files.count>0) {
+                player.prepareNewSong();
+                files.incrementCurrentIndex();                
+            }
         }
         onTracksChanged: console.debug(tracks)
         onTrackChanged: console.debug(track)
@@ -61,6 +77,20 @@ Rectangle {
             }
         }
         Button {
+            title: "Prev Song"
+            onClicked: {
+                player.prepareNewSong();
+                files.decrementCurrentIndex();
+            }
+        }
+        Button {
+            title: "Next Next"
+            onClicked: {
+                player.prepareNewSong();
+                files.incrementCurrentIndex();
+            }
+        }
+        Button {
             title: "Prev"
             enabled: player.track>1
             onClicked: {
@@ -88,13 +118,7 @@ Rectangle {
             }
         }
 
-        Text {
-            id: posText
-            width: 80
-            height: parent.height
-            text:player.position/1000;
-            horizontalAlignment: Text.AlignHCenter
-        }
+
     }
 
     ColumnLayout {
@@ -115,9 +139,14 @@ Rectangle {
 
             //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-            onCurrentIndexChanged: {
-                //var data=model.get(currentIndex)
-                //console.debug(data)
+            onCurrentIndexChanged: {                
+                var data=model.get(currentIndex)
+                console.debug(data)
+                if (player.load(data.file)) {
+                    player.prepare();
+                    if (player.wasPlaying)
+                        player.play();
+                }
             }
 
             Component {
@@ -153,9 +182,8 @@ Rectangle {
                         }
                         onClicked: {
                             console.debug("File: "+model.file);
-                            files.currentIndex=index
-                            if (player.load(model.file))
-                                player.prepare();
+                            player.prepareNewSong();
+                            files.currentIndex=index;
                         }
                     }
                 }

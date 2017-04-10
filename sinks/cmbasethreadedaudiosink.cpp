@@ -35,7 +35,7 @@ bool CMPlaybackThread::stop()
     if (sink)
         sink->drain();
     sync.unlock();
-    pauseCond.wakeAll();
+    pauseCond.wakeAll();    
 
     return r;
 }
@@ -143,6 +143,7 @@ bool CMBaseThreadedAudioSink::play()
         }
     }
     m_playback->play();
+    setState(QAudio::ActiveState);
 
     return true;
 }
@@ -150,6 +151,7 @@ bool CMBaseThreadedAudioSink::play()
 bool CMBaseThreadedAudioSink::stop()
 {
     m_playback->stop();
+    setState(QAudio::StoppedState);
 
     return true;
 }
@@ -157,6 +159,7 @@ bool CMBaseThreadedAudioSink::stop()
 bool CMBaseThreadedAudioSink::pause()
 {
     m_playback->stop();
+    setState(QAudio::IdleState);
 
     return true;
 }

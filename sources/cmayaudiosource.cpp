@@ -37,8 +37,6 @@ qint64 CMAYAudioSource::generateData(qint64 maxlen)
     ayemu_gen_sound (&m_ay, (void *)m_buffer.data(), m_fsize);
     m_aypos++;
 
-    qDebug() << m_fsize << maxlen;
-
     return m_fsize;
 }
 

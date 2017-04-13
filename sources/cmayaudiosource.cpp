@@ -26,7 +26,7 @@ qint64 CMAYAudioSource::generateData(qint64 maxlen)
         emit eot();
         ayemu_reset(&m_ay);
         return 0;
-    }
+    }    
 
     // XXX: We read one frame, sized m_fsize at a time only
     // try to generate up to maxlen instead
@@ -36,6 +36,10 @@ qint64 CMAYAudioSource::generateData(qint64 maxlen)
     ayemu_set_regs (&m_ay, m_regs);
     ayemu_gen_sound (&m_ay, (void *)m_buffer.data(), m_fsize);
     m_aypos++;
+
+    //setPosition(((m_aypos*m_fsize) / (m_rate*2.0*16.0)) * 10000);
+
+    setPosition(((float)m_aypos/(float)m_vtx->playerFreq)*1000.0);
 
     return m_fsize;
 }
@@ -74,6 +78,7 @@ bool CMAYAudioSource::open(QIODevice::OpenMode mode)
         m_meta.insert("year", m_vtx->year);
 
         m_meta.insert("tracks", m_tracks);
+        m_meta.insert("length", (quint64)(m_vtx->frames/m_vtx->playerFreq));
 
         emit metaChanged(m_meta);
 

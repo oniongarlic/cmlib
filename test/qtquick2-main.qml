@@ -117,4 +117,22 @@ ApplicationWindow {
             }
         }
     }
+
+    header: ToolBar {
+        RowLayout {
+
+        }
+    }
+
+    footer: ToolBar {
+        RowLayout {
+            Text {
+                id: posText
+                width: 80
+                height: parent.height
+                text: player.position/1000;
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+    }
 }

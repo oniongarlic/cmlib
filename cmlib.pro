@@ -4,6 +4,7 @@ QT += gui sql
 # DEFINES += SAP_DECODER
 DEFINES += SID_DECODER
 DEFINES += MOD_DECODER
+DEFINES += AY_DECODER
 
 ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
 
@@ -53,8 +54,8 @@ unix:!qnx:!android {
     PKGCONFIG += sc68
 
     LIBS+= -lasap
-    # DEFINES += ALSAAUDIO
-    DEFINES += QTAUDIO
+    DEFINES += ALSAAUDIO
+    # DEFINES += QTAUDIO
 }
 
 qnx:blackberry {
@@ -137,6 +138,14 @@ contains(DEFINES,SAP_DECODER) {
     HEADERS += sources/cmsapaudiosource.h
     SOURCES += sources/cmsapaudiosource.cpp
 }
+
+# AYEMU
+contains(DEFINES,AY_DECODER) {
+    HEADERS += sources/cmayaudiosource.h
+    SOURCES += sources/cmayaudiosource.cpp
+    LIBS += -layemu
+}
+
 
 DISTFILES += \
     test/*.qml \

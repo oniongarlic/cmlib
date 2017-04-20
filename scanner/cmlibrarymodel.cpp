@@ -71,6 +71,9 @@ QVariantMap CMLibraryModel::get(int index) const
     map.insert("file", m_data->value(index));
     map.insert("filename", fi.baseName());
 
+    map.insert("type", "");
+    map.insert("title", "");
+
     return map;
 }
 

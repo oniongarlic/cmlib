@@ -8,6 +8,7 @@
 
 class CMLibraryModel : public QAbstractListModel
 {
+    Q_OBJECT
 public:
     CMLibraryModel(QObject *parent = Q_NULLPTR);
 

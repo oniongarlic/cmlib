@@ -86,12 +86,12 @@ private:
     CMBaseAudioSink *m_sink;
     QAudio::State m_state;
     CMMediaDecoder m_dec;
-    double m_position;
-    double m_length;
     quint64 m_playtime;
-    int m_tracks;
-    int m_track;
     bool m_playing;
+    double m_position;
+    double m_length;    
+    int m_track;
+    int m_tracks;
 };
 
 #endif // CMMEDIAPLAYER_H

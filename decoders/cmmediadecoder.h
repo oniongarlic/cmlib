@@ -15,6 +15,10 @@
 #include "cmsc68audiosource.h"
 #endif
 
+#ifdef AY_DECODER
+#include "cmayaudiosource.h"
+#endif
+
 #ifdef FLAC_DECODER
 #include "cmflacaudiosource.h"
 #endif

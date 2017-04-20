@@ -8,13 +8,13 @@
 
 CMMediaPlayer::CMMediaPlayer(QObject *parent)
     : QObject(parent)
+    , m_sink(0)
     , m_playtime(0)
     , m_playing(false)
     , m_position(0)
     , m_length(0)
     , m_track(0)
-    , m_tracks(0)
-    , m_sink(0)
+    , m_tracks(0)    
 {
     connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
     connect(&m_dec, SIGNAL(eot()), this, SLOT(decoderEOT()));

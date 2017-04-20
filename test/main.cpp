@@ -50,8 +50,6 @@
 #include "scanner/cmlibrarymodel.h"
 #include "decoders/cmmediadecoder.h"
 
-CMLibraryModel model;
-
 #if 0
 void myMessageOutput(QtMsgType type, const char* msg)
 {
@@ -66,8 +64,11 @@ int main(int argc, char **argv)
     QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
+    CMLibraryModel model;
 
     app.setApplicationName("Qt CM Player test");
+
+    qsrand(QTime::currentTime().msec());
 
     //qInstallMsgHandler(myMessageOutput);
 
@@ -86,12 +87,10 @@ int main(int argc, char **argv)
     // qmlRegisterType<CMFileAudioSink>("org.tal.cm", 1, 0, "CMFileAudioSink");
     qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
 
-    qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "LibraryModel", "C++ only");
-
-    qsrand(QTime::currentTime().msec());
+    qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "MediaLibraryModel", "C++ only");
+    qRegisterMetaType<CMLibraryModel *>();
 
     scanner.initialize("mediadatabase.db");
-
     scanner.setFilters(mdec.getSupportedExtensions());    
 
 #if QT_VERSION < 0x050000

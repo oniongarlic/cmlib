@@ -19,7 +19,9 @@ CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 #ifdef SC68_DECODER
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSC68AudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSC68AudioSource(this))));
 #endif
-
+#ifdef AY_DECODER
+    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMAYAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMAYAudioSource(this))));
+#endif
 #ifdef FLAC_DECODER
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMFlacAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMFlacAudioSource(this))));
 #endif
@@ -72,6 +74,9 @@ QStringList CMMediaDecoder::getSupportedExtensions()
 #endif
 #ifdef SC68_DECODER
     e << CMSC68AudioSource::extensions();
+#endif
+#ifdef AY_DECODER
+    e << CMAYAudioSource::extensions();
 #endif
 #ifdef FLAC_DECODER
     e << CMFlacAudioSource::extensions();

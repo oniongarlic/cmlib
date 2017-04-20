@@ -41,7 +41,7 @@ int CMAlsaAudioSink::write(const QByteArray &buffer)
     if (err<0) {
         switch (err) {
         case -EPIPE:
-        case -EBADF:
+        case -EBADFD:
             snd_pcm_prepare(handle);
             break;
         default:

@@ -20,21 +20,19 @@ qint64 CMOpenMTPAudioSource::generateData(qint64 maxlen)
 
     r=mod->read_interleaved_stereo((std::int32_t)m_rate, (std::size_t)maxlen/4, (std::int16_t *)m_buffer.data() );
 
-    qDebug() << maxlen << r;
-
     r=r*4;
 
-    // Check for end-of-track and if so, zero fill buffer and report
-    if (r==0) {
+    // Check end of track, but if we have more subsongs, switch song instead
+    if (r==0 && m_tracks>1 && m_track<m_tracks) {
+        // reset();
+        setTrack(m_track+1);
+        // emit eoss();
+    } else if (r==0) { // Check for end-of-track and if so, zero fill buffer and report
         qDebug("openmtp: EOT");
         m_buffer.fill(0);
         emit eot();
-        reset();
-    } else {        
-        float tmp=((float)r/(float)(m_rate*2.0*2.0))*(float)1000.0;
-        m_track_pos+=tmp;
-        setPosition(m_track_pos);
     }
+    setPosition(mod->get_position_seconds()*1000.0);
 
     return r;
 }
@@ -44,6 +42,16 @@ qint64 CMOpenMTPAudioSource::writeData(const char *data, qint64 len)
     m_tune.append(data, len);
     qDebug() << "Wrote: " << len;
     return len;
+}
+
+void CMOpenMTPAudioSource::setTrack(quint16 track)
+{
+    if (track>m_tracks) {
+        qWarning() << "openmtp: Request track outside tracks!";
+        return;
+    }
+    mod->select_subsong(track-1);
+    CMBaseAudioSource::setTrack(track);
 }
 
 bool CMOpenMTPAudioSource::open(QIODevice::OpenMode mode)
@@ -62,17 +70,16 @@ bool CMOpenMTPAudioSource::open(QIODevice::OpenMode mode)
             setTrack(1);
             m_meta.clear();
 
+            m_meta.insert("tracks", m_tracks);
             m_meta.insert("channels", mod->get_num_channels());
             m_meta.insert("instruments", mod->get_num_instruments());
             m_meta.insert("patterns", mod->get_num_patterns());
             m_meta.insert("samples", mod->get_num_samples());
-
-            //qDebug() << mod->get_metadata_keys();
-
+            m_meta.insert("title", QString::fromStdString(mod->get_metadata("title")));
+            m_meta.insert("artist", QString::fromStdString(mod->get_metadata("artist")));
+            m_meta.insert("tracker", QString::fromStdString(mod->get_metadata("tracker")));
+            m_meta.insert("comment", QString::fromStdString(mod->get_metadata("message")));
 #if 0
-            //m_meta.insert("title", mod->get_);
-            m_meta.insert("comment", ModPlug_GetMessage(m_modplug));
-
             QVariantList samples;
             for (uint i=0;i<ModPlug_NumSamples(m_modplug);i++) {
                 char tmp[80];
@@ -82,10 +89,6 @@ bool CMOpenMTPAudioSource::open(QIODevice::OpenMode mode)
 
             m_meta.insert("sampleData", samples);
 #endif
-            m_meta.insert("tracks", m_tracks);
-
-            qDebug() << m_meta;
-
             emit metaChanged(m_meta);
         } else {
             qWarning("Failed to load mod file, invalid ?");
@@ -123,6 +126,7 @@ void CMOpenMTPAudioSource::close()
     switch (openMode()) {
     case QIODevice::ReadOnly:
         delete mod;
+        mod=NULL;
         break;
     case QIODevice::WriteOnly:
         setvalid(!m_tune.isEmpty());
@@ -135,8 +139,8 @@ void CMOpenMTPAudioSource::close()
 }
 
 bool CMOpenMTPAudioSource::reset()
-{   
-   // ModPlug_Seek(m_modplug, 0);
+{      
+    mod->set_position_seconds(0.0);
     m_track_pos=0;
     setPosition(m_track_pos);
 

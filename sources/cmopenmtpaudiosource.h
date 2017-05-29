@@ -37,6 +37,10 @@ private:
     qint32 m_pattern;
     qint32 m_row;
     qint32 m_pchannels;
+
+    // CMBaseAudioSource interface
+public slots:
+    void setTrack(quint16 track);
 };
 
 #endif // CMOPENMTPAUDIOSOURCE_H

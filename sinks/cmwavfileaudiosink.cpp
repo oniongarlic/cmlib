@@ -5,8 +5,8 @@
 CMWavFileAudioSink::CMWavFileAudioSink(QObject *parent)
     : CMFileAudioSink(parent)
 {
-    sample_rate=44100;
-    channels=2;
+    sample_rate=m_rate;
+    channels=m_channels;
     bps=2;
     byte_rate = sample_rate*channels*bps;
 }

@@ -6,6 +6,8 @@ CMBaseAudioSink::CMBaseAudioSink(QObject *parent)
     : QObject(parent)
     , m_state(QAudio::StoppedState)
     , m_valid(true)
+    , m_channels(2)
+    , m_rate(44100)
 {
 
 }

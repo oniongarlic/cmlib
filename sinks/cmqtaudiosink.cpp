@@ -7,7 +7,6 @@
 
 #include "cmqtaudiosink.h"
 
-const int DataFrequencyHz = 44100;
 const int BufferSize      = 65535;
 
 CMQtAudioSink::CMQtAudioSink(QObject *parent)
@@ -22,13 +21,12 @@ CMQtAudioSink::CMQtAudioSink(QObject *parent)
 
 void CMQtAudioSink::initializeAudio()
 {
-
 #if QT_VERSION < 0x050000
-    m_format.setFrequency(DataFrequencyHz);
-    m_format.setChannels(2);
+    m_format.setFrequency(m_rate);
+    m_format.setChannels(m_channels);
 #else
-    m_format.setSampleRate(DataFrequencyHz);
-    m_format.setChannelCount(2);
+    m_format.setSampleRate(m_rate);
+    m_format.setChannelCount(m_channels);
 #endif
     m_format.setSampleSize(16);
     m_format.setCodec("audio/pcm");

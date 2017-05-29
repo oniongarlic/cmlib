@@ -27,6 +27,16 @@ QAudio::State CMBaseAudioSink::state() const
     return m_state;
 }
 
+uint CMBaseAudioSink::channels() const
+{
+    return m_channels;
+}
+
+uint CMBaseAudioSink::rate() const
+{
+    return m_rate;
+}
+
 void CMBaseAudioSink::setState(QAudio::State state)
 {
     qDebug() << "CMBaseAudioSink::state = " << state;

@@ -3,7 +3,8 @@ QT += gui sql
 # DEFINES += FLAC_DECODER
 # DEFINES += SAP_DECODER
 DEFINES += SID_DECODER
-DEFINES += MOD_DECODER
+# DEFINES += MOD_DECODER
+DEFINES += MTP_DECODER
 DEFINES += AY_DECODER
 
 ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
@@ -52,6 +53,7 @@ unix:!qnx:!android {
     PKGCONFIG += libmodplug
     PKGCONFIG += libsidplayfp
     PKGCONFIG += sc68
+    PKGCONFIG += libopenmpt
 
     LIBS+= -lasap
     DEFINES += ALSAAUDIO
@@ -119,6 +121,13 @@ contains(DEFINES,FLAC_DECODER) {
 contains(DEFINES,MOD_DECODER) {
     HEADERS += sources/cmmodplugaudiosource.h
     SOURCES += sources/cmmodplugaudiosource.cpp
+}
+
+# OpenMTP
+contains(DEFINES,MTP_DECODER) {
+    HEADERS += sources/cmopenmtpaudiosource.h
+    SOURCES += sources/cmopenmtpaudiosource.cpp
+    # LIBS += -lopenmtp
 }
 
 # SID

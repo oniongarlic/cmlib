@@ -62,10 +62,15 @@ bool CMOpenMTPAudioSource::open(QIODevice::OpenMode mode)
     case QIODevice::ReadOnly:
         if (m_tune.isEmpty())
             return false;
-        mod=new openmpt::module((const char *)m_tune.data(), (std::size_t)m_tune.size());
+        try {
+            mod=new openmpt::module((const char *)m_tune.data(), (std::size_t)m_tune.size());
+        } catch ( const std::exception & e ) {
+            qWarning() << "openmtp exception" << e.what();
+            mod=NULL;
+        }
         if (mod) {
             QIODevice::open(mode);
-            r=true;            
+            r=true;
             setTracks(mod->get_num_subsongs());
             setTrack(1);
             m_meta.clear();

@@ -1,11 +1,5 @@
 QT += gui sql
 
-# DEFINES += FLAC_DECODER
-# DEFINES += SAP_DECODER
-DEFINES += SID_DECODER
-DEFINES += MOD_DECODER
-DEFINES += AY_DECODER
-
 ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
 
 lessThan(QT_MAJOR_VERSION, 5): {
@@ -20,9 +14,9 @@ QT += multimedia
 
 INCLUDEPATH += sources sinks player decoders
 
-OTHER_FILES += test/*.qml
+OTHER_FILES += test/*.qml test/qtquick1/*.qml test/qtquick2/*.qml
 
-SOURCES += test/main.cpp \
+SOURCES += \
     sources/cmbaseaudiosource.cpp \
     scanner/cmmediascanner.cpp \
     decoders/cmmediadecoder.cpp \
@@ -42,20 +36,53 @@ HEADERS += \
     sinks/cmfileaudiosink.h \
     sinks/cmwavfileaudiosink.h \
     sinks/cmbasethreadedaudiosink.h \
-    sinks/cmplaybackthread_p.h \    
+    sinks/cmplaybackthread_p.h \
     scanner/cmlibrarymodel.h
 
+SOURCES += test/main.cpp
+
 unix:!qnx:!android {
-    CONFIG +=link_pkgconfig
+    CONFIG +=link_pkgconfig       
 
+packagesExist(flac++) {
+    DEFINES += FLAC_DECODER
     PKGCONFIG += flac++
-    PKGCONFIG += libmodplug
-    PKGCONFIG += libsidplayfp
-    PKGCONFIG += sc68
+}
 
-    LIBS+= -lasap
+packagesExist(sc68) {
+    DEFINES += SC68_DECODER
+    PKGCONFIG += sc68
+}
+
+packagesExist(libsidplayfp) {
+    DEFINES += SID_DECODER
+    PKGCONFIG += libsidplayfp
+}
+
+
+lessThan(QT_MAJOR_VERSION, 5): {
+packagesExist(libmodplug) {
+    DEFINES += MOD_DECODER
+    PKGCONFIG += libmodplug
+}
+} else {
+packagesExist(libopenmpt) {
+    DEFINES += MTP_DECODER
+    PKGCONFIG += libopenmpt
+    CONFIG += c++11
+}
+}
+    DEFINES += AY_DECODER
+
     DEFINES += ALSAAUDIO
     # DEFINES += QTAUDIO
+} else {
+    # DEFINES += FLAC_DECODER
+    # DEFINES += SAP_DECODER
+    DEFINES += SID_DECODER
+    # DEFINES += MOD_DECODER
+    DEFINES += MTP_DECODER
+    DEFINES += AY_DECODER
 }
 
 qnx:blackberry {
@@ -121,6 +148,13 @@ contains(DEFINES,MOD_DECODER) {
     SOURCES += sources/cmmodplugaudiosource.cpp
 }
 
+# OpenMTP
+contains(DEFINES,MTP_DECODER) {
+    HEADERS += sources/cmopenmtpaudiosource.h
+    SOURCES += sources/cmopenmtpaudiosource.cpp
+    # LIBS += -lopenmtp
+}
+
 # SID
 contains(DEFINES,SID_DECODER) {
     HEADERS += sources/cmsidaudiosource.h
@@ -137,13 +171,14 @@ contains(DEFINES,SC68_DECODER) {
 contains(DEFINES,SAP_DECODER) {
     HEADERS += sources/cmsapaudiosource.h
     SOURCES += sources/cmsapaudiosource.cpp
+    LIBS+= -lasap
 }
 
 # AYEMU
 contains(DEFINES,AY_DECODER) {
     HEADERS += sources/cmayaudiosource.h
     SOURCES += sources/cmayaudiosource.cpp
-    LIBS += -layemu
+    LIBS += -L/usr/local/lib -layemu
 }
 
 

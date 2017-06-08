@@ -1,5 +1,4 @@
-import QtQuick 2.8
-import QtQuick.Layouts 1.1
+import QtQuick 1.1
 import org.tal.cm 1.0
 
 Item {
@@ -42,6 +41,7 @@ Item {
 
     CMAudioSink {
         id: audioSink
+        rate: 48000;
     }
 
     CMWavFileAudioSink {
@@ -49,7 +49,7 @@ Item {
         file: "audio-qml.wav"
     }
 
-    RowLayout {
+    Row {
         id: control
         width: parent.width
         anchors.top: parent.top
@@ -99,7 +99,7 @@ Item {
         }
         Button {
             title: "Next"
-            enabled: player.tracks>1
+            enabled: player.tracks>1 && player.track<player.tracks
             onClicked: {
                 player.nextTrack();
             }
@@ -121,7 +121,7 @@ Item {
 
     }
 
-    ColumnLayout {
+    Column {
         width: parent.width
         anchors.top: control.bottom
         anchors.bottom: parent.bottom

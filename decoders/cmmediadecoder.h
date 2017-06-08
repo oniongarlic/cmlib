@@ -4,8 +4,18 @@
 #include <QObject>
 
 #include "cmbaseaudiosource.h"
+
+#ifdef SID_DECODER
 #include "cmsidaudiosource.h"
+#endif
+
+#ifdef MOD_DECODER
 #include "cmmodplugaudiosource.h"
+#endif
+
+#ifdef MTP_DECODER
+#include "cmopenmtpaudiosource.h"
+#endif
 
 #ifdef SAP_DECODER
 #include "cmsapaudiosource.h"

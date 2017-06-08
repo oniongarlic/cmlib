@@ -58,8 +58,8 @@ bool CMQSAAudioSink::prepareAudio() {
     int err;
 
     pp.format.interleave = 1;
-    pp.format.rate = 44100;
-    pp.format.voices = 2;
+    pp.format.rate = m_rate;
+    pp.format.voices = m_channels;
     pp.format.format = SND_PCM_SFMT_S16_LE;
 
     if ((err = snd_pcm_plugin_params (handle, &pp)) < 0)

@@ -1,8 +1,9 @@
 <RCC>
     <qresource prefix="/">
+        <file>qtquick1-main.qml</file>
         <file>qtquick2-main.qml</file>
-        <file>main.qml</file>
-        <file>Button.qml</file>
-        <file>MediaList.qml</file>
+        <file>qtquick1/Button.qml</file>
+        <file>qtquick1/Player.qml</file>
+        <file>qtquick2/Player.qml</file>
     </qresource>
 </RCC>

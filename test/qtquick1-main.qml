@@ -1,5 +1,6 @@
-import QtQuick 2.6
+import QtQuick 1.1
 import org.tal.cm 1.0
+import "qtquick1"
 
 Rectangle {
     id: root

@@ -10,6 +10,9 @@ CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 #ifdef MOD_DECODER
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMModPlugAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMModPlugAudioSource(this))));
 #endif
+#ifdef MTP_DECODER
+    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMOpenMTPAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMOpenMTPAudioSource(this))));
+#endif
 #ifdef SID_DECODER
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSidAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSidAudioSource(this))));
 #endif
@@ -65,6 +68,9 @@ QStringList CMMediaDecoder::getSupportedExtensions()
 #else
 #ifdef MOD_DECODER
     e << CMModPlugAudioSource::extensions();
+#endif
+#ifdef MTP_DECODER
+    e << CMOpenMTPAudioSource::extensions();
 #endif
 #ifdef SID_DECODER
     e << CMSidAudioSource::extensions();

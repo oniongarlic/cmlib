@@ -60,7 +60,11 @@ void myMessageOutput(QtMsgType type, const char* msg)
 
 int main(int argc, char **argv)
 {
+#if QT_VERSION >= 0x050000
     QGuiApplication app(argc, argv);
+#else
+     QApplication app(argc, argv);
+#endif
     QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
@@ -88,7 +92,7 @@ int main(int argc, char **argv)
     qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
 
     qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "MediaLibraryModel", "C++ only");
-    qRegisterMetaType<CMLibraryModel *>();
+    //qRegisterMetaType<CMLibraryModel *>();
 
     scanner.initialize("mediadatabase.db");
     scanner.setFilters(mdec.getSupportedExtensions());    
@@ -122,9 +126,9 @@ int main(int argc, char **argv)
     context->setContextProperty("_files", &model);
     //context->setContextProperty("_scanner", &scanner);
 #if defined(Q_OS_BLACKBERRY)
-    viewer.setSource(QUrl::fromLocalFile("qrc:/main.qml"));
+    viewer.setSource(QUrl::fromLocalFile("qrc:/qtquick1-main.qml"));
 #else
-    viewer.setSource(QUrl::fromLocalFile("qrc:/main.qml"));
+    viewer.setSource(QUrl(QString("qrc:/qtquick1-main.qml")));
 #endif
 #if defined(Q_OS_QNX)
     viewer.showFullScreen();

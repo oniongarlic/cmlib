@@ -16,7 +16,7 @@ CMAlsaAudioSink::CMAlsaAudioSink(QObject *parent)
         goto init_error;
     }
 
-    if ((err = snd_pcm_set_params(handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, 2, 44100, 1, 100000)) < 0) {
+    if ((err = snd_pcm_set_params(handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, m_channels, m_rate, 1, 100000)) < 0) {
         qDebug() << "Set params error: " << snd_strerror(err);
         goto init_error;
     }

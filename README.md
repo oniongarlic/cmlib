@@ -12,7 +12,8 @@ Audio sources are QIODevice based so they can be read and written to like any Qt
 Currently implemented are:
 
 * libsidplayfp for SID files
-* libmodplug for Tracker modules
+* libopenmtp for Tracker modules (Prefered!)
+* (libmodplug for Tracker modules (Optional, deprecated))
 * libasap for SAP files
 * sc68 for Atari and Amiga SC68 and sndh files
 * FLAC

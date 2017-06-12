@@ -58,9 +58,10 @@ bool CMMediaScanner::initialize(QString db)
     m_db_ok=m_db.open();
     if (!m_db_ok) {
         qWarning("Failed to open database");
-    } else {
-        createTable("mediafiles");
+        return false;
     }
+
+    createTable("mediafiles");
 
     return m_db_ok;
 }

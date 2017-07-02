@@ -135,4 +135,6 @@ bool CMAYAudioSource::reset()
 {
     m_aypos=0;
     ayemu_reset(&m_ay);
+
+    return true;
 }

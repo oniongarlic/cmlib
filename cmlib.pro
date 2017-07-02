@@ -59,7 +59,6 @@ packagesExist(libsidplayfp) {
     PKGCONFIG += libsidplayfp
 }
 
-
 lessThan(QT_MAJOR_VERSION, 5): {
 packagesExist(libmodplug) {
     DEFINES += MOD_DECODER
@@ -87,11 +86,6 @@ packagesExist(libopenmpt) {
 
 qnx:blackberry {
     DEFINES += QNXAUDIO
-
-    HEADERS += sinks/cmqsaaudiosink.h
-    SOURCES += sinks/cmqsaaudiosink.cpp
-
-    LIBS += -lasound -laudio_manager
 
     LIBS += -L3rdparty/qnx-armv7/lib
     LIBS += -lsidplayfp
@@ -132,10 +126,18 @@ contains(DEFINES,ALSAAUDIO) {
     LIBS+=-lasound
 }
 
+# QNX
+contains(DEFINES,QNXAUDIO) {
+    HEADERS += sinks/cmqsaaudiosink.h
+    SOURCES += sinks/cmqsaaudiosink.cpp
+    LIBS += -lasound -laudio_manager
+}
+
 #######################################################################
 # Sources
 
 # FLAC
+# https://xiph.org/flac/
 contains(DEFINES,FLAC_DECODER) {
     HEADERS += sources/cmflacaudiosource.h
     SOURCES += sources/cmflacaudiosource.cpp
@@ -143,12 +145,14 @@ contains(DEFINES,FLAC_DECODER) {
 }
 
 # Modplug
+# https://github.com/Konstanty/libmodplug
 contains(DEFINES,MOD_DECODER) {
     HEADERS += sources/cmmodplugaudiosource.h
     SOURCES += sources/cmmodplugaudiosource.cpp
 }
 
 # OpenMTP
+# https://lib.openmpt.org/libopenmpt/
 contains(DEFINES,MTP_DECODER) {
     HEADERS += sources/cmopenmtpaudiosource.h
     SOURCES += sources/cmopenmtpaudiosource.cpp
@@ -156,18 +160,21 @@ contains(DEFINES,MTP_DECODER) {
 }
 
 # SID
+# https://sourceforge.net/p/sidplay-residfp/wiki/Home/
 contains(DEFINES,SID_DECODER) {
     HEADERS += sources/cmsidaudiosource.h
     SOURCES += sources/cmsidaudiosource.cpp
 }
 
 # SC68
+# https://sourceforge.net/projects/sc68/
 contains(DEFINES,SC68_DECODER) {
     HEADERS += sources/cmsc68audiosource.h
     SOURCES += sources/cmsc68audiosource.cpp
 }
 
 # ASAP
+# http://asap.sourceforge.net/
 contains(DEFINES,SAP_DECODER) {
     HEADERS += sources/cmsapaudiosource.h
     SOURCES += sources/cmsapaudiosource.cpp
@@ -175,12 +182,14 @@ contains(DEFINES,SAP_DECODER) {
 }
 
 # AYEMU
+# https://github.com/asashnov/libayemu
 contains(DEFINES,AY_DECODER) {
     HEADERS += sources/cmayaudiosource.h
     SOURCES += sources/cmayaudiosource.cpp
     LIBS += -L/usr/local/lib -layemu
 }
 
+#######################################################################
 
 DISTFILES += \
     test/*.qml \

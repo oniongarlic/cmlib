@@ -7,6 +7,10 @@ CMLibraryModel::CMLibraryModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     m_data=&m_dummy;
+
+#if QT_VERSION < 0x050000
+    setRoleNames(roleNames());
+#endif
 }
 
 int CMLibraryModel::rowCount(const QModelIndex &parent) const
@@ -29,8 +33,6 @@ QVariant CMLibraryModel::data(const QModelIndex &index, int role) const
 
     const QString f=m_data->value(index.row());
     QFileInfo fi(f);
-
-    //qDebug() << index.row() << f << role;
 
     switch (role) {
     case CMLibraryModel::FileRole:

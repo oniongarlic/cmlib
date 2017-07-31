@@ -66,6 +66,20 @@ bool CMMediaScanner::initialize(QString db)
     return m_db_ok;
 }
 
+uint CMMediaScanner::count()
+{
+    QSqlQuery q(m_db);
+    uint c=0;
+
+    if (!q.exec("SELECT COUNT(*) FROM mediafiles")) {
+        qWarning("Media count query failed");
+        return -1;
+    }
+    c=q.value(0).toUInt();
+
+    return c;
+}
+
 void CMMediaScanner::addFilter(const QString &filter)
 {
     m_filter << filter;

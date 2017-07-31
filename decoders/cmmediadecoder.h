@@ -33,6 +33,10 @@
 #include "cmflacaudiosource.h"
 #endif
 
+#ifdef OPUS_DECODER
+#include "cmopusaudiosource.h"
+#endif
+
 class CMMediaDecoder : public QObject
 {
     Q_OBJECT

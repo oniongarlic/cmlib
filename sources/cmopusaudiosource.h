@@ -19,18 +19,16 @@ public:
 
     static QStringList extensions();
 
-    // CMBaseAudioSource interface
+    bool open(OpenMode mode);
+    void close();
+    bool reset();
+
 protected:
     qint64 generateData(qint64 maxlen);
 
-    // QIODevice interface
-public:
-    bool open(OpenMode mode);
-    void close();
-
 private:
     OggOpusFile *m_opus;
-    float m_track_pos;
+    float m_track_pos;    
 };
 
 #endif // CMOPUSAUDIOSOURCE_H

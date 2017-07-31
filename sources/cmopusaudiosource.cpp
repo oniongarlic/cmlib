@@ -1,16 +1,18 @@
 #include "cmopusaudiosource.h"
 
 CMOpusAudioSource::CMOpusAudioSource(QObject *parent)
-    : CMBaseAudioSource(parent)
+    : CMBaseAudioSource(parent),
+      m_opus(NULL),
+      m_track_pos(0)
 {
 
 }
 
 CMOpusAudioSource::~CMOpusAudioSource()
-{
-    m_data.clear();
+{    
     if (m_opus)
         op_free(m_opus);
+    m_data.clear();
 }
 
 QStringList CMOpusAudioSource::extensions()
@@ -27,8 +29,9 @@ qint64 CMOpusAudioSource::generateData(qint64 maxlen)
     int r;
 
     r=op_read_stereo(m_opus, (opus_int16 *)m_buffer.data(), maxlen);
+
     if (r>=0) {
-        float tmp=((float)r*2/(float)(48000*2.0*2.0))*(float)1000.0;
+        float tmp=((float)r*4/(float)(48000*2.0*2.0))*(float)1000.0;
         m_track_pos+=tmp;
         setPosition(m_track_pos);
         return r*4;
@@ -46,7 +49,7 @@ bool CMOpusAudioSource::open(QIODevice::OpenMode mode)
 
     switch (mode) {
     case QIODevice::ReadOnly:
-        if (m_data.isEmpty()) {
+        if (m_data.isEmpty() || m_data.size()<512) {
             qWarning("Opus: No media loaded");
             return false;
         }
@@ -54,6 +57,7 @@ bool CMOpusAudioSource::open(QIODevice::OpenMode mode)
         m_buffer.fill(0);
         m_buffer_length=0;
         m_track_pos=0.0;
+        setPosition(m_track_pos);
 
         m_opus=op_open_memory((const unsigned char *)m_data.constData(), m_data.size(), &op);
 
@@ -97,4 +101,14 @@ void CMOpusAudioSource::close()
     }
 
     QIODevice::close();
+}
+
+bool CMOpusAudioSource::reset()
+{
+    if (op_seekable(m_opus)) {
+        op_raw_seek(m_opus, 0);
+        setPosition(0);
+        return true;
+    }
+    return false;
 }

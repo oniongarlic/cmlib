@@ -10,7 +10,7 @@ class CMBaseAudioSink : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QAudio::State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(uint rate READ rate NOTIFY rateChanged)
+    Q_PROPERTY(uint rate READ rate WRITE setRate NOTIFY rateChanged)
     Q_PROPERTY(uint channels READ channels NOTIFY channelsChanged)
 public:
     explicit CMBaseAudioSink(QObject *parent = 0);
@@ -36,6 +36,7 @@ signals:
     void position(qint64 pos);
 
 public slots:
+    void setRate(uint rate);
 
 protected:
     void setState(QAudio::State state);

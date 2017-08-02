@@ -7,7 +7,7 @@ CMBaseAudioSink::CMBaseAudioSink(QObject *parent)
     , m_state(QAudio::StoppedState)
     , m_valid(true)
     , m_channels(2)
-    , m_rate(44100)
+    , m_rate(48000)
 {
 
 }
@@ -35,6 +35,18 @@ uint CMBaseAudioSink::channels() const
 uint CMBaseAudioSink::rate() const
 {
     return m_rate;
+}
+
+void CMBaseAudioSink::setRate(uint rate)
+{
+    if (m_rate == rate)
+        return;
+
+    m_rate = rate;
+
+    qDebug() << "NewRate" << rate;
+
+    emit rateChanged(m_rate);
 }
 
 void CMBaseAudioSink::setState(QAudio::State state)

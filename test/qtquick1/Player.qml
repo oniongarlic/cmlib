@@ -84,7 +84,7 @@ Item {
             }
         }
         Button {
-            title: "Next Next"
+            title: "Next Song"
             onClicked: {
                 player.prepareNewSong();
                 files.incrementCurrentIndex();
@@ -117,8 +117,6 @@ Item {
                 player.setAudioSink(audioSink)
             }
         }
-
-
     }
 
     Column {
@@ -169,6 +167,7 @@ Item {
                         Row {
                             id: r
                             anchors.margins: 16;
+                            width: parent.width
                             Text {
                                 id: txt
                                 text: model.filename;

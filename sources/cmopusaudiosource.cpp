@@ -37,15 +37,19 @@ qint64 CMOpusAudioSource::generateData(qint64 maxlen)
         return r*4;
     }
 
+    if (r==OP_HOLE)
+        return 0;
+
     qWarning() << "Opus: Read error " << r;
 
-    return 0;
+    return -1;
 }
 
 bool CMOpusAudioSource::open(QIODevice::OpenMode mode)
 {
     bool r=false;
     int op;
+    const OpusTags *tags;
 
     switch (mode) {
     case QIODevice::ReadOnly:
@@ -68,6 +72,35 @@ bool CMOpusAudioSource::open(QIODevice::OpenMode mode)
             QIODevice::open(mode);
             r=true;
         }
+
+        setTracks(1);
+
+        m_link=op_current_link(m_opus);
+
+        qDebug() << m_link;
+
+        m_meta.clear();
+        tags=op_tags(m_opus, m_link);
+        if (tags && tags->comments>0) {            
+
+            m_meta.insert("vendor", tags->vendor);
+
+            for(uint i=0; i<tags->comments; i++){
+                QString tmp(tags->user_comments[i]);
+                int sep=tmp.indexOf('=');
+
+                m_meta.insert(tmp.mid(0, sep).toLower(), tmp.mid(sep+1));
+            }
+        }
+
+        m_meta.insert("links", op_link_count(m_opus));
+        m_meta.insert("channels", op_channel_count(m_opus, m_link));
+        m_meta.insert("serialno", op_serialno(m_opus, m_link));
+
+        m_bitrate=op_bitrate(m_opus, m_link);
+        m_meta.insert("bitrate", m_bitrate);
+
+        emit metaChanged(m_meta);
 
         break;
     case QIODevice::WriteOnly:

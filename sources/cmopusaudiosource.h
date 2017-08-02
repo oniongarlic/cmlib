@@ -28,6 +28,8 @@ protected:
 
 private:
     OggOpusFile *m_opus;
+    int m_link;
+    qint32 m_bitrate;
     float m_track_pos;    
 };
 

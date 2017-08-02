@@ -45,6 +45,11 @@ private:
     int m_sample_rate;
     quint64 m_total_samples;
     QBuffer m_read_buffer;
+    bool m_eot;
+
+    // Stream interface
+protected:
+    bool eof_callback();
 };
 
 #endif // CMFLACAUDIOSOURCE_H

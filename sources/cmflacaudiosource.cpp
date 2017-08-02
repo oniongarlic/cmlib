@@ -126,6 +126,8 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
             QIODevice::open(mode);
             m_pos=0;
 
+            setTracks(1);
+
             m_meta.clear();
             m_meta.insert("channels", m_channels);
             m_meta.insert("rate", m_sample_rate);

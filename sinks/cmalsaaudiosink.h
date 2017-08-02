@@ -21,6 +21,7 @@ protected:
     int write(const QByteArray &buffer);
     void prepare();
     void drain();
+    int init();
 };
 
 #endif // CMALSAAUDIOSINK_H

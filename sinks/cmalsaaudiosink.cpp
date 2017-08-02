@@ -6,7 +6,7 @@
 
 CMAlsaAudioSink::CMAlsaAudioSink(QObject *parent)
     : CMBaseThreadedAudioSink(parent)
-    , handle(0)
+    , handle(0)    
 {
     int err;
 
@@ -14,12 +14,12 @@ CMAlsaAudioSink::CMAlsaAudioSink(QObject *parent)
     if (err<0) {
         qDebug() << "PCM open error: " << snd_strerror(err);
         goto init_error;
-    }
+    }    
 
-    if ((err = snd_pcm_set_params(handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, m_channels, m_rate, 1, 100000)) < 0) {
-        qDebug() << "Set params error: " << snd_strerror(err);
-        goto init_error;
-    }
+    qDebug() << "alsasink" << m_channels << m_rate;
+
+    if (!init())
+        goto init_error;    
 
     return;
 
@@ -33,6 +33,17 @@ CMAlsaAudioSink::~CMAlsaAudioSink()
         snd_pcm_drain(handle);
         snd_pcm_close(handle);
     }
+}
+
+int CMAlsaAudioSink::init()
+{
+    int err;
+
+    if ((err = snd_pcm_set_params(handle, SND_PCM_FORMAT_S16_LE, SND_PCM_ACCESS_RW_INTERLEAVED, m_channels, m_rate, 1, 100000)) < 0) {
+        qDebug() << "Set params error: " << snd_strerror(err);
+        return false;
+    }
+    return true;
 }
 
 int CMAlsaAudioSink::write(const QByteArray &buffer)

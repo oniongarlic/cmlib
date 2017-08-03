@@ -37,9 +37,9 @@ ApplicationWindow {
             console.debug("EOT!")
             player.stop();
 
-            if (files.count>0) {
+            if (mediaList.count>0) {
                 player.prepareNewSong();
-                files.incrementCurrentIndex();
+                mediaList.incrementCurrentIndex();
             }
         }
         onTracksChanged: console.debug(tracks)
@@ -59,6 +59,7 @@ ApplicationWindow {
         id: mediaList
         anchors.fill: parent
         onFileSelected: {
+            player.prepareNewSong();
             if (player.load(file)) {
                 player.prepare();
                 if (player.wasPlaying)
@@ -125,14 +126,14 @@ ApplicationWindow {
                 text: "Prev Song"
                 onClicked: {
                     player.prepareNewSong();
-                    files.decrementCurrentIndex();
+                    mediaList.decrementCurrentIndex();
                 }
             }
             ToolButton {
                 text: "Next Song"
                 onClicked: {
                     player.prepareNewSong();
-                    files.incrementCurrentIndex();
+                    mediaList.incrementCurrentIndex();
                 }
             }
             ToolButton {

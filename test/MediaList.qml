@@ -11,6 +11,7 @@ ListView {
     clip: true;
     model: _files
     currentIndex: -1
+    headerPositioning: ListView.PullBackHeader
 
     //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
@@ -19,12 +20,36 @@ ListView {
     onCurrentIndexChanged: {
         var data=model.get(currentIndex)
         console.debug(data)
+        fileSelected(data.file)
+    }
+
+    property int titleWidth;
+
+    header: Component {
+        id: headerComponent
+        RowLayout {
+            width: parent.width
+            spacing: 8
+            Text {
+                id: headerTitle
+                text: "Song title"
+                font.pixelSize: 28
+                Layout.fillWidth: true
+                Component.onCompleted: titleWidth=width;
+            }
+            Text {
+                id: headerType
+                text: "Type"
+                font.pixelSize: 28
+                Layout.fillWidth: false;
+            }
+        }
     }
 
     Component {
         id: highlightDelegate
         Rectangle {
-            color: "green"
+            color: "#70d370"
             width: parent.width
             height: 20
         }
@@ -33,7 +58,6 @@ ListView {
     Component {
         id: fileDelegate
         Item {
-            //color: files.currentIndex==inputs.currentInput ? "#e5e5e5" : "#ffffff";
             width: parent.width;
             height: r.height;
             MouseArea {
@@ -45,17 +69,17 @@ ListView {
                         id: txt
                         text: model.filename;
                         font.pixelSize: 24
+                        Layout.preferredWidth: titleWidth
                     }
                     Text {
                         id: type
                         text: model.type
-                        color: "red"
+                        font.pixelSize: 22
                     }
                 }
                 onClicked: {
                     console.debug("File: "+model.file);
                     files.currentIndex=index
-                    fileSelected(model.file)
                 }
             }
         }

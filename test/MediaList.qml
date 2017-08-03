@@ -17,8 +17,8 @@ ListView {
     signal fileSelected(string file)
 
     onCurrentIndexChanged: {
-        //var data=model.get(currentIndex)
-        //console.debug(data)
+        var data=model.get(currentIndex)
+        console.debug(data)
     }
 
     Component {
@@ -38,7 +38,7 @@ ListView {
             height: r.height;
             MouseArea {
                 anchors.fill: parent;
-                Row {
+                RowLayout {
                     id: r
                     anchors.margins: 16;
                     Text {

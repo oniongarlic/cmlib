@@ -49,6 +49,11 @@ packagesExist(flac++) {
     PKGCONFIG += flac++
 }
 
+packagesExist(opusfile) {
+    DEFINES += OPUS_DECODER
+    PKGCONFIG += opusfile
+}
+
 packagesExist(sc68) {
     DEFINES += SC68_DECODER
     PKGCONFIG += sc68
@@ -187,6 +192,13 @@ contains(DEFINES,AY_DECODER) {
     HEADERS += sources/cmayaudiosource.h
     SOURCES += sources/cmayaudiosource.cpp
     LIBS += -L/usr/local/lib -layemu
+}
+
+# Opus
+#
+contains(DEFINES,OPUS_DECODER) {
+    HEADERS += sources/cmopusaudiosource.h
+    SOURCES += sources/cmopusaudiosource.cpp
 }
 
 #######################################################################

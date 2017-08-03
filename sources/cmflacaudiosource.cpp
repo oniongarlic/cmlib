@@ -12,6 +12,7 @@ CMFlacAudioSource::CMFlacAudioSource(QObject *parent)
     : CMBaseAudioSource(parent)
 {
     init();
+    set_metadata_respond(FLAC__METADATA_TYPE_VORBIS_COMMENT);
 }
 
 CMFlacAudioSource::~CMFlacAudioSource()
@@ -21,10 +22,18 @@ CMFlacAudioSource::~CMFlacAudioSource()
 
 FLAC__StreamDecoderReadStatus CMFlacAudioSource::read_callback(FLAC__byte buffer[], size_t *bytes)
 {    
+    qint64 r;
+
     if (m_read_buffer.atEnd())
         return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
 
-    m_read_buffer.read((char *)buffer, *bytes);
+    r=m_read_buffer.read((char *)buffer, *bytes);
+
+    if (m_read_buffer.atEnd())
+        m_eot=true;
+
+    if (r<=0)
+        return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
 
     return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
 }
@@ -89,13 +98,20 @@ qint64 CMFlacAudioSource::generateData(qint64 maxlen)
             qWarning("Failed to process FLAC data");
     }
 #else
-    bool r=process_single();
+    bool r=process_single();    
+    // XXX: For some reason process_single return true even if we are eof so work around it
+    if (!r || m_eot) {
+        qDebug() << "FLAC: EOT";      
+        emit eot();
+    }
 #endif
 
     if (m_buffer_length>0) {
         float tmp=((float)m_buffer_length/(float)(m_rate*2.0*2.0))*(float)1000.0;
         m_track_pos+=tmp;
         setPosition(m_track_pos);
+    } else {
+
     }
 
     return m_buffer_length;
@@ -115,6 +131,7 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
         m_buffer.fill(0);
         m_buffer_length=0;
         m_track_pos=0;
+        m_eot=false;
 
         m_read_buffer.setData(m_data);
         m_read_buffer.open(QIODevice::ReadOnly);
@@ -125,6 +142,12 @@ bool CMFlacAudioSource::open(QIODevice::OpenMode mode)
             setvalid(true);
             QIODevice::open(mode);
             m_pos=0;
+
+            setTracks(1);
+
+            m_length=((float)get_total_samples()/(float)(m_rate*2.0*2.0))*(float)1000.0;
+
+            qDebug() << m_length;
 
             m_meta.clear();
             m_meta.insert("channels", m_channels);
@@ -172,21 +195,35 @@ void CMFlacAudioSource::close()
 
 bool CMFlacAudioSource::reset()
 {
+    m_eot=false;
+    m_track_pos=0;
+    setPosition(m_track_pos);
     FLAC::Decoder::Stream::reset();
     return m_read_buffer.seek(0);
 }
 
 void CMFlacAudioSource::metadata_callback(const FLAC__StreamMetadata *metadata)
-{
-    qDebug() << "FLAC: Meta CB " << metadata->type;
-    if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO) {
+{    
+    switch (metadata->type) {
+    case FLAC__METADATA_TYPE_STREAMINFO:
         m_total_samples = metadata->data.stream_info.total_samples;
         m_sample_rate = metadata->data.stream_info.sample_rate;
         m_channels = metadata->data.stream_info.channels;
         m_bps = metadata->data.stream_info.bits_per_sample;
-
         qDebug() << m_total_samples << m_sample_rate << m_channels << m_bps;
+        break;
+    case FLAC__METADATA_TYPE_VORBIS_COMMENT:
+        qWarning() << "FLAC: Comments/Tags not yet handled";
+        qDebug() << metadata->data.vorbis_comment.num_comments;
+        break;
+    default:
+        qWarning() << "FLAC: Unhandled metadata type" << metadata->type;
     }
+}
+
+bool CMFlacAudioSource::eof_callback()
+{
+    return m_read_buffer.atEnd();
 }
 
 QStringList CMFlacAudioSource::extensions()

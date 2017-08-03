@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE bool scan(QStringList &list, bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
 
+    Q_INVOKABLE uint count();
 signals:
     void scanning(QString path);
     void scanningDone();

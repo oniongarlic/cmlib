@@ -28,6 +28,9 @@ CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 #ifdef FLAC_DECODER
     decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMFlacAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMFlacAudioSource(this))));
 #endif
+#ifdef OPUS_DECODER
+    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMOpusAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMOpusAudioSource(this))));
+#endif
 
     createDecoderRegExp();
     connectDecoderSignals();
@@ -86,6 +89,9 @@ QStringList CMMediaDecoder::getSupportedExtensions()
 #endif
 #ifdef FLAC_DECODER
     e << CMFlacAudioSource::extensions();
+#endif
+#ifdef OPUS_DECODER
+    e << CMOpusAudioSource::extensions();
 #endif
 #endif
     return e;

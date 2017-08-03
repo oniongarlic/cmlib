@@ -1,8 +1,10 @@
 import QtQuick 2.8
-import org.tal.cm 1.0
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.1
+
+import org.tal.cm 1.0
+
 import "qtquick2"
 
 ApplicationWindow {
@@ -16,14 +18,29 @@ ApplicationWindow {
         id: player
         Component.onCompleted: setAudioSink(audioSink)
 
+        property bool wasPlaying: false
+
+        function prepareNewSong() {
+            if (player.playing) {
+                console.debug("Stopping current playback")
+                player.stop();
+                player.wasPlaying=true;
+            } else {
+                player.wasPlaying=false;
+            }
+        }
+
         onMetadata: {
             console.debug(meta.title)
         }
         onEot: {
             console.debug("EOT!")
             player.stop();
-            //files.incrementCurrentIndex();
-            //player.play();
+
+            if (files.count>0) {
+                player.prepareNewSong();
+                files.incrementCurrentIndex();
+            }
         }
         onTracksChanged: console.debug(tracks)
         onTrackChanged: console.debug(track)
@@ -42,8 +59,11 @@ ApplicationWindow {
         id: mediaList
         anchors.fill: parent
         onFileSelected: {
-            if (player.load(file))
+            if (player.load(file)) {
                 player.prepare();
+                if (player.wasPlaying)
+                    player.play();
+            }
         }
     }
 
@@ -78,11 +98,10 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        RowLayout {
-            anchors.fill: parent
+        RowLayout {            
             ToolButton {
                 text: "Play"
-                enabled: !player.playing
+                enabled: !player.playing && player.tracks>0
                 onClicked: {
                     if (!player.play())
                         console.debug("Playback start failed")
@@ -103,6 +122,20 @@ ApplicationWindow {
                 }
             }
             ToolButton {
+                text: "Prev Song"
+                onClicked: {
+                    player.prepareNewSong();
+                    files.decrementCurrentIndex();
+                }
+            }
+            ToolButton {
+                text: "Next Song"
+                onClicked: {
+                    player.prepareNewSong();
+                    files.incrementCurrentIndex();
+                }
+            }
+            ToolButton {
                 text: "Prev"
                 enabled: player.track>1
                 onClicked: {
@@ -111,29 +144,35 @@ ApplicationWindow {
             }
             ToolButton {
                 text: "Next"
-                enabled: player.tracks>1
+                enabled: player.tracks>1 && player.track<player.tracks
                 onClicked: {
                     player.nextTrack();
+                }
+            }
+
+            ToolButton {
+                text: "WAV Sink"
+                onClicked: {
+                    player.setAudioSink(wavSink)
+                }
+            }
+            ToolButton {
+                text: "OutSink"
+                onClicked: {
+                    player.setAudioSink(audioSink)
                 }
             }
         }
     }
 
-    header: ToolBar {
-        RowLayout {
-
-        }
-    }
-
-    footer: ToolBar {
-        RowLayout {
-            Text {
-                id: posText
-                width: 80
-                height: parent.height
-                text: player.position/1000;
-                horizontalAlignment: Text.AlignHCenter
-            }
+    Drawer {
+        id: mainDrawer
+        height: root.height
+        width: root.width/1.5
+        dragMargin: rootStack.depth > 1 ? 0 : Qt.styleHints.startDragDistance
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 16
         }
     }
 }

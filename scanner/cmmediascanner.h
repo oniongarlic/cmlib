@@ -38,6 +38,7 @@ public:
 
 signals:
     void scanning(QString path);
+    void scannedPath(const QString path);
     void scanningDone();
 
 public slots:

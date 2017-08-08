@@ -8,7 +8,7 @@
 path text not null,\
 title text,\
 meta text,\
-type int not null,\
+type varchar,\
 rating int not null default -1,\
 primary key (path));"
 
@@ -194,7 +194,7 @@ bool CMMediaScanner::scan(bool fromStart)
     QDirIterator it(path, m_filter, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
 
     emit scanning(path);
-
+    m_db.transaction();
     while (it.hasNext()) {
         QString f;
         QFileInfo info;
@@ -207,6 +207,8 @@ bool CMMediaScanner::scan(bool fromStart)
             m_pathsleft.append(f);            
         }
     }
+    m_db.commit();
+    emit scannedPath(path);
 
     r=!m_pathsleft.isEmpty();
     if (r)

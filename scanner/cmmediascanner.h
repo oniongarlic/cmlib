@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE bool addPath(const QString &path);
     Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void clearPaths();
-    Q_INVOKABLE bool scan(QStringList &list, bool fromStart=false);
+    Q_INVOKABLE bool scan(bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
 
     Q_INVOKABLE bool addFile(const QString &file);
@@ -56,8 +56,7 @@ private:
     QTimer m_ticker;
     QStringList m_pathsleft;
     QStringList m_paths;
-    QStringList m_filter;    
-    QStringList m_filelist;
+    QStringList m_filter;
 };
 
 #endif // CMMEDIASCANNER_H

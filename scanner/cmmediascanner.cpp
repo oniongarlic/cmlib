@@ -136,7 +136,7 @@ bool CMMediaScanner::scanAsync()
     if (m_paths.isEmpty())
         return false;
 
-    if (scan(m_filelist, true))
+    if (scan(true))
         m_ticker.start();
 
     return true;
@@ -167,8 +167,10 @@ bool CMMediaScanner::addFile(const QString &file)
 
 void CMMediaScanner::scanLoop()
 {
-    if (scan(m_filelist, false))
+    if (scan(false))
         m_ticker.start();
+    else
+        m_model->refresh();
 }
 
 /**
@@ -178,7 +180,7 @@ void CMMediaScanner::scanLoop()
  * @param list
  * @return
  */
-bool CMMediaScanner::scan(QStringList &list, bool fromStart)
+bool CMMediaScanner::scan(bool fromStart)
 {
     bool r;
 
@@ -200,8 +202,7 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
         f=it.next();       
         info=it.fileInfo();
         if (info.isFile()) {
-            addFile(f);
-            list.append(f);
+            addFile(f);            
         } else if (info.isDir()) {
             m_pathsleft.append(f);            
         }

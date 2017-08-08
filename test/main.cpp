@@ -64,8 +64,7 @@ int main(int argc, char **argv)
     QGuiApplication app(argc, argv);
 #else
      QApplication app(argc, argv);
-#endif
-    QStringList fileList;
+#endif   
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
 
@@ -110,13 +109,10 @@ int main(int argc, char **argv)
 #endif
 
     if (scanner.count()==0) {
-        while (scanner.scan(fileList)) {
-        // XXX
-        }        
+        scanner.scanAsync();
     } else {
-
-    }
-    scanner.model()->refresh();
+        scanner.model()->refresh();
+    }    
     qDebug() << "Model count" << scanner.model()->count();
 
 #if QT_VERSION < 0x050000

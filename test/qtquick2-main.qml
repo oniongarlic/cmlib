@@ -36,9 +36,10 @@ ApplicationWindow {
         onEot: {
             console.debug("EOT!")
             player.stop();
-            if (files.count>0) {
+
+            if (mediaList.count>0) {
                 player.prepareNewSong();
-                files.incrementCurrentIndex();
+                mediaList.incrementCurrentIndex();
             }
         }
         onTracksChanged: console.debug(tracks)
@@ -47,7 +48,54 @@ ApplicationWindow {
 
     CMAudioSink {
         id: audioSink
-        // rate: 48000;
+    }
+
+    CMWavFileAudioSink {
+        id: wavSink
+        file: "audio-qml.wav"
+    }
+
+    MediaList {
+        id: mediaList
+        anchors.fill: parent
+        onFileSelected: {
+            player.prepareNewSong();
+            if (player.load(file)) {
+                player.prepare();
+                if (player.wasPlaying)
+                    player.play();
+            }
+        }
+    }
+
+    footer: ToolBar {
+        RowLayout {
+            anchors.fill: parent
+            Text {
+                text:player.position/1000;
+                horizontalAlignment: Text.AlignHCenter
+                Layout.minimumWidth: 100
+                Layout.maximumWidth: 200
+            }
+
+            Text {
+                text: player.track + " / " + player.tracks
+                Layout.fillWidth: true
+            }
+
+            ToolButton {
+                text: "WAV Sink"
+                onClicked: {
+                    player.setAudioSink(wavSink)
+                }
+            }
+            ToolButton {
+                text: "OutSink"
+                onClicked: {
+                    player.setAudioSink(audioSink)
+                }
+            }
+        }
     }
 
     Connections {
@@ -88,14 +136,14 @@ ApplicationWindow {
                 text: "Prev Song"
                 onClicked: {
                     player.prepareNewSong();
-                    files.decrementCurrentIndex();
+                    mediaList.decrementCurrentIndex();
                 }
             }
             ToolButton {
-                text: "Next Next"
+                text: "Next Song"
                 onClicked: {
                     player.prepareNewSong();
-                    files.incrementCurrentIndex();
+                    mediaList.incrementCurrentIndex();
                 }
             }
             ToolButton {
@@ -137,89 +185,6 @@ ApplicationWindow {
                 onClicked: {
                     player.setAudioSink(audioSink)
                 }
-            }
-        }
-    }
-
-    Item {
-        anchors.fill: parent
-        ColumnLayout {
-            anchors.fill: parent
-            ListView {
-                id: files
-                delegate: fileDelegate
-                highlight: highlightDelegate
-                highlightFollowsCurrentItem: true
-                highlightMoveDuration: 500
-                clip: true;
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                model: _files
-                currentIndex: -1
-
-                //flickableDirection: Flickable.HorizontalAndVerticalFlick
-
-                onCurrentIndexChanged: {
-                    var data=model.get(currentIndex)
-                    console.debug(data)
-                    if (player.load(data.file)) {
-                        player.prepare();
-                        if (player.wasPlaying)
-                            player.play();
-                    }
-                }
-
-                Component {
-                    id: highlightDelegate
-                    Rectangle {
-                        color: "green"
-                        width: parent.width
-                        height: 20
-                    }
-                }
-
-                Component {
-                    id: fileDelegate
-                    Item {
-                        //color: files.currentIndex==inputs.currentInput ? "#e5e5e5" : "#ffffff";
-                        width: parent.width;
-                        height: r.height;
-                        MouseArea {
-                            anchors.fill: parent;
-                            Row {
-                                id: r
-                                anchors.margins: 16;
-                                Text {
-                                    id: txt
-                                    text: model.title;
-                                    font.pixelSize: 24
-                                }
-                                Text {
-                                    id: type
-                                    text: model.type
-                                    color: "red"
-                                }
-                            }
-                            onClicked: {
-                                console.debug("File: "+model.file);
-                                player.prepareNewSong();
-                                files.currentIndex=index;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    footer: ToolBar {
-        RowLayout {
-            Text {
-                id: posText
-                width: 80
-                height: parent.height
-                text: player.position/1000;
-                horizontalAlignment: Text.AlignHCenter
             }
         }
     }

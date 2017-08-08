@@ -68,7 +68,6 @@ int main(int argc, char **argv)
     QStringList fileList;
     CMMediaScanner scanner;
     CMMediaDecoder mdec;
-    CMLibraryModel model;
 
     app.setApplicationName("Qt CM Player test");
 
@@ -110,12 +109,15 @@ int main(int argc, char **argv)
     scanner.addPath("/home/milang/CMTestFiles");
 #endif
 
-    while (scanner.scan(fileList)) {
+    if (scanner.count()==0) {
+        while (scanner.scan(fileList)) {
         // XXX
-    }
+        }        
+    } else {
 
-    fileList.sort();
-    model.setStringList(&fileList);
+    }
+    scanner.model()->refresh();
+    qDebug() << "Model count" << scanner.model()->count();
 
 #if QT_VERSION < 0x050000
     QDeclarativeView viewer;
@@ -123,8 +125,8 @@ int main(int argc, char **argv)
 
     viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
     viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    context->setContextProperty("_files", &model);
-    //context->setContextProperty("_scanner", &scanner);
+    context->setContextProperty("_files", scanner.model());
+    context->setContextProperty("_scanner", &scanner);
 #if defined(Q_OS_BLACKBERRY)
     viewer.setSource(QUrl::fromLocalFile("qrc:/qtquick1-main.qml"));
 #else
@@ -138,7 +140,7 @@ int main(int argc, char **argv)
 #else
     QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextProperty("_files", &model);
+    engine.rootContext()->setContextProperty("_files", scanner.model());
     engine.load(QUrl(QStringLiteral("qrc:/qtquick2-main.qml")));
 #endif
 

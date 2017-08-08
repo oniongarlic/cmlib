@@ -9,6 +9,9 @@
 #include <QStringList>
 #include <QTimer>
 #include <QSqlDatabase>
+#include <QSqlQueryModel>
+
+#include "cmlibrarymodel.h"
 
 class CMMediaScanner : public QObject
 {
@@ -18,16 +21,21 @@ public:
     ~CMMediaScanner();
     void setFilters(const QStringList &filters);
 
-    Q_INVOKABLE bool initialize(QString db);
+    Q_INVOKABLE bool initialize(const QString &db);
 
     Q_INVOKABLE void addFilter(const QString &filter);
-    Q_INVOKABLE bool addPath(const QString path);
+    Q_INVOKABLE bool addPath(const QString &path);
     Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void clearPaths();
     Q_INVOKABLE bool scan(QStringList &list, bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
 
+    Q_INVOKABLE bool addFile(const QString &file);
+
     Q_INVOKABLE uint count();
+
+    Q_INVOKABLE CMLibraryModel *model();
+
 signals:
     void scanning(QString path);
     void scanningDone();
@@ -41,6 +49,7 @@ private slots:
 
 private:
     QSqlDatabase m_db;
+    CMLibraryModel *m_model;
     bool m_db_ok;
     QMap<QString, QString> m_tables;
 

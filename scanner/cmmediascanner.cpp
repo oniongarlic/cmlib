@@ -50,7 +50,7 @@ bool CMMediaScanner::createTable(const QString table)
     return r;
 }
 
-bool CMMediaScanner::initialize(QString db)
+bool CMMediaScanner::initialize(const QString &db)
 {
     m_db=QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(db);
@@ -63,6 +63,8 @@ bool CMMediaScanner::initialize(QString db)
 
     createTable("mediafiles");
 
+    m_model=new CMLibraryModel(this);
+
     return m_db_ok;
 }
 
@@ -71,13 +73,23 @@ uint CMMediaScanner::count()
     QSqlQuery q(m_db);
     uint c=0;
 
-    if (!q.exec("SELECT COUNT(*) FROM mediafiles")) {
+    if (!q.exec("SELECT COUNT(*) AS c FROM mediafiles")) {
         qWarning("Media count query failed");
         return -1;
     }
-    c=q.value(0).toUInt();
+    if (q.isActive() && q.first())
+        c=q.value(0).toUInt();
+    else
+        c=-1;
+
+    qDebug() << "COUNT" << c;
 
     return c;
+}
+
+CMLibraryModel *CMMediaScanner::model()
+{    
+    return m_model;
 }
 
 void CMMediaScanner::addFilter(const QString &filter)
@@ -85,7 +97,7 @@ void CMMediaScanner::addFilter(const QString &filter)
     m_filter << filter;
 }
 
-bool CMMediaScanner::addPath(const QString path)
+bool CMMediaScanner::addPath(const QString &path)
 {
     if (m_paths.contains(path)) {
         qWarning() << "Scan path already exist in scan list";
@@ -130,6 +142,29 @@ bool CMMediaScanner::scanAsync()
     return true;
 }
 
+bool CMMediaScanner::addFile(const QString &file)
+{
+    QFile f(file);
+    QFileInfo fi(file);
+
+    if (!f.exists())
+        return false;
+
+    QSqlQuery query(m_db);
+
+    query.prepare("INSERT OR REPLACE INTO mediafiles (path, title, type) VALUES (?, ?, -1)");
+    query.bindValue(0, file);
+    query.bindValue(1, fi.baseName());
+
+    if (!query.exec()) {
+        qWarning() << "Query failed: " << query.lastError() ;
+        qDebug() << query.lastQuery();
+        return false;
+    }
+
+    return true;
+}
+
 void CMMediaScanner::scanLoop()
 {
     if (scan(m_filelist, false))
@@ -162,21 +197,11 @@ bool CMMediaScanner::scan(QStringList &list, bool fromStart)
         QString f;
         QFileInfo info;
 
-        f=it.next();        
-
+        f=it.next();       
         info=it.fileInfo();
         if (info.isFile()) {
-            QSqlQuery query(m_db);
-
+            addFile(f);
             list.append(f);
-
-            query.prepare("INSERT INTO mediafiles (path, type) VALUES (?, -1)");
-            query.bindValue(0, f);
-
-            if (!query.exec()) {
-                qWarning() << "Query failed: " << query.lastError() ;
-                qDebug() << query.lastQuery();
-            }
         } else if (info.isDir()) {
             m_pathsleft.append(f);            
         }

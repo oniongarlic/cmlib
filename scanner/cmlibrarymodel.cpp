@@ -2,87 +2,50 @@
 
 #include <QFileInfo>
 #include <QDebug>
+#include <QModelIndex>
 
 CMLibraryModel::CMLibraryModel(QObject *parent)
-    : QAbstractListModel(parent)
-{
-    m_data=&m_dummy;
-
+    : QSqlQueryModel(parent)
+{    
 #if QT_VERSION < 0x050000
     setRoleNames(roleNames());
 #endif
 }
 
-int CMLibraryModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-    return count();
-}
-
 QVariant CMLibraryModel::data(const QModelIndex &index, int role) const
 {    
-    if (!index.isValid()) {
-        qWarning("Invalid index");
-        return QVariant();
-    }
+    QVariant value = QSqlQueryModel::data(index, role);
 
-    if (m_data->count()<index.row()) {
-        qWarning("Index out of bounds");
-        return QVariant();
-    }
+    if(role < Qt::UserRole)
+        return value;
 
-    const QString f=m_data->value(index.row());
-    QFileInfo fi(f);
+    int columnIdx = role - Qt::UserRole - 1;
+    QModelIndex modelIndex = this->index(index.row(), columnIdx);
+    value = QSqlQueryModel::data(modelIndex, Qt::DisplayRole);
 
-    switch (role) {
-    case CMLibraryModel::FileRole:
-        return QVariant(f);
-        break;
-    case CMLibraryModel::TitleRole:
-        return QVariant(fi.baseName()); // XXX
-        break;
-    case CMLibraryModel::TypeRole:
-        return QVariant(fi.suffix().toLower());
-        break;
-    case CMLibraryModel::FileNameRole:
-        return QVariant(fi.baseName());
-        break;
-    }
+    qDebug() << value;
 
-    return QVariant();
+    return value;
+}
+
+void CMLibraryModel::refresh()
+{
+    setQuery("SELECT path,type,title,meta FROM mediafiles ORDER BY title");
 }
 
 uint CMLibraryModel::count() const
 {
-    return m_data->size();
-}
-
-void CMLibraryModel::clear()
-{
-    beginResetModel();
-    m_data->clear();
-    endResetModel();
+    return rowCount(QModelIndex());
 }
 
 QVariantMap CMLibraryModel::get(int index) const
 {
     QVariantMap map;
-    const QString f=m_data->value(index);
-    QFileInfo fi(f);
 
-    map.insert("file", m_data->value(index));
-    map.insert("filename", fi.baseName());
-
-    map.insert("type", "");
-    map.insert("title", "");
+    map.insert("file", QSqlQueryModel::data(this->index(index, 0), Qt::DisplayRole));
+    map.insert("type", QSqlQueryModel::data(this->index(index, 1), Qt::DisplayRole));
+    map.insert("title", QSqlQueryModel::data(this->index(index, 2), Qt::DisplayRole));
 
     return map;
 }
 
-void CMLibraryModel::setStringList(QStringList *list)
-{
-    qDebug("setStringList");
-    beginResetModel();
-    m_data=list;
-    endResetModel();
-}

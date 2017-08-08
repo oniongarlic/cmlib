@@ -6,8 +6,9 @@
 #include <QStringList>
 #include <QVariantMap>
 #include <QSqlDatabase>
+#include <QSqlQueryModel>
 
-class CMLibraryModel : public QAbstractListModel
+class CMLibraryModel : public QSqlQueryModel
 {
     Q_OBJECT
 public:
@@ -15,14 +16,11 @@ public:
 
     enum Roles {FileRole = Qt::UserRole, FileNameRole, TypeRole, TitleRole };
 
-    int rowCount(const QModelIndex &parent=QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
 
+    Q_INVOKABLE void refresh();
     Q_INVOKABLE uint count() const;
-    Q_INVOKABLE void clear();
     Q_INVOKABLE QVariantMap get(int index) const;
-
-    void setStringList(QStringList *list);
 
     QHash<int, QByteArray> roleNames() const {
         QHash<int, QByteArray> roles;
@@ -34,8 +32,7 @@ public:
     }
 
 private:    
-    QStringList *m_data;
-    QStringList m_dummy;
+    QSqlDatabase m_db;
 };
 
 #endif // CUTEMEDIAMODEL_H

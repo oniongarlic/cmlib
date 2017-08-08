@@ -1,6 +1,10 @@
 #include "cmmediadecoder.h"
 
 #include <QDebug>
+#include <QMetaObject>
+#include <QMetaClassInfo>
+
+#define ADD_SOURCE(_src) { decoders.append(new QPair<QStringList, CMBaseAudioSource *>(_src::extensions(), static_cast<CMBaseAudioSource*>(new _src(this)))); }
 
 CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 {
@@ -8,53 +12,53 @@ CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
     qDebug("DECODER: Registering sources");
 
 #ifdef MOD_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMModPlugAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMModPlugAudioSource(this))));
+    ADD_SOURCE(CMModPlugAudioSource)
 #endif
 #ifdef MTP_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMOpenMTPAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMOpenMTPAudioSource(this))));
+    ADD_SOURCE(CMOpenMTPAudioSource)
 #endif
 #ifdef SID_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSidAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSidAudioSource(this))));
+    ADD_SOURCE(CMSidAudioSource)
 #endif
 #ifdef SAP_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSapAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSapAudioSource(this))));
+    ADD_SOURCE(CMSapAudioSource)
 #endif
 #ifdef SC68_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMSC68AudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMSC68AudioSource(this))));
+    ADD_SOURCE(CMSC68AudioSource)
 #endif
 #ifdef AY_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMAYAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMAYAudioSource(this))));
+    ADD_SOURCE(CMAYAudioSource)
 #endif
 #ifdef FLAC_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMFlacAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMFlacAudioSource(this))));
+    ADD_SOURCE(CMFlacAudioSource)
 #endif
 #ifdef OPUS_DECODER
-    decoders.append(new QPair<QStringList, CMBaseAudioSource *>(CMOpusAudioSource::extensions(), static_cast<CMBaseAudioSource*>(new CMOpusAudioSource(this))));
+    ADD_SOURCE(CMOpusAudioSource)
 #endif
 
-    createDecoderRegExp();
-    connectDecoderSignals();
+    analyzeDecoders();
 }
 
-void CMMediaDecoder::connectDecoderSignals()
+void CMMediaDecoder::analyzeDecoders()
 {
     for (int i = 0; i < decoders.size(); i++) {
-        CMBaseAudioSource *d=decoders.at(i)->second;
-
-        connect(d, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
-        connect(d, SIGNAL(eot()), this, SLOT(decoderEOT()));
-    }
-}
-
-void CMMediaDecoder::createDecoderRegExp()
-{
-    for (int i = 0; i < decoders.size(); i++) {
+        const QMetaObject *mo;
+        QMetaClassInfo mci;
         QStringList filters=decoders.at(i)->first;
+        CMBaseAudioSource *d=decoders.at(i)->second;
 
         for (int f = 0; f < filters.size(); f++) {
             QRegExp *r=new QRegExp(filters.at(f), Qt::CaseInsensitive, QRegExp::Wildcard);
             regToDecoder.insert(r, decoders.at(i)->second);
         }
+
+        mo=d->metaObject();
+        mci=mo->classInfo(mo->indexOfClassInfo("mime"));
+
+        qDebug() << mo->className() << mci.value();
+
+        connect(d, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+        connect(d, SIGNAL(eot()), this, SLOT(decoderEOT()));
     }
 }
 
@@ -62,38 +66,9 @@ QStringList CMMediaDecoder::getSupportedExtensions()
 {
     QStringList e;
 
-#if 0
-    for (int i = 0; i < decoders.size(); i++) {
-        CMBaseAudioSource *d=decoders.at(i)->second;
+    for (int i = 0; i < decoders.size(); i++)
+        e << decoders.at(i)->first;;
 
-        e << d->extensions();
-    }
-#else
-#ifdef MOD_DECODER
-    e << CMModPlugAudioSource::extensions();
-#endif
-#ifdef MTP_DECODER
-    e << CMOpenMTPAudioSource::extensions();
-#endif
-#ifdef SID_DECODER
-    e << CMSidAudioSource::extensions();
-#endif
-#ifdef SAP_DECODER
-    e << CMSapAudioSource::extensions();
-#endif
-#ifdef SC68_DECODER
-    e << CMSC68AudioSource::extensions();
-#endif
-#ifdef AY_DECODER
-    e << CMAYAudioSource::extensions();
-#endif
-#ifdef FLAC_DECODER
-    e << CMFlacAudioSource::extensions();
-#endif
-#ifdef OPUS_DECODER
-    e << CMOpusAudioSource::extensions();
-#endif
-#endif
     return e;
 }
 
@@ -105,6 +80,7 @@ void CMMediaDecoder::decoderMetadata(QVariantHash meta)
 
 void CMMediaDecoder::decoderEOT()
 {
+    qDebug() << "Decoder EoT";
     emit eot();
 }
 

@@ -54,11 +54,10 @@ protected slots:
     void decoderEOT();
 
 protected:
-    void createDecoderRegExp();
+    void analyzeDecoders();
 private:
     QList<QPair<QStringList, CMBaseAudioSource *> * >decoders;
-    QHash<QRegExp *, CMBaseAudioSource *> regToDecoder;
-    void connectDecoderSignals();
+    QHash<QRegExp *, CMBaseAudioSource *> regToDecoder;    
 };
 
 #endif // CMMEDIADECODER_H

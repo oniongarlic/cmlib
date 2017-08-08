@@ -9,7 +9,8 @@ Item {
     anchors.fill: parent
     visible: true
 
-    property alias position: player.position
+    property alias position: player.position  
+    property alias playing: player.playing
 
     CMMediaPlayer {
         id: player

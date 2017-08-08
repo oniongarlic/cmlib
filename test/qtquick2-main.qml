@@ -50,6 +50,16 @@ ApplicationWindow {
         // rate: 48000;
     }
 
+    Connections {
+        target: _scanner
+        onScanning: {
+            console.debug("Scanning "+path)
+        }
+        onScanningDone: {
+            console.debug("Done!")
+        }
+    }
+
     header: ToolBar {
         RowLayout {            
             ToolButton {
@@ -101,6 +111,19 @@ ApplicationWindow {
                 onClicked: {
                     player.nextTrack();
                 }
+            }
+
+            ToolSeparator {
+
+            }
+
+            ToolButton {
+                text: "Scan"
+                onClicked: _scanner.scanAsync()
+            }
+
+            ToolSeparator {
+
             }
 
             ToolButton {
@@ -168,7 +191,7 @@ ApplicationWindow {
                                 anchors.margins: 16;
                                 Text {
                                     id: txt
-                                    text: model.filename;
+                                    text: model.title;
                                     font.pixelSize: 24
                                 }
                                 Text {

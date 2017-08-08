@@ -75,6 +75,7 @@ int main(int argc, char **argv)
     //qInstallMsgHandler(myMessageOutput);
 
     qmlRegisterType<CMMediaPlayer>("org.tal.cm", 1, 0, "CMMediaPlayer");
+    qmlRegisterType<CMMediaScanner>("org.tal.cm", 1, 0, "CMMediaScanner");
     qmlRegisterUncreatableType<CMBaseAudioSink>("org.tal.cm", 1, 0, "CMBaseAudioSink", "CMBaseAudioSink is abstract and can not be created");
 
 #ifdef QTAUDIO
@@ -137,6 +138,7 @@ int main(int argc, char **argv)
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("_files", scanner.model());
+    engine.rootContext()->setContextProperty("_scanner", &scanner);
     engine.load(QUrl(QStringLiteral("qrc:/qtquick2-main.qml")));
 #endif
 

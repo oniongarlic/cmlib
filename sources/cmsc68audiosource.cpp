@@ -91,6 +91,8 @@ bool CMSC68AudioSource::open(QIODevice::OpenMode mode)
         }
 
         r=true;
+        QIODevice::open(mode);
+        m_pos=0;
 
         m_track=sc68_cntl(m_sc68, SC68_GET_DEFTRK);
         m_tracks=sc68_cntl(m_sc68, SC68_GET_TRACKS);
@@ -110,10 +112,6 @@ bool CMSC68AudioSource::open(QIODevice::OpenMode mode)
 
         emit metaChanged(m_meta);
 
-        if (r) {
-            QIODevice::open(mode);
-            m_pos=0;
-        }
         break;
     case QIODevice::WriteOnly:
         m_data.clear();

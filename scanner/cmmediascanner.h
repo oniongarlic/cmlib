@@ -27,8 +27,10 @@ public:
     Q_INVOKABLE bool addPath(const QString &path);
     Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void clearPaths();
+
     Q_INVOKABLE bool scan(bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
+    Q_INVOKABLE bool scanAsyncCancel();
 
     Q_INVOKABLE bool addFile(const QString &file);
 

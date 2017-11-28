@@ -15,7 +15,7 @@ primary key (path));"
 CMMediaScanner::CMMediaScanner(QObject *parent) : QObject(parent)
 {
     m_ticker.setSingleShot(true);
-    m_ticker.setInterval(100);
+    m_ticker.setInterval(10);
     connect(&m_ticker, SIGNAL(timeout()), this, SLOT(scanLoop()));
 
     m_tables.insert("mediafiles", TABLE_MEDIA_FILES);
@@ -140,6 +140,16 @@ bool CMMediaScanner::scanAsync()
         m_ticker.start();
 
     return true;
+}
+
+bool CMMediaScanner::scanAsyncCancel()
+{
+    if (m_ticker.isActive()) {
+        m_ticker.stop();
+        return true;
+    }
+
+    return false;
 }
 
 bool CMMediaScanner::addFile(const QString &file)

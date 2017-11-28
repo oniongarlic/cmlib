@@ -23,7 +23,18 @@ QVariant CMLibraryModel::data(const QModelIndex &index, int role) const
     QModelIndex modelIndex = this->index(index.row(), columnIdx);
     value = QSqlQueryModel::data(modelIndex, Qt::DisplayRole);
 
-    qDebug() << value;
+    switch (role) {
+    case FileNameRole:
+    {
+        QFileInfo f(value.toString());
+        value=f.fileName();
+    }
+        break;
+    default:
+        break;
+    }
+
+    qDebug() << role << value;
 
     return value;
 }

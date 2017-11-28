@@ -14,7 +14,7 @@ class CMLibraryModel : public QSqlQueryModel
 public:
     CMLibraryModel(QObject *parent = 0);
 
-    enum Roles {FileRole = Qt::UserRole, FileNameRole, TypeRole, TitleRole };
+    enum Roles {FileRole = Qt::UserRole, FileNameRole, TypeRole, TitleRole, MetaRole };
 
     QVariant data(const QModelIndex &index, int role) const;
 
@@ -28,6 +28,7 @@ public:
         roles[TypeRole] = "type";
         roles[TitleRole] = "title";
         roles[FileNameRole] = "filename";
+        roles[MetaRole] = "metadata";
         return roles;
     }
 

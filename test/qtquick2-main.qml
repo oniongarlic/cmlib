@@ -20,7 +20,10 @@ ApplicationWindow {
 
         property bool wasPlaying: false
 
+        onWasPlayingChanged: console.debug("WasPlaying: "+wasPlaying)
+
         function prepareNewSong() {
+            console.debug("Preparing next song for playback")
             if (player.playing) {
                 console.debug("Stopping current playback")
                 player.stop();
@@ -32,7 +35,7 @@ ApplicationWindow {
 
         onMetadata: {
             console.debug(meta.title)
-        }
+        }        
         onEot: {
             console.debug("EOT!")
             player.stop();
@@ -42,8 +45,10 @@ ApplicationWindow {
                 mediaList.incrementCurrentIndex();
             }
         }
-        onTracksChanged: console.debug(tracks)
-        onTrackChanged: console.debug(track)
+        onTracksChanged: console.debug("Tracks: "+tracks)
+        onTrackChanged: {
+            console.debug("Track:"+track)
+        }
     }
 
     CMAudioSink {
@@ -62,8 +67,10 @@ ApplicationWindow {
             player.prepareNewSong();
             if (player.load(file)) {
                 player.prepare();
-                if (player.wasPlaying)
+                if (player.wasPlaying) {
+                    console.debug("We where playing, starting playback of loaded file")
                     player.play();
+                }
             }
         }
     }
@@ -80,6 +87,12 @@ ApplicationWindow {
 
             Text {
                 text: player.track + " / " + player.tracks
+                Layout.fillWidth: true
+            }
+
+            Text {
+                id: scanning
+                text: ""
                 Layout.fillWidth: true
             }
 
@@ -101,10 +114,12 @@ ApplicationWindow {
     Connections {
         target: _scanner
         onScanning: {
-            console.debug("Scanning "+path)
+            // console.debug("Scanning "+path)
+            scanning.text=path;
         }
         onScanningDone: {
             console.debug("Done!")
+            scanning.text='';
         }
     }
 
@@ -134,15 +149,13 @@ ApplicationWindow {
             }
             ToolButton {
                 text: "Prev Song"
-                onClicked: {
-                    player.prepareNewSong();
+                onClicked: {                    
                     mediaList.decrementCurrentIndex();
                 }
             }
             ToolButton {
                 text: "Next Song"
-                onClicked: {
-                    player.prepareNewSong();
+                onClicked: {                    
                     mediaList.incrementCurrentIndex();
                 }
             }

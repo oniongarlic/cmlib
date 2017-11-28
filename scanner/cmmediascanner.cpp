@@ -146,6 +146,8 @@ bool CMMediaScanner::scanAsyncCancel()
 {
     if (m_ticker.isActive()) {
         m_ticker.stop();
+        emit scanningDone();
+        m_model->refresh();
         return true;
     }
 
@@ -220,11 +222,11 @@ bool CMMediaScanner::scan(bool fromStart)
     m_db.commit();
     emit scannedPath(path);
 
-    r=!m_pathsleft.isEmpty();
+    r=m_pathsleft.isEmpty();
     if (r)
         emit scanningDone();
 
-    return r;
+    return !r;
 }
 
 

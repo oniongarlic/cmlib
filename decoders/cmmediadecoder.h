@@ -2,6 +2,7 @@
 #define CMMEDIADECODER_H
 
 #include <QObject>
+#include <QSet>
 
 #include "cmbaseaudiosource.h"
 
@@ -43,7 +44,7 @@ class CMMediaDecoder : public QObject
 public:
     explicit CMMediaDecoder(QObject *parent = 0);
     CMBaseAudioSource *findSuitableDecoder(QString file);
-    QStringList getSupportedExtensions();
+    const QStringList getSupportedExtensions() const;
 
 signals:
     void metadata(QVariantHash meta);
@@ -55,9 +56,11 @@ protected slots:
 
 protected:
     void analyzeDecoders();
-private:
-    QList<QPair<QStringList, CMBaseAudioSource *> * >decoders;
-    QHash<QRegExp *, CMBaseAudioSource *> regToDecoder;    
+private:    
+    QHash<QRegExp *, CMBaseAudioSource *> regToDecoder;
+    QHash<QString, QString> m_ext_to_mime;
+    QList<CMBaseAudioSource *> m_decoders;
+    QStringList m_extensions;
 };
 
 #endif // CMMEDIADECODER_H

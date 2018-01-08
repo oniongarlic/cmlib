@@ -4,7 +4,7 @@
 #include <QMetaObject>
 #include <QMetaClassInfo>
 
-#define ADD_SOURCE(_src) { decoders.append(new QPair<QStringList, CMBaseAudioSource *>(_src::extensions(), static_cast<CMBaseAudioSource*>(new _src(this)))); }
+#define ADD_SOURCE(_src) { m_decoders.append(static_cast<CMBaseAudioSource*>(new _src(this))); }
 
 CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 {
@@ -41,35 +41,39 @@ CMMediaDecoder::CMMediaDecoder(QObject *parent) : QObject(parent)
 
 void CMMediaDecoder::analyzeDecoders()
 {
-    for (int i = 0; i < decoders.size(); i++) {
+    for (int i = 0; i < m_decoders.size(); i++) {
+        CMBaseAudioSource *src=m_decoders.at(i);
         const QMetaObject *mo;
-        QMetaClassInfo mci;
-        QStringList filters=decoders.at(i)->first;
-        CMBaseAudioSource *d=decoders.at(i)->second;
+        QMetaClassInfo mci_mime, mci_extensions;
+        QStringList ext;
 
-        for (int f = 0; f < filters.size(); f++) {
-            QRegExp *r=new QRegExp(filters.at(f), Qt::CaseInsensitive, QRegExp::Wildcard);
-            regToDecoder.insert(r, decoders.at(i)->second);
+        mo=src->metaObject();
+        mci_mime=mo->classInfo(mo->indexOfClassInfo("mime"));
+        mci_extensions=mo->classInfo(mo->indexOfClassInfo("extensions"));
+
+        qDebug() << "Decoder Info: " << mo->className() << mci_mime.value() << mci_extensions.value();
+
+        QString tmp(mci_extensions.value());
+        ext=tmp.split(";");
+
+        qDebug() << ext;
+
+        m_extensions << ext;
+
+        for (int f = 0; f < ext.size(); f++) {
+            QRegExp *r=new QRegExp(ext.at(f), Qt::CaseInsensitive, QRegExp::Wildcard);
+            regToDecoder.insert(r, src);
         }
 
-        mo=d->metaObject();
-        mci=mo->classInfo(mo->indexOfClassInfo("mime"));
-
-        qDebug() << mo->className() << mci.value();
-
-        connect(d, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
-        connect(d, SIGNAL(eot()), this, SLOT(decoderEOT()));
+        connect(src, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+        connect(src, SIGNAL(eot()), this, SLOT(decoderEOT()));
     }
 }
 
-QStringList CMMediaDecoder::getSupportedExtensions()
+const QStringList CMMediaDecoder::getSupportedExtensions() const
 {
-    QStringList e;
-
-    for (int i = 0; i < decoders.size(); i++)
-        e << decoders.at(i)->first;;
-
-    return e;
+    qDebug() << m_extensions;
+    return m_extensions;
 }
 
 void CMMediaDecoder::decoderMetadata(QVariantHash meta)

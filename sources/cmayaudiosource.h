@@ -11,6 +11,8 @@
 class CMAYAudioSource : public CMBaseAudioSource
 {
     Q_OBJECT
+    Q_CLASSINFO("mime", "audio/x-vtx")
+    Q_CLASSINFO("extensions", "*.vtx")
 public:
     CMAYAudioSource(QObject *parent=0);
 

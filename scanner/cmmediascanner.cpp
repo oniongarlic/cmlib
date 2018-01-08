@@ -177,6 +177,29 @@ bool CMMediaScanner::addFile(const QString &file)
     return true;
 }
 
+bool CMMediaScanner::updateFile(const QString &file, const QString title)
+{
+    QFile f(file);
+    QFileInfo fi(file);
+
+    if (!f.exists())
+        return false;
+
+    QSqlQuery query(m_db);
+
+    query.prepare("UPDATE mediafiles SET title=? WHERE path=?");
+    query.bindValue(0, title);
+    query.bindValue(1, file);
+
+    if (!query.exec()) {
+        qWarning() << "Query failed: " << query.lastError() ;
+        qDebug() << query.lastQuery();
+        return false;
+    }
+
+    return true;
+}
+
 void CMMediaScanner::scanLoop()
 {
     if (scan(false))

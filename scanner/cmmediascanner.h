@@ -33,11 +33,11 @@ public:
     Q_INVOKABLE bool scanAsyncCancel();
 
     Q_INVOKABLE bool addFile(const QString &file);
+    Q_INVOKABLE bool updateFile(const QString &file, const QString title);
 
     Q_INVOKABLE uint count();
 
-    Q_INVOKABLE CMLibraryModel *model();
-
+    Q_INVOKABLE CMLibraryModel *model();    
 signals:
     void scanning(QString path);
     void scannedPath(const QString path);

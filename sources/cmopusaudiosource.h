@@ -17,8 +17,6 @@ public:
     explicit CMOpusAudioSource(QObject *parent=0);
     ~CMOpusAudioSource();    
 
-    static QStringList extensions();
-
     bool open(OpenMode mode);
     void close();
     bool reset();

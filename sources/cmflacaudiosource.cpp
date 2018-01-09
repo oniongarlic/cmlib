@@ -226,11 +226,3 @@ bool CMFlacAudioSource::eof_callback()
     return m_read_buffer.atEnd();
 }
 
-QStringList CMFlacAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.flac";
-
-    return e;
-}

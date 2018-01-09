@@ -150,15 +150,6 @@ bool CMSC68AudioSource::reset()
     return true;
 }
 
-QStringList CMSC68AudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.sc68" << "*.sndh";
-
-    return e;
-}
-
 void CMSC68AudioSource::setTrack(quint16 track)
 {
     qDebug() << "sc68 setTrack" << track << m_track << m_tracks;

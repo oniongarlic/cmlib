@@ -2,15 +2,6 @@
 
 #include <QDebug>
 
-QStringList CMAYAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.vtx";
-
-    return e;
-}
-
 CMAYAudioSource::CMAYAudioSource(QObject *parent)
     : CMBaseAudioSource(parent)
     , m_vtx(0)

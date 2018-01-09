@@ -18,8 +18,6 @@ public:
     bool reset();
     bool open(QIODevice::OpenMode mode);
 
-    static QStringList extensions();
-
 protected:
     qint64 generateData(qint64 maxlen);
 private:

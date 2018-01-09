@@ -16,8 +16,6 @@ class CMAYAudioSource : public CMBaseAudioSource
 public:
     CMAYAudioSource(QObject *parent=0);
 
-    static QStringList extensions();
-
 protected:
     qint64 generateData(qint64 maxlen);
 

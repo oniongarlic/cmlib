@@ -24,8 +24,6 @@ public:
     void close();   
     bool reset();
 
-    static QStringList extensions();
-
     // CMBaseAudioSource interface
 public slots:
     void setTrack(quint16 track);

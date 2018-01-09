@@ -21,8 +21,6 @@ public:
     void close();
     bool reset();
 
-    static QStringList extensions();
-
     static bool initOnce;
 
 public slots:

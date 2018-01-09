@@ -156,12 +156,3 @@ bool CMSidAudioSource::reset()
     setPosition(0);
     return true;
 }
-
-QStringList CMSidAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.sid";
-
-    return e;
-}

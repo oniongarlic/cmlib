@@ -117,16 +117,6 @@ bool CMModPlugAudioSource::open(QIODevice::OpenMode mode)
     return r;
 }
 
-QStringList CMModPlugAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.mod" << "*.xm" << "*.it" << "*.s3m" << "*.stm" << "*.669" << "*.amf" << "*.ams" << "*.dbm" << "*.dmf";
-    e << "*.dsm" << "*.far" <<"*.mdl" << "*.med" << "*.mtm" <<  "*.okt" << "*.ptm" << "*.ult" << "*.umx" << "*.mt2" << "*.psm";
-
-    return e;
-}
-
 void CMModPlugAudioSource::close()
 {
     switch (openMode()) {

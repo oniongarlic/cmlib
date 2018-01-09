@@ -126,11 +126,3 @@ bool CMSapAudioSource::reset()
     return true;
 }
 
-QStringList CMSapAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.sap" <<  "*.rmt" << "*.cmc" << "*.cm3" << "*.cmr" << "*.cms" << "*.dmc" << "*.dlt" << "*.mpt" << "*.mpd" << "*.tmc" << "*.tm8" << "*.tm2" << "*.fc";
-
-    return e;
-}

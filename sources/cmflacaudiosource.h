@@ -17,8 +17,6 @@ public:
     CMFlacAudioSource(QObject *parent=0);
     ~CMFlacAudioSource();
 
-    static QStringList extensions();
-
     // Stream interface
 protected:
     FLAC__StreamDecoderReadStatus read_callback(FLAC__byte buffer[], size_t *bytes);

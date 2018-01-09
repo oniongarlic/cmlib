@@ -15,15 +15,6 @@ CMOpusAudioSource::~CMOpusAudioSource()
     m_data.clear();
 }
 
-QStringList CMOpusAudioSource::extensions()
-{
-    QStringList e;
-
-    e << "*.opus";
-
-    return e;
-}
-
 qint64 CMOpusAudioSource::generateData(qint64 maxlen)
 {
     int r;

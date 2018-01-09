@@ -63,6 +63,7 @@ ApplicationWindow {
     MediaList {
         id: mediaList
         anchors.fill: parent
+        model: player.getSongModel()
         onFileSelected: {
             player.prepareNewSong();
             if (player.load(file)) {
@@ -112,7 +113,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: _scanner
+        target: player.getMediaScanner()
         onScanning: {
             // console.debug("Scanning "+path)
             scanning.text=path;
@@ -120,6 +121,12 @@ ApplicationWindow {
         onScanningDone: {
             console.debug("Done!")
             scanning.text='';
+        }
+        onScanningChanged: {
+            if (scanning)
+                dialogScanning.open();
+            else
+                dialogScanning.close();
         }
     }
 
@@ -180,7 +187,7 @@ ApplicationWindow {
 
             ToolButton {
                 text: "Scan"
-                onClicked: _scanner.scanAsync()
+                onClicked: player.getMediaScanner().scanAsync(true)
             }
 
             ToolSeparator {
@@ -202,11 +209,22 @@ ApplicationWindow {
         }
     }
 
+    Dialog {
+         id: dialogScanning
+         modal: true
+         title: "Scanning for media..."
+         // standardButtons: Dialog.Ok
+         BusyIndicator {
+             anchors.centerIn: parent
+             running: parent.visible
+         }
+     }
+
     Drawer {
         id: mainDrawer
         height: root.height
         width: root.width/1.5
-        dragMargin: rootStack.depth > 1 ? 0 : Qt.styleHints.startDragDistance
+        //dragMargin: rootStack.depth > 1 ? 0 : Qt.styleHints.startDragDistance
         ColumnLayout {
             anchors.fill: parent
             spacing: 16

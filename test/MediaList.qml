@@ -8,8 +8,7 @@ ListView {
     highlight: highlightDelegate
     highlightFollowsCurrentItem: true
     highlightMoveDuration: 500
-    clip: true;
-    model: _files
+    clip: true;    
     currentIndex: -1
     headerPositioning: ListView.PullBackHeader
 

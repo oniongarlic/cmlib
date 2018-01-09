@@ -14,7 +14,6 @@ Item {
 
     CMMediaPlayer {
         id: player
-        Component.onCompleted: setAudioSink(audioSink)
 
         property bool wasPlaying: false
 
@@ -41,6 +40,12 @@ Item {
         }
         onTracksChanged: console.debug(tracks)
         onTrackChanged: console.debug(track)
+
+        Component.onCompleted: {
+            setAudioSink(audioSink)
+            files.model=player.getSongModel();
+            player.refreshDatabase();
+        }
     }
 
     CMAudioSink {
@@ -138,7 +143,7 @@ Item {
             clip: true;
             width: parent.width
             height: parent.height
-            model: _files
+            model: player.getSongModel()
             currentIndex: -1
 
             //flickableDirection: Flickable.HorizontalAndVerticalFlick

@@ -4,6 +4,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <QDesktopServices>
+
 #define TABLE_MEDIA_FILES "CREATE TABLE IF NOT EXISTS mediafiles (\
 path text not null,\
 title text,\
@@ -12,7 +14,9 @@ type varchar,\
 rating int not null default -1,\
 primary key (path));"
 
-CMMediaScanner::CMMediaScanner(QObject *parent) : QObject(parent)
+CMMediaScanner::CMMediaScanner(QObject *parent) :
+    QObject(parent),
+    m_scanning(false)
 {
     m_ticker.setSingleShot(true);
     m_ticker.setInterval(10);
@@ -131,15 +135,31 @@ void CMMediaScanner::clearPaths()
     m_paths.clear();
 }
 
+void CMMediaScanner::addDefaultPath()
+{
+#if QT_VERSION < 0x050000
+    addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+#if defined(Q_OS_BLACKBERRY)
+    scanner.addPath("/accounts/1000/shared/music");
+#endif
+#else
+    addPath(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+#endif
+}
+
 bool CMMediaScanner::scanAsync()
 {
-    if (m_paths.isEmpty())
+    if (m_paths.isEmpty()) {
+        qWarning() << "scanAsync: Not paths defined";
         return false;
+    }
 
-    if (scan(true))
+    if (scan(true)) {
         m_ticker.start();
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 bool CMMediaScanner::scanAsyncCancel()
@@ -228,7 +248,11 @@ bool CMMediaScanner::scan(bool fromStart)
     const QString path=m_pathsleft.takeFirst();
     QDirIterator it(path, m_filter, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
 
+    m_scanning=true;
+    emit scanningChanged(m_scanning);
+
     emit scanning(path);
+
     m_db.transaction();
     while (it.hasNext()) {
         QString f;
@@ -246,8 +270,11 @@ bool CMMediaScanner::scan(bool fromStart)
     emit scannedPath(path);
 
     r=m_pathsleft.isEmpty();
-    if (r)
+    if (r) {
+        m_scanning=false;
+        emit scanningChanged(m_scanning);
         emit scanningDone();
+    }
 
     return !r;
 }

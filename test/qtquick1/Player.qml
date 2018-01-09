@@ -10,7 +10,6 @@ Item {
 
     CMMediaPlayer {
         id: player
-        Component.onCompleted: setAudioSink(audioSink)
 
         property bool wasPlaying: false
 
@@ -37,6 +36,13 @@ Item {
         }
         onTracksChanged: console.debug(tracks)
         onTrackChanged: console.debug(track)
+
+        Component.onCompleted: {
+            setAudioSink(audioSink)
+            files.model=player.getSongModel();
+            player.refreshDatabase();
+        }
+
     }
 
     CMAudioSink {
@@ -47,6 +53,14 @@ Item {
     CMWavFileAudioSink {
         id: wavSink
         file: "audio-qml.wav"
+    }
+
+    Connections {
+        target: player.getMediaScanner()
+
+        onScanningChanged: {
+            console.debug("ScanningChanged: "+scanning)
+        }
     }
 
     Row {
@@ -117,6 +131,13 @@ Item {
                 player.setAudioSink(audioSink)
             }
         }
+
+        Button {
+            title: "Scan media"
+            onClicked: {
+                player.getMediaScanner().scanAsync();
+            }
+        }
     }
 
     Column {
@@ -132,7 +153,7 @@ Item {
             clip: true;
             width: parent.width
             height: parent.height
-            model: _files
+            //model: _files
             currentIndex: -1
 
             //flickableDirection: Flickable.HorizontalAndVerticalFlick

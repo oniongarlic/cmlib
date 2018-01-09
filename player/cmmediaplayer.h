@@ -6,6 +6,7 @@
 #include "cmbaseaudiosource.h"
 #include "cmbaseaudiosink.h"
 #include "cmmediadecoder.h"
+#include "scanner/cmmediascanner.h"
 
 class CMMediaPlayer : public QObject
 {
@@ -30,11 +31,20 @@ public:
 
     Q_INVOKABLE bool prevTrack();
     Q_INVOKABLE bool nextTrack();
-
     Q_INVOKABLE bool setTrack(quint16 track);
+
+    Q_INVOKABLE bool prevSong();
+    Q_INVOKABLE bool nextSong();
+    Q_INVOKABLE bool setSong(quint16 song);
+
     Q_INVOKABLE void setPlaytime(quint64 ms);
 
     Q_INVOKABLE bool setAudioSink(CMBaseAudioSink *sink);
+
+    Q_INVOKABLE CMLibraryModel *getSongModel();
+    Q_INVOKABLE CMMediaScanner *getMediaScanner();
+
+    Q_INVOKABLE bool refreshDatabase();
 
     QAudio::State getState();
 
@@ -86,6 +96,7 @@ private:
     CMBaseAudioSink *m_sink;
     QAudio::State m_state;
     CMMediaDecoder m_dec;
+    CMMediaScanner m_scanner;
     quint64 m_playtime;
     bool m_playing;
     double m_position;

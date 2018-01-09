@@ -14,10 +14,16 @@ CMMediaPlayer::CMMediaPlayer(QObject *parent)
     , m_position(0)
     , m_length(0)
     , m_track(0)
-    , m_tracks(0)    
+    , m_tracks(0)
+    , m_scanner(this)
 {
     connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
     connect(&m_dec, SIGNAL(eot()), this, SLOT(decoderEOT()));
+
+    m_scanner.initialize("player_mediadatabase.db");
+    m_scanner.setFilters(m_dec.getSupportedExtensions());
+
+    m_scanner.addDefaultPath();
 }
 
 /**
@@ -67,6 +73,7 @@ bool CMMediaPlayer::load(const QByteArray &data, CMBaseAudioSource *source)
 
     m_source->disconnect(this, 0);
     connect(m_source, SIGNAL(positionChanged(quint64)), SLOT(sinkPosition(quint64)));
+    // connect(m_source, SIGNAL(eot()), SLOT(decoderEOT()));
 
     m_sink->setAudioSource(m_source);
 
@@ -139,6 +146,21 @@ bool CMMediaPlayer::nextTrack()
     return false;
 }
 
+bool CMMediaPlayer::prevSong()
+{
+
+}
+
+bool CMMediaPlayer::nextSong()
+{
+
+}
+
+bool CMMediaPlayer::setSong(quint16 song)
+{
+
+}
+
 bool CMMediaPlayer::setTrack(quint16 track)
 {
     m_source->setTrack(track);
@@ -165,6 +187,29 @@ bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
     return true;
 }
 
+CMLibraryModel *CMMediaPlayer::getSongModel()
+{
+    return m_scanner.model();
+}
+
+CMMediaScanner *CMMediaPlayer::getMediaScanner()
+{
+    return &m_scanner;
+}
+
+bool CMMediaPlayer::refreshDatabase()
+{
+    bool r=true;
+
+    if (m_scanner.count()==0) {
+        r=m_scanner.scanAsync();
+    } else {
+        m_scanner.model()->refresh();
+    }
+
+    return r;
+}
+
 QAudio::State CMMediaPlayer::getState()
 {
     return m_sink->state();
@@ -172,11 +217,17 @@ QAudio::State CMMediaPlayer::getState()
 
 void CMMediaPlayer::decoderMetadata(QVariantHash meta)
 {
+    qDebug() << meta;
+    if (meta.contains("title")) {
+        //m_scanner.updateFile();
+    }
+
     emit metadata(meta);
 }
 
 void CMMediaPlayer::decoderEOT()
 {
+    qDebug() << "Source signaled EoT";
     emit eot();
 }
 

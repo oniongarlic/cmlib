@@ -21,12 +21,16 @@ public:
     ~CMMediaScanner();
     void setFilters(const QStringList &filters);
 
+    Q_PROPERTY(bool scanning READ getScanning NOTIFY scanningChanged)
+
     Q_INVOKABLE bool initialize(const QString &db);
 
     Q_INVOKABLE void addFilter(const QString &filter);
     Q_INVOKABLE bool addPath(const QString &path);
     Q_INVOKABLE void clearFilters();
     Q_INVOKABLE void clearPaths();
+
+    Q_INVOKABLE void addDefaultPath();
 
     Q_INVOKABLE bool scan(bool fromStart=false);
     Q_INVOKABLE bool scanAsync();
@@ -37,11 +41,19 @@ public:
 
     Q_INVOKABLE uint count();
 
-    Q_INVOKABLE CMLibraryModel *model();    
+    Q_INVOKABLE CMLibraryModel *model();
+
+    Q_INVOKABLE bool getScanning() const
+    {
+        return m_scanning;
+    }
+
 signals:
     void scanning(QString path);
     void scannedPath(const QString path);
     void scanningDone();
+
+    void scanningChanged(bool scanning);
 
 public slots:
 
@@ -60,6 +72,7 @@ private:
     QStringList m_pathsleft;
     QStringList m_paths;
     QStringList m_filter;
+    bool m_scanning;
 };
 
 #endif // CMMEDIASCANNER_H

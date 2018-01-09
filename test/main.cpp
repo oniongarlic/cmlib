@@ -65,9 +65,6 @@ int main(int argc, char **argv)
 #else
      QApplication app(argc, argv);
 #endif   
-    CMMediaScanner scanner;
-    CMMediaDecoder mdec;
-
     app.setApplicationName("Qt CM Player test");
 
     qsrand(QTime::currentTime().msec());
@@ -93,37 +90,12 @@ int main(int argc, char **argv)
     qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "MediaLibraryModel", "C++ only");
     //qRegisterMetaType<CMLibraryModel *>();
 
-    scanner.initialize("mediadatabase.db");
-    scanner.setFilters(mdec.getSupportedExtensions());    
-
-#if QT_VERSION < 0x050000
-    scanner.addPath(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-#else
-    scanner.addPath(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
-#endif
-
-#if defined(Q_OS_BLACKBERRY)
-    scanner.addPath("/accounts/1000/shared/music");
-#else
-    scanner.addPath("/home/milang/Music");
-    scanner.addPath("/home/milang/CMTestFiles");
-#endif
-
-    if (scanner.count()==0) {
-        scanner.scanAsync();
-    } else {
-        scanner.model()->refresh();
-    }    
-    qDebug() << "Model count" << scanner.model()->count();
-
 #if QT_VERSION < 0x050000
     QDeclarativeView viewer;
     QDeclarativeContext *context = viewer.rootContext();
 
     viewer.connect(viewer.engine(), SIGNAL(quit()), SLOT(close()));
-    viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    context->setContextProperty("_files", scanner.model());
-    context->setContextProperty("_scanner", &scanner);
+    viewer.setResizeMode(QDeclarativeView::SizeRootObjectToView);    
 #if defined(Q_OS_BLACKBERRY)
     viewer.setSource(QUrl::fromLocalFile("qrc:/qtquick1-main.qml"));
 #else
@@ -137,8 +109,6 @@ int main(int argc, char **argv)
 #else
     QQmlApplicationEngine engine;
 
-    engine.rootContext()->setContextProperty("_files", scanner.model());
-    engine.rootContext()->setContextProperty("_scanner", &scanner);
     engine.load(QUrl(QStringLiteral("qrc:/qtquick2-main.qml")));
 #endif
 

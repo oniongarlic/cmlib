@@ -3,7 +3,7 @@
 #include <QDebug>
 
 #define DEFAULT_CHANNELS (2)
-#define DEFAULT_RATE (44100)
+#define DEFAULT_RATE (48000)
 
 CMBaseAudioSource::CMBaseAudioSource(QObject *parent) :
     QIODevice(parent),
@@ -94,6 +94,7 @@ qint64 CMBaseAudioSource::readData(char *data, qint64 maxlen)
     }
 
     if (maxlen==0) {
+        qWarning("source: Zero read");
         return 0;
     }
 

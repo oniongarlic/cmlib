@@ -68,6 +68,7 @@ bool CMOpusAudioSource::open(QIODevice::OpenMode mode)
         if (op!=0) {
             qWarning("Opus: Not valid opus data");
             qDebug() << op;
+            return false;
         } else {
             QIODevice::open(mode);
             r=true;

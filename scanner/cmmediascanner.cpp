@@ -220,6 +220,44 @@ bool CMMediaScanner::updateFile(const QString &file, const QString title)
     return true;
 }
 
+bool CMMediaScanner::removeFile(const QString &file)
+{
+    QSqlQuery query(m_db);
+
+    qDebug() << "Removing from database " << file;
+
+    query.prepare("DELETE FROM mediafiles WHERE path=?");
+    query.bindValue(0, file);
+
+    if (!query.exec()) {
+        qWarning() << "Query failed: " << query.lastError() ;
+        qDebug() << query.lastQuery();
+        return false;
+    }
+
+    return true;
+}
+
+bool CMMediaScanner::refresh()
+{
+    QSqlQuery q(m_db);
+
+    q.exec("SELECT path FROM mediafiles ORDER BY path");
+
+    if (q.isActive()) {
+        while (q.next()) {
+            QFile f(q.value(0).toString());
+            if (!f.exists())
+                removeFile(f.fileName());
+        }
+        return true;
+    } else {
+        qDebug() << "Error" << q.lastQuery() << q.lastError().text();
+    }
+
+    return false;
+}
+
 void CMMediaScanner::scanLoop()
 {
     if (scan(false))
@@ -238,6 +276,8 @@ void CMMediaScanner::scanLoop()
 bool CMMediaScanner::scan(bool fromStart)
 {
     bool r;
+
+    refresh();
 
     if (m_paths.isEmpty())
         return false;

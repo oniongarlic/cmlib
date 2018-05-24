@@ -37,6 +37,7 @@ public:
     Q_INVOKABLE bool scanAsyncCancel();
 
     Q_INVOKABLE bool addFile(const QString &file);
+    Q_INVOKABLE bool removeFile(const QString &file);
     Q_INVOKABLE bool updateFile(const QString &file, const QString title);
 
     Q_INVOKABLE uint count();
@@ -48,6 +49,7 @@ public:
         return m_scanning;
     }
 
+    Q_INVOKABLE bool refresh();
 signals:
     void scanning(QString path);
     void scannedPath(const QString path);
@@ -59,6 +61,7 @@ public slots:
 
 protected:
     bool createTable(const QString table);
+
 private slots:
     void scanLoop();
 

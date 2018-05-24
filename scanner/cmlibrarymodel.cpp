@@ -10,6 +10,7 @@ CMLibraryModel::CMLibraryModel(QObject *parent)
 #if QT_VERSION < 0x050000
     setRoleNames(roleNames());
 #endif
+    refresh();
 }
 
 QVariant CMLibraryModel::data(const QModelIndex &index, int role) const

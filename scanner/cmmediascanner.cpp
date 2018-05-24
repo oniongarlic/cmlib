@@ -244,12 +244,20 @@ bool CMMediaScanner::refresh()
 
     q.exec("SELECT path FROM mediafiles ORDER BY path");
 
+    if (!m_db.transaction()) {
+        qWarning("Failed to start transaction!");
+        return false;
+    } else {
+        qDebug("Removing old data");
+    }
+
     if (q.isActive()) {
         while (q.next()) {
             QFile f(q.value(0).toString());
             if (!f.exists())
                 removeFile(f.fileName());
         }
+        m_db.commit();
         return true;
     } else {
         qDebug() << "Error" << q.lastQuery() << q.lastError().text();

@@ -154,6 +154,8 @@ bool CMMediaScanner::scanAsync()
         return false;
     }
 
+    refresh();
+
     if (scan(true)) {
         m_ticker.start();
         return true;
@@ -283,9 +285,7 @@ void CMMediaScanner::scanLoop()
  */
 bool CMMediaScanner::scan(bool fromStart)
 {
-    bool r;
-
-    refresh();
+    bool r;    
 
     if (m_paths.isEmpty())
         return false;

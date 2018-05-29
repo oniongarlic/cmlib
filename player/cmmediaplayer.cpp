@@ -187,9 +187,30 @@ bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
     return true;
 }
 
-CMLibraryModel *CMMediaPlayer::getSongModel()
+
+QSortFilterProxyModel *CMMediaPlayer::getSongModel()
 {
-    return m_scanner.model();
+    // return m_scanner.model();
+    m_model.setSourceModel(m_scanner.model());
+    m_model.setFilterCaseSensitivity(Qt::CaseInsensitive);
+
+    return &m_model;
+}
+
+bool CMMediaPlayer::setFilter(const QString filter)
+{
+    m_model.setFilterFixedString(filter);    
+    m_model.invalidate();
+    //m_model->setFilterRegExp(QRegExp(filter, Qt::CaseInsensitive, QRegExp::FixedString));
+
+    return true;
+}
+
+QVariantMap CMMediaPlayer::get(int index)
+{    
+    QModelIndex tmp=m_model.mapToSource(m_model.index(index, 0));    
+
+    return m_scanner.model()->get(tmp.row());
 }
 
 CMMediaScanner *CMMediaPlayer::getMediaScanner()
@@ -197,11 +218,11 @@ CMMediaScanner *CMMediaPlayer::getMediaScanner()
     return &m_scanner;
 }
 
-bool CMMediaPlayer::refreshDatabase()
+bool CMMediaPlayer::refreshDatabase(bool force)
 {
     bool r=true;
 
-    if (m_scanner.count()==0) {
+    if (m_scanner.count()==0 || force) {
         r=m_scanner.scanAsync();
     } else {
         m_scanner.model()->refresh();

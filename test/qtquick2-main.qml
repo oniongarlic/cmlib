@@ -228,6 +228,26 @@ ApplicationWindow {
         ColumnLayout {
             anchors.fill: parent
             spacing: 16
+            Text {
+                id: name
+                text: qsTr("Search")
+            }
+            TextInput {
+                id: searchText
+                Layout.fillWidth: true
+
+                onAccepted: {
+                    player.setFilter(text)
+                }
+            }
+            Button {
+                //enabled: searchText.
+                text: "Clear search"
+                onClicked: {
+                    searchText.text=''
+                    player.setFilter('')
+                }
+            }
         }
     }
 }

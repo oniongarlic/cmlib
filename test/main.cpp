@@ -88,6 +88,7 @@ int main(int argc, char **argv)
     qmlRegisterType<CMWavFileAudioSink>("org.tal.cm", 1, 0, "CMWavFileAudioSink");
 
     qmlRegisterUncreatableType<CMLibraryModel>("org.tal.cm", 1, 0, "MediaLibraryModel", "C++ only");
+    qmlRegisterUncreatableType<QSortFilterProxyModel>("org.tal.cm", 1, 0, "MediaLibraryProxyModel", "C++ only");
     //qRegisterMetaType<CMLibraryModel *>();
 
 #if QT_VERSION < 0x050000

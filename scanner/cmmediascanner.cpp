@@ -154,6 +154,8 @@ bool CMMediaScanner::scanAsync()
         return false;
     }
 
+    refresh();
+
     if (scan(true)) {
         m_ticker.start();
         return true;
@@ -220,6 +222,52 @@ bool CMMediaScanner::updateFile(const QString &file, const QString title)
     return true;
 }
 
+bool CMMediaScanner::removeFile(const QString &file)
+{
+    QSqlQuery query(m_db);
+
+    qDebug() << "Removing from database " << file;
+
+    query.prepare("DELETE FROM mediafiles WHERE path=?");
+    query.bindValue(0, file);
+
+    if (!query.exec()) {
+        qWarning() << "Query failed: " << query.lastError() ;
+        qDebug() << query.lastQuery();
+        return false;
+    }
+
+    return true;
+}
+
+bool CMMediaScanner::refresh()
+{
+    QSqlQuery q(m_db);
+
+    q.exec("SELECT path FROM mediafiles ORDER BY path");
+
+    if (!m_db.transaction()) {
+        qWarning("Failed to start transaction!");
+        return false;
+    } else {
+        qDebug("Removing old data");
+    }
+
+    if (q.isActive()) {
+        while (q.next()) {
+            QFile f(q.value(0).toString());
+            if (!f.exists())
+                removeFile(f.fileName());
+        }
+        m_db.commit();
+        return true;
+    } else {
+        qDebug() << "Error" << q.lastQuery() << q.lastError().text();
+    }
+
+    return false;
+}
+
 void CMMediaScanner::scanLoop()
 {
     if (scan(false))
@@ -237,7 +285,7 @@ void CMMediaScanner::scanLoop()
  */
 bool CMMediaScanner::scan(bool fromStart)
 {
-    bool r;
+    bool r;    
 
     if (m_paths.isEmpty())
         return false;

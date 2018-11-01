@@ -1,6 +1,6 @@
 import QtQuick 2.8
 import QtQuick.Layouts 1.1
-import org.tal.cm 1.0
+// import org.tal.cm 1.0
 
 ListView {
     id: files
@@ -8,7 +8,7 @@ ListView {
     highlight: highlightDelegate
     highlightFollowsCurrentItem: true
     highlightMoveDuration: 500
-    clip: true;    
+    clip: true;
     currentIndex: -1
     headerPositioning: ListView.PullBackHeader
 
@@ -17,7 +17,7 @@ ListView {
     signal fileSelected(string file)
 
     onCurrentIndexChanged: {
-        var data=model.get(currentIndex)
+        var data=player.get(currentIndex)
         console.debug(data)
         fileSelected(data.file)
     }
@@ -26,21 +26,28 @@ ListView {
 
     header: Component {
         id: headerComponent
-        RowLayout {
+        Rectangle {
             width: parent.width
-            spacing: 8
-            Text {
-                id: headerTitle
-                text: "Song title"
-                font.pixelSize: 28
-                Layout.fillWidth: true
-                Component.onCompleted: titleWidth=width;
-            }
-            Text {
-                id: headerType
-                text: "Type"
-                font.pixelSize: 28
-                Layout.fillWidth: false;
+            height: rl.height
+            color: "lightgrey"
+            z: 3
+            RowLayout {
+                id: rl
+                width: parent.width
+                spacing: 8
+                Text {
+                    id: headerTitle
+                    text: "Song title"
+                    font.pixelSize: 26
+                    Layout.fillWidth: true
+                    Component.onCompleted: titleWidth=width;
+                }
+                Text {
+                    id: headerType
+                    text: "Type"
+                    font.pixelSize: 26
+                    Layout.fillWidth: false;
+                }
             }
         }
     }

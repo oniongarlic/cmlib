@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAudio>
+#include <QSortFilterProxyModel>
 #include "cmbaseaudiosource.h"
 #include "cmbaseaudiosink.h"
 #include "cmmediadecoder.h"
@@ -41,10 +42,12 @@ public:
 
     Q_INVOKABLE bool setAudioSink(CMBaseAudioSink *sink);
 
-    Q_INVOKABLE CMLibraryModel *getSongModel();
+    Q_INVOKABLE QSortFilterProxyModel *getSongModel();
+    Q_INVOKABLE QVariantMap get(int index);
+
     Q_INVOKABLE CMMediaScanner *getMediaScanner();
 
-    Q_INVOKABLE bool refreshDatabase();
+    Q_INVOKABLE bool refreshDatabase(bool force=false);
 
     QAudio::State getState();
 
@@ -91,13 +94,17 @@ protected slots:
 
 public slots:
 
-private:    
+    bool setFilter(const QString filter);
+private:
     CMBaseAudioSource *m_source;
     CMBaseAudioSink *m_sink;
     QAudio::State m_state;
     CMMediaDecoder m_dec;
     CMMediaScanner m_scanner;
     quint64 m_playtime;
+
+    QSortFilterProxyModel m_model;
+
     bool m_playing;
     double m_position;
     double m_length;    

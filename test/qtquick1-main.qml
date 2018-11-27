@@ -6,6 +6,16 @@ Rectangle {
     id: root
     width: 1024
     height: 600
+    gradient: Gradient {
+        GradientStop {
+            position: 0.00;
+            color: "#ffffff";
+        }
+        GradientStop {
+            position: 1.00;
+            color: "#606bff";
+        }
+    }
     visible: true
 
     Player {

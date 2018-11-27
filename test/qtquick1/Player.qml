@@ -159,7 +159,7 @@ Item {
             //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
             onCurrentIndexChanged: {                
-                var data=model.get(currentIndex)
+                var data=player.get(currentIndex)
                 console.debug(data)
                 if (player.load(data.file)) {
                     player.prepare();
@@ -172,7 +172,7 @@ Item {
                 id: highlightDelegate
                 Rectangle {
                     color: "green"
-                    width: parent.width
+                    //width: parent.width
                     height: 20
                 }
             }

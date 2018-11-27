@@ -217,6 +217,17 @@ ApplicationWindow {
                     player.setAudioSink(audioSink)
                 }
             }
+
+            ToolSeparator {
+
+            }
+
+            ToolButton {
+                text: "Quit"
+                onClicked: {
+                    Qt.quit()
+                }
+            }
         }
     }
 

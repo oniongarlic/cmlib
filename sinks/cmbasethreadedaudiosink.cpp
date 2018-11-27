@@ -8,7 +8,7 @@ CMPlaybackThread::CMPlaybackThread(QObject *parent)
     : QObject(parent)
     , isRunning(true)
     , isPlaying(false)
-    , frag_size(4096)
+    , frag_size(16384)
     , m_buffer(65535, 0)
 {
 
@@ -55,7 +55,7 @@ void CMPlaybackThread::playLoop()
 {
     QThread *cur=QThread::currentThread();
 
-    m_buffer.resize(frag_size);
+    m_buffer.reserve(frag_size);
 
     qDebug() << "Thread is running :" << cur->currentThreadId();
     qDebug() << "Buffer size is " << m_buffer.size();
@@ -68,6 +68,7 @@ void CMPlaybackThread::playLoop()
             if (sink)
                 sink->prepare();
             qDebug("...Resuming");
+            m_buffer.resize(frag_size);
             if (!source) {
                 qWarning("Source is not set !");
                 isPlaying=false;
@@ -80,8 +81,12 @@ void CMPlaybackThread::playLoop()
             Q_ASSERT(source);
             Q_ASSERT(sink);
             sync.unlock();
-            int r=source->read(m_buffer.data(), frag_size);
+            int r=source->read(m_buffer.data(), m_buffer.size());
             sync.lock();
+            if (r<m_buffer.size()) {
+                qDebug() << "Source returned only " << r << m_buffer.size();
+                m_buffer.resize(r);
+            }
             if (r>0)
                 sink->write(m_buffer);
         }

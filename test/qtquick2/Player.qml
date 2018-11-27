@@ -9,7 +9,7 @@ Item {
     anchors.fill: parent
     visible: true
 
-    property alias position: player.position  
+    property alias position: player.position
     property alias playing: player.playing
 
     CMMediaPlayer {
@@ -35,7 +35,7 @@ Item {
             player.stop();
             if (files.count>0) {
                 player.prepareNewSong();
-                files.incrementCurrentIndex();                
+                files.incrementCurrentIndex();
             }
         }
         onTracksChanged: console.debug(tracks)
@@ -148,7 +148,7 @@ Item {
 
             //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
-            onCurrentIndexChanged: {                
+            onCurrentIndexChanged: {
                 var data=model.get(currentIndex)
                 console.debug(data)
                 if (player.load(data.file)) {
@@ -170,25 +170,25 @@ Item {
             Component {
                 id: fileDelegate
                 Item {
-                    //color: files.currentIndex==inputs.currentInput ? "#e5e5e5" : "#ffffff";
-                    width: parent.width;
                     height: r.height;
+                    RowLayout {
+                        id: r
+                        spacing: 8
+                        anchors.margins: 16;
+                        anchors.fill: parent
+                        Text {
+                            id: txt
+                            text: model.filename;
+                            font.pixelSize: 24
+                        }
+                        Text {
+                            id: type
+                            text: model.type
+                            color: "red"
+                        }
+                    }
                     MouseArea {
                         anchors.fill: parent;
-                        Row {
-                            id: r
-                            anchors.margins: 16;
-                            Text {
-                                id: txt
-                                text: model.filename;
-                                font.pixelSize: 24
-                            }
-                            Text {
-                                id: type
-                                text: model.type
-                                color: "red"
-                            }
-                        }
                         onClicked: {
                             console.debug("File: "+model.file);
                             player.prepareNewSong();

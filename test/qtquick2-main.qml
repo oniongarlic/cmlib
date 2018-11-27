@@ -1,7 +1,7 @@
-import QtQuick 2.8
-import QtQuick.Window 2.2
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.1
+import QtQuick 2.9
+import QtQuick.Window 2.11
+import QtQuick.Layouts 1.4
+import QtQuick.Controls 2.4
 
 import org.tal.cm 1.0
 
@@ -74,7 +74,18 @@ ApplicationWindow {
                 }
             }
         }
+        onPressAndHold: {
+            contextMenu.open();
+        }
     }
+
+    Menu {
+        id: contextMenu
+        MenuItem {
+            text: "Details..."
+        }
+    }
+
 
     footer: ToolBar {
         RowLayout {
@@ -226,15 +237,17 @@ ApplicationWindow {
         width: root.width/1.5
         //dragMargin: rootStack.depth > 1 ? 0 : Qt.styleHints.startDragDistance
         ColumnLayout {
-            anchors.fill: parent
+            //anchors.fill: parent
             spacing: 16
+            Layout.alignment: Qt.AlignTop
             Text {
                 id: name
                 text: qsTr("Search")
             }
-            TextInput {
+            TextField {
                 id: searchText
                 Layout.fillWidth: true
+                placeholderText: "Search tracks..."
 
                 onAccepted: {
                     player.setFilter(text)

@@ -1,6 +1,5 @@
-import QtQuick 2.8
-import QtQuick.Layouts 1.1
-// import org.tal.cm 1.0
+import QtQuick 2.9
+import QtQuick.Layouts 1.4
 
 ListView {
     id: files
@@ -15,6 +14,7 @@ ListView {
     //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
     signal fileSelected(string file)
+    signal pressAndHold(int index)
 
     onCurrentIndexChanged: {
         var data=player.get(currentIndex)
@@ -64,28 +64,36 @@ ListView {
     Component {
         id: fileDelegate
         Item {
-            width: parent.width;
             height: r.height;
-            MouseArea {
-                anchors.fill: parent;
-                RowLayout {
-                    id: r
-                    anchors.margins: 16;
-                    Text {
-                        id: txt
-                        text: model.filename;
-                        font.pixelSize: 24
-                        Layout.preferredWidth: titleWidth
-                    }
-                    Text {
-                        id: type
-                        text: model.type
-                        font.pixelSize: 22
-                    }
+            width: parent.width
+            RowLayout {
+                id: r
+                width: parent.width;
+                spacing: 16
+                Text {
+                    id: txt
+                    text: model.filename;
+                    font.pixelSize: 24
+                    Layout.preferredWidth: titleWidth
+                    Layout.fillWidth: true
                 }
+                Text {
+                    id: type
+                    color: "#ec0f0f"
+                    text: model.type
+                    // visible: false
+                    font.pixelSize: 22
+                    Layout.fillWidth: false
+                }
+            }
+            MouseArea {
+                anchors.fill: parent;                
                 onClicked: {
                     console.debug("File: "+model.file);
                     files.currentIndex=index
+                }
+                onPressAndHold: {
+                    files.pressAndHold(index);
                 }
             }
         }

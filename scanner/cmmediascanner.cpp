@@ -296,8 +296,10 @@ bool CMMediaScanner::scan(bool fromStart)
     const QString path=m_pathsleft.takeFirst();
     QDirIterator it(path, m_filter, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
 
-    m_scanning=true;
-    emit scanningChanged(m_scanning);
+    if (m_scanning==false) {
+        m_scanning=true;
+        emit scanningChanged(m_scanning);
+    }
 
     emit scanning(path);
 

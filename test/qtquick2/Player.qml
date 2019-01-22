@@ -1,7 +1,6 @@
-import QtQuick 2.8
-import QtQuick.Layouts 1.1
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.1
+import QtQuick 2.12
+import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.4
 import org.tal.cm 1.0
 
 Item {
@@ -134,6 +133,7 @@ Item {
         width: parent.width
         anchors.top: control.bottom
         anchors.bottom: parent.bottom
+
         ListView {
             id: files
             delegate: fileDelegate

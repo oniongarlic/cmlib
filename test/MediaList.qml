@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.12
 import QtQuick.Layouts 1.4
 
 ListView {
@@ -9,7 +9,7 @@ ListView {
     highlightMoveDuration: 500
     clip: true;
     currentIndex: -1
-    headerPositioning: ListView.PullBackHeader
+    headerPositioning: ListView.OverlayHeader
 
     //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
@@ -24,33 +24,46 @@ ListView {
 
     property int titleWidth;
 
-    header: Component {
+    Component {
         id: headerComponent
-        Rectangle {
+        RowLayout {
+            id: headerRow
+            spacing: 1
+            z: 2
             width: parent.width
-            height: rl.height
-            color: "lightgrey"
-            z: 3
-            RowLayout {
-                id: rl
-                width: parent.width
-                spacing: 8
+            function itemAt(index) { return r2.itemAt(index) }
+
+            signal clicked(int index)
+
+            Repeater {
+                id: r2
+                model: lm
                 Text {
-                    id: headerTitle
-                    text: "Song title"
-                    font.pixelSize: 26
+                    text: name
+                    font.bold: true
+                    font.pixelSize: 18
+                    padding: 2
+                    //background: Rectangle { color: "grey" }
                     Layout.fillWidth: true
-                    Component.onCompleted: titleWidth=width;
-                }
-                Text {
-                    id: headerType
-                    text: "Type"
-                    font.pixelSize: 26
-                    Layout.fillWidth: false;
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            console.debug(index)
+                            headerRow.clicked(index)
+                        }
+                    }
                 }
             }
+            ListModel {
+                id: lm
+                ListElement { name: "Name"; sort: "name"; }
+                ListElement { name: "Type"; sort: "type" }
+            }
         }
+
     }
+
+    header: headerComponent
 
     Component {
         id: highlightDelegate
@@ -74,8 +87,9 @@ ListView {
                     id: txt
                     text: model.filename;
                     font.pixelSize: 24
-                    Layout.preferredWidth: titleWidth
-                    Layout.fillWidth: true
+                    //Layout.preferredWidth: titleWidth
+                    Layout.preferredWidth: files.headerItem.itemAt(0).width
+                    //Layout.fillWidth: true
                 }
                 Text {
                     id: type

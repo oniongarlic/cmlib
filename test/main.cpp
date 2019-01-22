@@ -14,8 +14,10 @@
 #include <QPair>
 #include <QTime>
 #include <QDebug>
+#include <QSystemTrayIcon>
 
 #if QT_VERSION >= 0x050000
+#include <QApplication>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQuick>
@@ -61,9 +63,10 @@ void myMessageOutput(QtMsgType type, const char* msg)
 int main(int argc, char **argv)
 {
 #if QT_VERSION >= 0x050000
-    QGuiApplication app(argc, argv);
+    //QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 #else
-     QApplication app(argc, argv);
+    QApplication app(argc, argv);
 #endif   
     app.setApplicationName("Qt CM Player test");
 
@@ -111,6 +114,16 @@ int main(int argc, char **argv)
     QQmlApplicationEngine engine;
 
     engine.load(QUrl(QStringLiteral("qrc:/qtquick2-main.qml")));
+#endif
+
+#ifndef QT_NO_SYSTEMTRAYICON
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
+
+    trayIcon = new QSystemTrayIcon();
+    trayIcon->setToolTip("CMLibTestApplication");
+    trayIcon->setVisible(true);
+    //trayIcon->setContextMenu(trayIconMenu);
 #endif
 
     return app.exec();

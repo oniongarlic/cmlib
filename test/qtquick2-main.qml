@@ -1,4 +1,4 @@
-import QtQuick 2.9
+import QtQuick 2.12
 import QtQuick.Window 2.11
 import QtQuick.Layouts 1.4
 import QtQuick.Controls 2.4
@@ -235,10 +235,15 @@ ApplicationWindow {
          id: dialogScanning
          modal: true
          title: "Scanning for media..."
-         // standardButtons: Dialog.Ok
+         x: (parent.width - width) / 2
+         y: (parent.height - height) / 2
+         standardButtons: Dialog.Cancel
          BusyIndicator {
              anchors.centerIn: parent
              running: parent.visible
+         }
+         onRejected: {
+            player.getMediaScanner().scanAsyncCancel();
          }
      }
 

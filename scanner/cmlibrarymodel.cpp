@@ -30,7 +30,7 @@ QVariant CMLibraryModel::data(const QModelIndex &index, int role) const
         QFileInfo f(value.toString());
         value=f.fileName();
     }
-        break;
+        break;    
     default:
         break;
     }

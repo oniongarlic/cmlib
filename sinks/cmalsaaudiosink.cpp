@@ -6,7 +6,8 @@
 
 CMAlsaAudioSink::CMAlsaAudioSink(QObject *parent)
     : CMBaseThreadedAudioSink(parent)
-    , handle(0)    
+    , handle(0)
+    //, m_resampler(0)
 {
     int err;
 
@@ -43,12 +44,19 @@ int CMAlsaAudioSink::init()
         qDebug() << "Set params error: " << snd_strerror(err);
         return false;
     }
+#if 0
+    if (m_resampler)
+        speex_resampler_destroy(m_resampler);
+
+    m_resampler=speex_resampler_init(m_channels, m_rate, m_srate, 10, &err);
+#endif
+
     return true;
 }
 
 int CMAlsaAudioSink::write(const QByteArray &buffer)
 {
-    int err=snd_pcm_writei(handle, buffer.data(), buffer.size()/4); // 2-channel, 16-bit
+    snd_pcm_sframes_t err=snd_pcm_writei(handle, buffer.constData(), buffer.size()/4); // 2-channel, 16-bit
     if (err<0) {
         switch (err) {
         case -EPIPE:
@@ -61,6 +69,8 @@ int CMAlsaAudioSink::write(const QByteArray &buffer)
             break;
         }
     }
+
+    qDebug() << buffer.size();
 
     return err;
 }

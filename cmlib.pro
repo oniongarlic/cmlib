@@ -9,6 +9,8 @@ QT += declarative
 } else {
 QT += qml quick
 QT += multimedia
+# For Tray icon
+QT += widgets
 # CONFIG += c++11
 }
 

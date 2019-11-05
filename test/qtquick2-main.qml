@@ -1,7 +1,7 @@
 import QtQuick 2.12
-import QtQuick.Window 2.11
-import QtQuick.Layouts 1.4
-import QtQuick.Controls 2.4
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
 import org.tal.cm 1.0
 
@@ -57,23 +57,32 @@ ApplicationWindow {
 
     CMWavFileAudioSink {
         id: wavSink
-        file: "audio-qml.wav"
+        file: "audio-"+mediaList.currentIndex+"-qml.wav"
     }
 
     MediaList {
         id: mediaList
         anchors.fill: parent
         model: player.getSongModel()
+
+        property bool prepared: false
+
         onFileSelected: {
+            forceActiveFocus();
             player.prepareNewSong();
             if (player.load(file)) {
-                player.prepare();
+                prepared=player.prepare();
                 if (player.wasPlaying) {
                     console.debug("We where playing, starting playback of loaded file")
                     player.play();
                 }
             }
         }
+        onPlaySelected: {
+            if (prepared && !player.playing)
+                player.play();
+        }
+
         onPressAndHold: {
             contextMenu.open();
         }

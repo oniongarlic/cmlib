@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.4
 
 ListView {
@@ -8,21 +9,99 @@ ListView {
     highlightFollowsCurrentItem: true
     highlightMoveDuration: 500
     clip: true;
+    focus: true
     currentIndex: -1
     headerPositioning: ListView.OverlayHeader
+
+    property int scrollIndex: 0
+
+    section.property: "title"
+    section.criteria: ViewSection.FirstCharacter
+    section.delegate: sectionHeading
+
+    ScrollBar.vertical: ScrollBar {}
 
     //flickableDirection: Flickable.HorizontalAndVerticalFlick
 
     signal fileSelected(string file)
+    signal playSelected();
     signal pressAndHold(int index)
+
+    onCurrentSectionChanged: console.debug("Section:"+currentSection)
 
     onCurrentIndexChanged: {
         var data=player.get(currentIndex)
         console.debug(data)
         fileSelected(data.file)
+        scrollIndex=currentIndex
+    }
+
+    Keys.onSpacePressed: {
+        scrollRelative(25)
+    }
+
+    function scrollRelative(rel) {
+        var ni=scrollIndex+rel;
+        if (ni>count)
+            ni=count;
+        positionViewAtIndex(ni, ListView.Center);
+        scrollIndex=ni;
+    }
+
+    Keys.onPressed: {
+        switch (event.key) {
+        case Qt.Key_PageDown:
+            scrollRelative(60);
+            event.accepted = true;
+            break;
+
+        case Qt.Key_PageUp:
+            scrollRelative(-60);
+            event.accepted = true;
+            break;
+        case Qt.Key_Home:
+            positionViewAtBeginning();
+            event.accepted = true;
+            break;
+        case Qt.Key_End:
+            positionViewAtEnd();
+            event.accepted = true;
+            break;
+        }
     }
 
     property int titleWidth;
+
+    function setSelection(index)
+    {
+        if (index!=currentIndex) {
+            files.currentIndex=index
+            var data=player.get(currentIndex)
+            console.debug(data)
+            fileSelected(data.file)
+        }
+    }
+
+    function playSelection(index)
+    {
+        if (index!=currentIndex)
+            setSelection(index)
+        playSelected();
+    }
+
+    Component {
+        id: sectionHeading
+        Rectangle {
+            width: parent.width
+            height: childrenRect.height
+            color: "lightsteelblue"
+            Text {
+                text: section
+                font.bold: true
+                font.pixelSize: 20
+            }
+        }
+    }
 
     Component {
         id: headerComponent
@@ -101,10 +180,14 @@ ListView {
                 }
             }
             MouseArea {
-                anchors.fill: parent;                
+                anchors.fill: parent;
                 onClicked: {
-                    console.debug("File: "+model.file);
-                    files.currentIndex=index
+                    console.debug("Clicked: "+index);
+                    setSelection(index)
+                }
+                onDoubleClicked: {
+                    console.debug("DoubleClicked"+index);
+                    playSelection(index)
                 }
                 onPressAndHold: {
                     files.pressAndHold(index);

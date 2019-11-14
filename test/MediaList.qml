@@ -48,6 +48,11 @@ ListView {
         scrollIndex=ni;
     }
 
+    function gotoIndex(ni) {
+        positionViewAtIndex(ni, ListView.Center);
+        scrollIndex=ni;
+    }
+
     Keys.onPressed: {
         switch (event.key) {
         case Qt.Key_PageDown:
@@ -60,11 +65,11 @@ ListView {
             event.accepted = true;
             break;
         case Qt.Key_Home:
-            positionViewAtBeginning();
+            gotoIndex(0); // positionViewAtBeginning();
             event.accepted = true;
             break;
         case Qt.Key_End:
-            positionViewAtEnd();
+            gotoIndex(count-1); // positionViewAtEnd();
             event.accepted = true;
             break;
         }

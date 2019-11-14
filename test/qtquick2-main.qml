@@ -35,7 +35,7 @@ ApplicationWindow {
 
         onMetadata: {
             console.debug(meta.title)
-        }        
+        }
         onEot: {
             console.debug("EOT!")
             player.stop();
@@ -151,7 +151,7 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        RowLayout {            
+        RowLayout {
             ToolButton {
                 text: "Play"
                 enabled: !player.playing && player.tracks>0
@@ -176,13 +176,13 @@ ApplicationWindow {
             }
             ToolButton {
                 text: "Prev Song"
-                onClicked: {                    
+                onClicked: {
                     mediaList.decrementCurrentIndex();
                 }
             }
             ToolButton {
                 text: "Next Song"
-                onClicked: {                    
+                onClicked: {
                     mediaList.incrementCurrentIndex();
                 }
             }
@@ -208,6 +208,15 @@ ApplicationWindow {
             ToolButton {
                 text: "Scan"
                 onClicked: player.getMediaScanner().scanAsync(true)
+            }
+
+            ToolSeparator {
+
+            }
+
+            ToolButton {
+                text: "Search"
+                onClicked: mainDrawer.open()
             }
 
             ToolSeparator {
@@ -241,49 +250,50 @@ ApplicationWindow {
     }
 
     Dialog {
-         id: dialogScanning
-         modal: true
-         title: "Scanning for media..."
-         x: (parent.width - width) / 2
-         y: (parent.height - height) / 2
-         standardButtons: Dialog.Cancel
-         BusyIndicator {
-             anchors.centerIn: parent
-             running: parent.visible
-         }
-         onRejected: {
+        id: dialogScanning
+        modal: true
+        title: "Scanning for media..."
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        standardButtons: Dialog.Cancel
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: parent.visible
+        }
+        onRejected: {
             player.getMediaScanner().scanAsyncCancel();
-         }
-     }
+        }
+    }
 
     Drawer {
         id: mainDrawer
-        height: root.height
-        width: root.width/1.5
-        //dragMargin: rootStack.depth > 1 ? 0 : Qt.styleHints.startDragDistance
+        width: root.width
+        edge: Qt.BottomEdge
         ColumnLayout {
             //anchors.fill: parent
             spacing: 16
             Layout.alignment: Qt.AlignTop
+            Layout.margins: 16
             Text {
                 id: name
                 text: qsTr("Search")
             }
-            TextField {
-                id: searchText
-                Layout.fillWidth: true
-                placeholderText: "Search tracks..."
+            RowLayout {
+                TextField {
+                    id: searchText
+                    Layout.fillWidth: true
+                    placeholderText: "Search tracks..."
 
-                onAccepted: {
-                    player.setFilter(text)
+                    onAccepted: {
+                        player.setFilter(text)
+                    }
                 }
-            }
-            Button {
-                //enabled: searchText.
-                text: "Clear search"
-                onClicked: {
-                    searchText.text=''
-                    player.setFilter('')
+                Button {
+                    text: "Clear"
+                    onClicked: {
+                        searchText.text=''
+                        player.setFilter('')
+                    }
                 }
             }
         }

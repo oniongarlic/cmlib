@@ -47,11 +47,11 @@ public:
     const QStringList getSupportedExtensions() const;
 
 signals:
-    void metadata(QVariantHash meta);
+    void metadata(QVariantMap meta);
     void eot();
 
 protected slots:
-    void decoderMetadata(QVariantHash meta);
+    void decoderMetadata(QVariantMap meta);
     void decoderEOT();
 
 protected:

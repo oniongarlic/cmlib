@@ -65,7 +65,7 @@ void CMMediaDecoder::analyzeDecoders()
             regToDecoder.insert(r, src);
         }
 
-        connect(src, SIGNAL(metaChanged(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+        connect(src, SIGNAL(metaChanged(QVariantMap)), this, SLOT(decoderMetadata(QVariantMap)));
         connect(src, SIGNAL(eot()), this, SLOT(decoderEOT()));
     }
 }
@@ -76,7 +76,7 @@ const QStringList CMMediaDecoder::getSupportedExtensions() const
     return m_extensions;
 }
 
-void CMMediaDecoder::decoderMetadata(QVariantHash meta)
+void CMMediaDecoder::decoderMetadata(QVariantMap meta)
 {
     qDebug() << "Got decoder meta data " << meta;
     emit metadata(meta);

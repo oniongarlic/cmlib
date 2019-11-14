@@ -2,7 +2,7 @@
 #define CMBASEAUDIOSOURCE_H
 
 #include <QObject>
-#include <QVariantHash>
+#include <QVariantMap>
 #include <QStringList>
 #include <QIODevice>
 
@@ -13,7 +13,7 @@ class CMBaseAudioSource : public QIODevice
     Q_PROPERTY(quint32 rate READ rate WRITE setRate NOTIFY rateChanged)
     Q_PROPERTY(quint16 track READ track WRITE setTrack NOTIFY trackChanged)
     Q_PROPERTY(quint16 tracks READ tracks WRITE setTracks NOTIFY tracksChanged)
-    Q_PROPERTY(QVariantHash meta READ meta NOTIFY metaChanged)
+    Q_PROPERTY(QVariantMap meta READ meta NOTIFY metaChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY validChanged)
     Q_PROPERTY(quint64 position READ position WRITE setPosition NOTIFY positionChanged)
 
@@ -43,7 +43,7 @@ public:
         return m_tracks;
     }
 
-    QVariantHash meta() const
+    QVariantMap meta() const
     {
         return m_meta;
     }
@@ -70,7 +70,7 @@ signals:
     void rateChanged(quint32 rate);
     void trackChanged(quint16 track);
     void tracksChanged(quint16 tracks);
-    void metaChanged(QVariantHash meta);
+    void metaChanged(QVariantMap meta);
     void validChanged(bool valid);
 
     void positionChanged(quint64 position);
@@ -102,7 +102,7 @@ protected:
     quint64 m_position;
 
     // Meta data (title, author, etc)
-    QVariantHash m_meta;
+    QVariantMap m_meta;
 
     bool m_valid;
 };

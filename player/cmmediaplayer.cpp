@@ -17,7 +17,7 @@ CMMediaPlayer::CMMediaPlayer(QObject *parent)
     , m_tracks(0)
     , m_scanner(this)
 {
-    connect(&m_dec, SIGNAL(metadata(QVariantHash)), this, SLOT(decoderMetadata(QVariantHash)));
+    connect(&m_dec, SIGNAL(metadata(QVariantMap)), this, SLOT(decoderMetadata(QVariantMap)));
     connect(&m_dec, SIGNAL(eot()), this, SLOT(decoderEOT()));
 
     m_scanner.initialize("player_mediadatabase.db");
@@ -67,12 +67,13 @@ bool CMMediaPlayer::load(const QByteArray &data, CMBaseAudioSource *source)
     if (m_source->isOpen())
         m_source->close();
 
+    m_source->disconnect(this, 0);
+    connect(m_source, SIGNAL(positionChanged(quint64)), SLOT(sinkPosition(quint64)));
+
     m_source->open(QIODevice::WriteOnly);
     m_source->write(data.constData(), data.size());
     m_source->close();
 
-    m_source->disconnect(this, 0);
-    connect(m_source, SIGNAL(positionChanged(quint64)), SLOT(sinkPosition(quint64)));
     // connect(m_source, SIGNAL(eot()), SLOT(decoderEOT()));
 
     m_sink->setAudioSource(m_source);
@@ -177,12 +178,17 @@ void CMMediaPlayer::setPlaytime(quint64 ms)
 bool CMMediaPlayer::setAudioSink(CMBaseAudioSink *sink)
 {
     if (m_sink) {
+        if (m_sink->state()!=QAudio::StoppedState)
+            return false;
         m_sink->disconnect(this, 0);
     }
 
     m_sink=sink;
 
     connect(m_sink, SIGNAL(stateChanged(QAudio::State)), SLOT(sinkState(QAudio::State)));
+
+    if (m_source)
+        m_sink->setAudioSource(m_source);
 
     return true;
 }
@@ -236,9 +242,10 @@ QAudio::State CMMediaPlayer::getState()
     return m_sink->state();
 }
 
-void CMMediaPlayer::decoderMetadata(QVariantHash meta)
+void CMMediaPlayer::decoderMetadata(QVariantMap meta)
 {
-    qDebug() << meta;
+    qDebug() << "Source sent metadata" << meta;
+
     if (meta.contains("title")) {
         //m_scanner.updateFile();
     }

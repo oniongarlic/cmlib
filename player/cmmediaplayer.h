@@ -77,7 +77,7 @@ public:
     }
 
 signals:
-    void metadata(QVariantHash meta);
+    void metadata(QVariantMap meta);
     void positionChanged(quint64 position);
     void lengthChanged(double length);
     void tracksChanged(int tracks);
@@ -87,7 +87,7 @@ signals:
     void playingChanged(bool playing);
 
 protected slots:
-    void decoderMetadata(QVariantHash meta);
+    void decoderMetadata(QVariantMap meta);
     void decoderEOT();
     void sinkPosition(quint64 pos);
     void sinkState(QAudio::State state);

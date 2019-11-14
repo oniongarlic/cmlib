@@ -68,9 +68,7 @@ int CMAlsaAudioSink::write(const QByteArray &buffer)
             snd_pcm_prepare(handle);
             break;
         }
-    }
-
-    qDebug() << buffer.size();
+    }    
 
     return err;
 }

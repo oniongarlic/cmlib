@@ -20,6 +20,9 @@ ApplicationWindow {
 
         property bool wasPlaying: false
 
+        property string author;
+        property string title;
+
         onWasPlayingChanged: console.debug("WasPlaying: "+wasPlaying)
 
         function prepareNewSong() {
@@ -34,8 +37,10 @@ ApplicationWindow {
         }
 
         onMetadata: {
-            console.debug(meta.title)
+            title=meta.title;
+            author=meta.author;
         }
+
         onEot: {
             console.debug("EOT!")
             player.stop();
@@ -57,7 +62,7 @@ ApplicationWindow {
 
     CMWavFileAudioSink {
         id: wavSink
-        file: "audio-"+mediaList.currentIndex+"-qml.wav"
+        file: "audio-"+player.track+"-"+player.title+"-_-"+player.author+"-qml.wav"
     }
 
     MediaList {
@@ -99,6 +104,19 @@ ApplicationWindow {
     footer: ToolBar {
         RowLayout {
             anchors.fill: parent
+
+            Text {
+                text: player.title
+                font.bold: true
+                Layout.fillWidth: true
+            }
+
+            Text {
+                text: player.author
+                font.italic: true
+                Layout.fillWidth: true
+            }
+
             Text {
                 text:player.position/1000;
                 horizontalAlignment: Text.AlignHCenter
@@ -111,10 +129,18 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
 
+            ToolSeparator {
+
+            }
+
             Text {
                 id: scanning
                 text: ""
                 Layout.fillWidth: true
+            }
+
+            ToolSeparator {
+
             }
 
             ToolButton {
@@ -216,7 +242,11 @@ ApplicationWindow {
 
             ToolButton {
                 text: "Search"
-                onClicked: mainDrawer.open()
+                onClicked: {
+                    mainDrawer.open()
+                    searchText.forceActiveFocus();
+                    searchText.selectAll();
+                }
             }
 
             ToolSeparator {

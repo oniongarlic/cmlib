@@ -43,7 +43,19 @@ HEADERS += \
 
 SOURCES += test/main.cpp
 
-unix:!qnx:!android {
+unix {
+    DEFINES += ALSAAUDIO
+}
+
+darwin {
+    # PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+    LIBS += -L/usr/local/lib
+    INCLUDEPATH += /usr/local/include
+    DEFINES += QTAUDIO
+    DEFINES -= ALSAAUDIO
+}
+
+unix:darwin:!qnx:!android {
     CONFIG +=link_pkgconfig       
 
 packagesExist(flac++) {
@@ -80,8 +92,8 @@ packagesExist(libopenmpt) {
 }
     DEFINES += AY_DECODER
 
-    DEFINES += ALSAAUDIO
-    # DEFINES += QTAUDIO
+    # DEFINES += ALSAAUDIO
+    DEFINES += QTAUDIO
 } else {
     # DEFINES += FLAC_DECODER
     # DEFINES += SAP_DECODER
@@ -122,6 +134,7 @@ android {
     $$ANDROID_SYSROOT/lib/libmodplug.so
     }
 }
+
 
 #######################################################################
 # Sinks

@@ -166,10 +166,14 @@ bool CMMediaScanner::scanAsync()
 
 bool CMMediaScanner::scanAsyncCancel()
 {
-    if (m_ticker.isActive()) {
+    if (m_scanning) {
         m_ticker.stop();
         emit scanningDone();
         m_model->refresh();
+
+        m_scanning=false;
+        emit scanningChanged(m_scanning);
+
         return true;
     }
 
@@ -299,6 +303,8 @@ bool CMMediaScanner::scan(bool fromStart)
     if (m_scanning==false) {
         m_scanning=true;
         emit scanningChanged(m_scanning);
+    } else if (m_scanning && fromStart) {
+        return false;
     }
 
     emit scanning(path);

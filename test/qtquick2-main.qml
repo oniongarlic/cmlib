@@ -133,16 +133,6 @@ ApplicationWindow {
 
             }
 
-            Text {
-                id: scanning
-                text: ""
-                Layout.fillWidth: true
-            }
-
-            ToolSeparator {
-
-            }
-
             ToolButton {
                 text: "WAV Sink"
                 onClicked: {
@@ -169,6 +159,7 @@ ApplicationWindow {
             scanning.text='';
         }
         onScanningChanged: {
+            console.debug("Scanning: "+scanning)
             if (scanning)
                 dialogScanning.open();
             else
@@ -285,10 +276,19 @@ ApplicationWindow {
         title: "Scanning for media..."
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        width: parent.width/2
         standardButtons: Dialog.Cancel
-        BusyIndicator {
-            anchors.centerIn: parent
-            running: parent.visible
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 16
+            BusyIndicator {
+                Layout.alignment: Qt.AlignHCenter
+                running: player.getMediaScanner().scanning
+            }
+            Text {
+                id: scanning
+                text: ""
+            }
         }
         onRejected: {
             player.getMediaScanner().scanAsyncCancel();

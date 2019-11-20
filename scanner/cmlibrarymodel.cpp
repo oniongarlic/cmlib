@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QModelIndex>
+#include <QSqlError>
+#include <QSqlQuery>
 
 CMLibraryModel::CMLibraryModel(QObject *parent)
     : QSqlQueryModel(parent)
@@ -35,17 +37,29 @@ QVariant CMLibraryModel::data(const QModelIndex &index, int role) const
         break;
     }
 
-    qDebug() << role << value;
-
     return value;
 }
 
 void CMLibraryModel::refresh()
 {
-    setQuery("SELECT path,type,title,meta FROM mediafiles ORDER BY title");
+    if (m_search.isEmpty()) {
+        //               0    1    2     3
+        setQuery("SELECT path,type,title,meta FROM mediafiles ORDER BY title");
+    } else {
+        QSqlQuery query;
+        query.prepare("SELECT path,type,title,meta FROM mediafiles WHERE title LIKE ? ORDER BY title");
+        query.bindValue(0, m_search);
+        setQuery(query);
+    }
+
+    if (lastError().isValid())
+        qDebug() << lastError();
+    // XXX: Workaround sqlite not reporting proper rowCount!
+    while (canFetchMore())
+           fetchMore();
 }
 
-uint CMLibraryModel::count() const
+int CMLibraryModel::count() const
 {
     return rowCount(QModelIndex());
 }
@@ -59,5 +73,10 @@ QVariantMap CMLibraryModel::get(int index) const
     map.insert("title", QSqlQueryModel::data(this->index(index, 2), Qt::DisplayRole));
 
     return map;
+}
+
+void CMLibraryModel::search(const QString &str)
+{
+    m_search=str;
 }
 

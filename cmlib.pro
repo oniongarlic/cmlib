@@ -3,15 +3,14 @@ QT += gui sql
 ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
 
 lessThan(QT_MAJOR_VERSION, 5): {
-CONFIG += mobility
-MOBILITY += multimedia
-QT += declarative
+    CONFIG += mobility
+    MOBILITY += multimedia
+    QT += declarative
 } else {
-QT += qml quick
-QT += multimedia
-# For Tray icon
-QT += widgets
-# CONFIG += c++11
+    QT += qml quick multimedia
+    # For Tray icon
+    QT += widgets
+    CONFIG += c++11
 }
 
 INCLUDEPATH += sources sinks player decoders
@@ -45,6 +44,7 @@ SOURCES += test/main.cpp
 
 unix {
     DEFINES += ALSAAUDIO
+    CONFIG +=link_pkgconfig
 }
 
 darwin {
@@ -55,8 +55,7 @@ darwin {
     DEFINES -= ALSAAUDIO
 }
 
-unix:darwin:!qnx:!android {
-    CONFIG +=link_pkgconfig       
+unix:!qnx:!android {
 
 packagesExist(flac++) {
     DEFINES += FLAC_DECODER
@@ -79,22 +78,24 @@ packagesExist(libsidplayfp) {
 }
 
 lessThan(QT_MAJOR_VERSION, 5): {
-packagesExist(libmodplug) {
-    DEFINES += MOD_DECODER
-    PKGCONFIG += libmodplug
-}
+    packagesExist(libmodplug) {
+        DEFINES += MOD_DECODER
+        PKGCONFIG += libmodplug
+    }
 } else {
-packagesExist(libopenmpt) {
-    DEFINES += MTP_DECODER
-    PKGCONFIG += libopenmpt
-    CONFIG += c++11
-}
+    packagesExist(libopenmpt) {
+        DEFINES += MTP_DECODER
+        PKGCONFIG += libopenmpt
+        CONFIG += c++11
+    }
 }
     DEFINES += AY_DECODER
 
     # DEFINES += ALSAAUDIO
     DEFINES += QTAUDIO
 } else {
+    # Non-pkg-config environments
+
     # DEFINES += FLAC_DECODER
     # DEFINES += SAP_DECODER
     DEFINES += SID_DECODER

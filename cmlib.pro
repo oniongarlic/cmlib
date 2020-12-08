@@ -42,39 +42,49 @@ HEADERS += \
 
 SOURCES += test/main.cpp
 
-unix {
+unix:!macx {
     DEFINES += ALSAAUDIO
-    CONFIG +=link_pkgconfig
+    CONFIG += link_pkgconfig
 }
 
-darwin {
-    # PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+macx {
     LIBS += -L/usr/local/lib
     INCLUDEPATH += /usr/local/include
     DEFINES += QTAUDIO
     DEFINES -= ALSAAUDIO
+    QT_CONFIG -= no-pkg-config
+    QT_CONFIG += pkg-config
+    PKG_CONFIG = /usr/local/bin/pkg-config
+    # PKG_CONFIG = /opt/local/bin/pkg-config
+    CONFIG += link_pkgconfig
+    CONFIG += c++17
+    message(OSX)
 }
 
-unix:!qnx:!android {
+unix:macx:!qnx:!android {
 
 packagesExist(flac++) {
     DEFINES += FLAC_DECODER
     PKGCONFIG += flac++
+    message(FLAC)
 }
 
 packagesExist(opusfile) {
     DEFINES += OPUS_DECODER
     PKGCONFIG += opusfile
+    message(OPUS)
 }
 
 packagesExist(sc68) {
     DEFINES += SC68_DECODER
     PKGCONFIG += sc68
+    message(SC68)
 }
 
 packagesExist(libsidplayfp) {
     DEFINES += SID_DECODER
     PKGCONFIG += libsidplayfp
+    message(SIDPLAYFP)
 }
 
 lessThan(QT_MAJOR_VERSION, 5): {
@@ -87,6 +97,7 @@ lessThan(QT_MAJOR_VERSION, 5): {
         DEFINES += MTP_DECODER
         PKGCONFIG += libopenmpt
         CONFIG += c++11
+        message(OPENMTP)
     }
 }
     DEFINES += AY_DECODER
@@ -96,10 +107,10 @@ lessThan(QT_MAJOR_VERSION, 5): {
 } else {
     # Non-pkg-config environments
 
-    # DEFINES += FLAC_DECODER
+    DEFINES += FLAC_DECODER
     # DEFINES += SAP_DECODER
     DEFINES += SID_DECODER
-    # DEFINES += MOD_DECODER
+    DEFINES += MOD_DECODER
     DEFINES += MTP_DECODER
     DEFINES += AY_DECODER
 }

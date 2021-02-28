@@ -3,6 +3,13 @@
 
 #include "cmbaseaudiosource.h"
 
+#ifdef Q_OS_DARWIN
+// XXX: Workaround C++, LLVM, whatever, don't care
+#ifndef HAVE_CXX11
+#  define auto_ptr unique_ptr
+#endif
+#endif
+
 #include <sidplayfp/sidplayfp.h>
 #include <sidplayfp/event.h>
 #include <sidplayfp/SidTune.h>

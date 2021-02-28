@@ -80,10 +80,12 @@ int main(int argc, char **argv)
 
 #ifdef QTAUDIO
     qmlRegisterType<CMQtAudioSink>("org.tal.cm", 1, 0, "CMAudioSink");
-#endif
+#else
 #ifdef ALSAAUDIO
     qmlRegisterType<CMAlsaAudioSink>("org.tal.cm", 1, 0, "CMAudioSink");
 #endif
+#endif
+
 #ifdef QNXAUDIO
     qmlRegisterType<CMQSAAudioSink>("org.tal.cm", 1, 0, "CMAudioSink");
 #endif

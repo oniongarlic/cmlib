@@ -43,7 +43,6 @@ HEADERS += \
 SOURCES += test/main.cpp
 
 unix {
-    DEFINES += ALSAAUDIO
     CONFIG +=link_pkgconfig
 }
 
@@ -56,6 +55,13 @@ darwin {
 }
 
 unix:!qnx:!android {
+
+packagesExist(alsa) {
+    DEFINES += ALSAAUDIO
+    PKGCONFIG += alsa
+} else {
+    DEFINES += QTAUDIO
+}
 
 packagesExist(flac++) {
     DEFINES += FLAC_DECODER
@@ -89,10 +95,7 @@ lessThan(QT_MAJOR_VERSION, 5): {
         CONFIG += c++11
     }
 }
-    DEFINES += AY_DECODER
-
-    # DEFINES += ALSAAUDIO
-    DEFINES += QTAUDIO
+    # DEFINES += AY_DECODER
 } else {
     # Non-pkg-config environments
 

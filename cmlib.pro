@@ -44,6 +44,7 @@ SOURCES += test/main.cpp
 
 unix {
     CONFIG +=link_pkgconfig
+    message(PKGCONFIG)
 }
 
 macx {
@@ -60,7 +61,7 @@ macx {
     message(OSX)
 }
 
-unix:macx:!qnx:!android {
+link_pkgconfig {
 
 packagesExist(alsa) {
     DEFINES += ALSAAUDIO

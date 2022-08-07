@@ -153,7 +153,7 @@ ListView {
         id: highlightDelegate
         Rectangle {
             color: "#70d370"
-            width: parent.width
+            width: ListView.view.width
             height: 20
         }
     }

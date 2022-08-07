@@ -162,7 +162,7 @@ ListView {
         id: fileDelegate
         Item {
             height: r.height;
-            width: parent.width
+            width: ListView.view.width
             RowLayout {
                 id: r
                 width: parent.width;

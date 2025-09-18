@@ -2,16 +2,11 @@ QT += gui sql
 
 ANDROID_SYSROOT=/home/milang/Android/toolchain-ndk-android-24/sysroot
 
-lessThan(QT_MAJOR_VERSION, 5): {
-    CONFIG += mobility
-    MOBILITY += multimedia
-    QT += declarative
-} else {
-    QT += qml quick multimedia
-    # For Tray icon
-    QT += widgets
-    CONFIG += c++11
-}
+QT += qml quick multimedia
+# For Tray icon
+QT += widgets core5compat
+CONFIG += c++11
+
 
 INCLUDEPATH += sources sinks player decoders
 

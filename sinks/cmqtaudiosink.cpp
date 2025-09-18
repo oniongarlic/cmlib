@@ -1,7 +1,9 @@
 #include <QDebug>
 #include <QFile>
 #include <QAudioOutput>
-#include <QAudioDeviceInfo>
+#include <QAudioFormat>
+#include <QAudioDevice>
+#include <QMediaDevices>
 #include <QtCore/qmath.h>
 #include <QtCore/qendian.h>
 
@@ -11,7 +13,7 @@ const int BufferSize      = 65535;
 
 CMQtAudioSink::CMQtAudioSink(QObject *parent)
     :   CMBaseAudioSink(parent)
-    ,   m_device(QAudioDeviceInfo::defaultOutputDevice())
+    ,   m_device(QMediaDevices::defaultAudioOutput())
     ,   m_audioOutput(0)
     ,   m_output(0)
     ,   m_buffer(BufferSize, 0)
@@ -21,22 +23,14 @@ CMQtAudioSink::CMQtAudioSink(QObject *parent)
 
 void CMQtAudioSink::initializeAudio()
 {
-#if QT_VERSION < 0x050000
-    m_format.setFrequency(m_rate);
-    m_format.setChannels(m_channels);
-#else
     m_format.setSampleRate(m_rate);
-    m_format.setChannelCount(m_channels);
-#endif
-    m_format.setSampleSize(16);
-    m_format.setCodec("audio/pcm");
-    m_format.setByteOrder(QAudioFormat::LittleEndian);
-    m_format.setSampleType(QAudioFormat::SignedInt);
+    m_format.setChannelCount(m_channels);         
+    m_format.setSampleFormat(QAudioFormat::Int16);
 
-    qDebug() << m_device.deviceName();
     if (!m_device.isFormatSupported(m_format)) {
+        // XXX
         qWarning() << "Default format not supported - trying to use nearest";
-        m_format = m_device.nearestFormat(m_format);
+        //m_format = m_device.nearestFormat(m_format);
     }
 
     createAudioOutput();
@@ -44,10 +38,10 @@ void CMQtAudioSink::initializeAudio()
 
 void CMQtAudioSink::createAudioOutput()
 {
-    m_audioOutput = new QAudioOutput(m_device, m_format, this);
-    connect(m_audioOutput, SIGNAL(notify()), SLOT(notified()));
-    connect(m_audioOutput, SIGNAL(stateChanged(QAudio::State)), SLOT(outputStateChanged(QAudio::State)));
-    m_audioOutput->setBufferSize(65535);
+    m_sink=new QAudioSink(m_format, this);
+    m_sink->setBufferSize(65535);
+    connect(m_sink, SIGNAL(notify()), SLOT(notified()));
+    connect(m_sink, SIGNAL(stateChanged(QAudio::State)), SLOT(outputStateChanged(QAudio::State)));
 }
 
 CMQtAudioSink::~CMQtAudioSink()
@@ -67,7 +61,7 @@ bool CMQtAudioSink::play()
         return false;
     }
 
-    QAudio::State s=m_audioOutput->state();
+    QAudio::State s=m_sink->state();
 
     qDebug() << "Play: State is " << s;
 
@@ -76,7 +70,7 @@ bool CMQtAudioSink::play()
         //
         break;
     case QAudio::SuspendedState:
-        m_audioOutput->resume();
+        m_sink->resume();
         break;
     case QAudio::StoppedState:
         if (!m_source->isOpen()) {
@@ -89,7 +83,7 @@ bool CMQtAudioSink::play()
         }
 
         qDebug("Starting playback");
-        m_audioOutput->start(m_source);
+        m_sink->start(m_source);
         break;
     case QAudio::IdleState:
         qDebug("Idle Audio state");
@@ -101,14 +95,14 @@ bool CMQtAudioSink::play()
         break;
     }
 
-    qDebug() << "Buffer size used is: " << m_audioOutput->bufferSize();
+    qDebug() << "Buffer size used is: " << m_sink->bufferSize();
 
     return true;
 }
 
 bool CMQtAudioSink::stop()
 {
-    m_audioOutput->stop();
+    m_sink->stop();
     // m_generator->close(); XXX Should we close the source too ?
 
     return true;
@@ -116,14 +110,14 @@ bool CMQtAudioSink::stop()
 
 bool CMQtAudioSink::pause()
 {
-    m_audioOutput->suspend();
+    m_sink->suspend();
 
     return true;
 }
 
 bool CMQtAudioSink::resume()
 {
-    m_audioOutput->resume();
+    m_sink->resume();
 
     return true;
 }
@@ -131,29 +125,29 @@ bool CMQtAudioSink::resume()
 void CMQtAudioSink::deviceChanged(int index)
 {
     m_source->close();
-    m_audioOutput->stop();
-    m_audioOutput->disconnect(this);
+    m_sink->stop();
+    m_sink->disconnect(this);
     createAudioOutput();
 }
 
 void CMQtAudioSink::notified()
 {
     //qWarning() << "bytesFree = " << m_audioOutput->bytesFree() << ", " << "elapsedUSecs = " << m_audioOutput->elapsedUSecs() << ", " << "processedUSecs = " << m_audioOutput->processedUSecs();
-    emit position(m_audioOutput->processedUSecs());
+    emit position(m_sink->processedUSecs());
 }
 
 void CMQtAudioSink::toggleSuspendResume()
 {
-    if (m_audioOutput->state() == QAudio::SuspendedState) {
+    if (m_sink->state() == QAudio::SuspendedState) {
         qDebug() << "status: Suspended, resume()";
-        m_audioOutput->resume();
-    } else if (m_audioOutput->state() == QAudio::ActiveState) {
+        m_sink->resume();
+    } else if (m_sink->state() == QAudio::ActiveState) {
         qDebug() << "status: Active, suspend()";
-        m_audioOutput->suspend();
-    } else if (m_audioOutput->state() == QAudio::StoppedState) {
+        m_sink->suspend();
+    } else if (m_sink->state() == QAudio::StoppedState) {
         qDebug() << "status: Stopped, resume()";
-        m_audioOutput->resume();
-    } else if (m_audioOutput->state() == QAudio::IdleState) {
+        m_sink->resume();
+    } else if (m_sink->state() == QAudio::IdleState) {
         qDebug() << "status: IdleState";
     }
 }

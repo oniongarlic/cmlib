@@ -11,7 +11,7 @@
 #endif
 
 #include <sidplayfp/sidplayfp.h>
-#include <sidplayfp/event.h>
+// #include <sidplayfp/event.h>
 #include <sidplayfp/SidTune.h>
 #include <sidplayfp/SidInfo.h>
 #include <sidplayfp/SidTuneInfo.h>

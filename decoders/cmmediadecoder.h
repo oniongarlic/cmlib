@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSet>
+#include <QRegExp>
 
 #include "cmbaseaudiosource.h"
 

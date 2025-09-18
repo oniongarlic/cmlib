@@ -10,6 +10,9 @@
 #include <QStringList>
 
 #include <QAudioOutput>
+#include <QAudioSink>
+#include <QAudioDevice>
+#include <QAudioFormat>
 
 #include "cmbaseaudiosink.h"
 #include "cmbaseaudiosource.h"
@@ -30,12 +33,13 @@ private:
     void initializeAudio();
     void createAudioOutput();
 
-private:    
-    QAudioDeviceInfo m_device;    
-    QAudioOutput*    m_audioOutput;
-    QIODevice*       m_output; // not owned
-    QAudioFormat     m_format;    
-    QByteArray       m_buffer;
+private:
+    QAudioSink*     m_sink;
+    QAudioDevice    m_device;
+    QAudioOutput*   m_audioOutput;
+    QIODevice*      m_output; // not owned
+    QAudioFormat    m_format;
+    QByteArray      m_buffer;
 
 private slots:
     void notified();    

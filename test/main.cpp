@@ -73,8 +73,6 @@ int main(int argc, char **argv)
 #endif   
     app.setApplicationName("Qt CM Player test");
 
-    qsrand(QTime::currentTime().msec());
-
     //qInstallMsgHandler(myMessageOutput);
 
     qmlRegisterType<CMMediaPlayer>("org.tal.cm", 1, 0, "CMMediaPlayer");

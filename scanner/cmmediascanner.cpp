@@ -5,6 +5,7 @@
 #include <QSqlError>
 
 #include <QDesktopServices>
+#include <QStandardPaths>
 
 #define TABLE_MEDIA_FILES "CREATE TABLE IF NOT EXISTS mediafiles (\
 path text not null,\

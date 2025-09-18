@@ -57,6 +57,11 @@ qint64 CMSidAudioSource::generateData(qint64 maxlen)
     m_buffer_length = engine->play((short*)m_buffer.data(), maxlen/2); // 16
     setPosition(engine->time()*1000);
 
+    if (!engine->isPlaying()) {
+        qDebug() << engine->error();
+        emit eot();
+    }
+
     return m_buffer_length*2;
 }
 

@@ -103,7 +103,7 @@ bool CMQtAudioSink::play()
 bool CMQtAudioSink::stop()
 {
     m_sink->stop();
-    // m_generator->close(); XXX Should we close the source too ?
+    m_source->close(); // XXX Should we close the source too ?
 
     return true;
 }

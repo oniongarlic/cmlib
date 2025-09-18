@@ -16,19 +16,11 @@
 #include <QDebug>
 #include <QSystemTrayIcon>
 
-#if QT_VERSION >= 0x050000
 #include <QApplication>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QtQuick>
 #include <QtQml>
-#else
-#include <QApplication>
-#include <QDeclarativeComponent>
-#include <QDeclarativeEngine>
-#include <QDeclarativeContext>
-#include <QDeclarativeView>
-#endif
 
 #include <QDesktopServices>
 

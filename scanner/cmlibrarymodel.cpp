@@ -9,9 +9,6 @@
 CMLibraryModel::CMLibraryModel(QObject *parent)
     : QSqlQueryModel(parent)
 {    
-#if QT_VERSION < 0x050000
-    setRoleNames(roleNames());
-#endif
     refresh();
 }
 
@@ -49,7 +46,7 @@ void CMLibraryModel::refresh()
         QSqlQuery query;
         query.prepare("SELECT path,type,title,meta FROM mediafiles WHERE title LIKE ? ORDER BY title");
         query.bindValue(0, m_search);
-        setQuery(query);
+        setQuery(std::move(query));
     }
 
     if (lastError().isValid())
